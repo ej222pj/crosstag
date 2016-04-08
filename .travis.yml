@@ -4,4 +4,4 @@ python:
 # command to install dependencies
 install: "pip3 install -r requirements.txt"
 # command to run tests
-script: python3 test_script.py
+script: python3 tests/test_script.py
