@@ -81,6 +81,7 @@ def stream():
     return Response(up_stream(), mimetype='text/event-stream')
 
 
+
 # Renders a static page for the tagin view. Shows the person who tags in.
 @app.route('/crosstag/v1.0/static_tagin_page')
 def static_tagin_page():
