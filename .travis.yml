@@ -1,10 +1,12 @@
+sudo: required
 language: python
 python:
   - "3.4"
-# command to install dependencies
+services:
+  - docker
 before_install:
   - echo "Testing Docker Hub Credentials"
-  - sudo docker login -e=$docker_email -u=$docker_user -p=$docker_password
+  - docker login -e=$docker_email -u=$docker_user -p=$docker_password
   - echo "Docker Hub credentials are working"
   - docker build -t crosstag
 install: "pip3 install -r requirements.txt"
