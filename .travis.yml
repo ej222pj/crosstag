@@ -8,7 +8,7 @@ before_install:
   - echo "Testing Docker Hub Credentials"
   - docker login -e=$docker_email -u=$docker_user -p=$docker_password
   - echo "Docker Hub credentials are working"
-  - docker build -t crosstag
+  - docker build -t crosstag/crosstag
 install: "pip3 install -r requirements.txt"
 # command to run tests
 script: python3 tests/test_script.py
