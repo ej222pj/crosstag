@@ -5,3 +5,13 @@ python:
 install: "pip3 install -r requirements.txt"
 # command to run tests
 script: python3 tests/test_script.py
+deploy:
+  - provider: s3
+    ⋮ # rest of S3 deployment for MyApp.zip
+  - provider: codedeploy
+    access_key_id: AKIAJ7HCSGHHPG67GW5A
+    secret_access_key: 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
+    bucket: "S3 Bucket"
+    key: latest.zip
+    application: crosstag
+    deployment_group: CrosstagDeploymentGroup
