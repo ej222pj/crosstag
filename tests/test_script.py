@@ -9,7 +9,6 @@ class TestStringMethods(unittest.TestCase):
         urls = ["http://%s:%d/crosstag/v1.0/get_user_data_tag/%s" % ("0.0.0.0", 80, "11111111")]
         unsent = (grequests.get(url) for url in urls)
         res = grequests.map(unsent)
-        print("Res is =  " + res)
         self.assertIsNone(res)
 
     def test_upper(self):
