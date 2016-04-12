@@ -176,7 +176,7 @@ def get_user_data_tag(tag_id):
     try:
         return User.query.filter_by(tag_id=tag_id).first().json()
     except:
-        return jsonify({})
+        return None
 
 
 # Stores a tag event based on tag_id and a timestamp
