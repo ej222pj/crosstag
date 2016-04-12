@@ -4,6 +4,16 @@ from crosstag_init import db
 
 
 class Debt(db.Model):
+    """
+        Debt - This class is the representation of the database model debt.
+
+        :id: Primary key, integer
+        :amount: integer
+        :uid: integer
+        :product: integer
+        :create_date: date
+
+    """
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Integer)
     uid = db.Column(db.Integer)
