@@ -4,6 +4,22 @@ from wtforms.validators import Required
 
 
 class EditUser(Form):
+    """
+    A representation of the form for editing a user.
+
+    :param name: Name of the user, Firstname & Lastname.
+    :param email: Emailaddress of the user.
+    :param phone: Phonenumber of the user.
+    :param address: Address 1 of the user.
+    :param address2: Address 2 of the user.
+    :param city: City of the user.
+    :param zip_code: Zip code of the city.
+    :param tag_id: Tag id of the user.
+    :param expiry_date: Expire date of the users membership.
+    :param gender: Gender of the user.
+    :param status: Status of the users membership.
+
+    """
     name = TextField('name', [validators.Length(max=80), validators.DataRequired()])
     email = TextField('email', [validators.Length(max=120), validators.Email()])
     phone = TextField('phone', validators=[])
