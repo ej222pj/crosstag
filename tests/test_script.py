@@ -1,12 +1,16 @@
 import unittest
-from crosstag_server import get_all_users
+import grequests
+#from crosstag_server import get_all_users
 
 
 class TestStringMethods(unittest.TestCase):
 
     def test_get_all_user(self):
-        hej = get_all_users();
-        self.assertIsNotNone(hej)
+        urls = ["http://%s:%d/crosstag/v1.0/get_user_data_tag/%s" % ("0.0.0.0", 80, "11111111")]
+        unsent = (grequests.get(url) for url in urls)
+        res = grequests.map(unsent)
+        print("Res is =  " + res)
+        self.assertIsNone(res)
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
