@@ -1,7 +1,12 @@
 import unittest
+from crosstag_server import get_all_users
 
 
 class TestStringMethods(unittest.TestCase):
+
+    def test_get_all_user(self):
+        hej = get_all_users();
+        self.assertIsNotNone(hej)
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
