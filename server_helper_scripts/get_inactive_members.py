@@ -4,6 +4,11 @@ from datetime import datetime, timedelta
 
 
 def get_inactive_members():
+    """
+    Helper script to retrieve all inactive members from the lokal database.
+
+    :return: An array of all inactive members
+    """
     users = User.query.filter(User.status == "Active").filter(User.last_tag_timestamp is not None).filter(User.last_tag_timestamp != '').all()
     arr = []
 

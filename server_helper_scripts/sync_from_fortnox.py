@@ -5,8 +5,12 @@ from db_models.user import User
 from fortnox.fortnox import Fortnox
 
 
-# Syncs the fortnox database with the local DB
 def sync_from_fortnox():
+    """
+    Helper script to sync the local database with the content of the database on fortnox.
+    Either updates an existing customer or creates a new.
+
+    """
     try:
         fortnox_data = Fortnox()
         customers = fortnox_data.get_all_customers()

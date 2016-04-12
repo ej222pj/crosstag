@@ -1,4 +1,11 @@
 def get_gender_from_ssn(customer):
+    """
+    Helper script to set the gender of a customer from fortnox.
+
+    :param customer: Takes a customer as argument
+    :type customer: JSON
+    :return: A string of the gender. Female, Male or Unknown
+    """
     ssn_gender_number = customer['OrganisationNumber'][-2:]
 
     try:

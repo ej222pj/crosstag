@@ -3,14 +3,39 @@ from calendar import monthrange
 
 
 class GenerateStats:
+    """
+    GenerateStats helps to calculate and generate the data for the statistics.
+
+    get_data - Return an array with every data collected.
+    get_all_gender_data - Return an array with the number of all genders by type.
+    get_gender_tag_data - Return an array with the amount of tags base on gender.
+    get_tagins_by_month - Return an array with the total amount of tagevents from every month
+    get_tagins_by_day - Returns an array with the total amount of tagevents per day in a specific month and year
+    get_tagins_by_hour - Return and array with the total amount of tagevents per hour on a specific day
+    get_age_data - Return an array with amount of customer in different age groups
+    get_current_year_string - Returns a string of the current year
+    get_current_month_string - Returns a string of the current month
+    get_current_day_string - Returns a string of the current day
+
+    """
 
     def get_data(self, users, tagevent, chosen_date_array):
+        """
+        Get_data is called from the server to generate data of the database. Returns an multidimensional array with every data
+        in different categories.
+
+        :param users: Takes the user database model as argument
+        :param tagevent: Takes the tagevent database model as argument
+        :param chosen_date_array: Takes a specific date to search from
+        :type users: Database model User
+        :type tagevent: Database model Tagevent
+        :type chosen_date_array: Dictionary
+        :return: Multidimensional array with data from every category.
+        """
         data = []
-        one_month = datetime.now() - timedelta(weeks=4)
-        one_month_events = tagevent.query.filter(tagevent.timestamp > one_month).all()
 
         data.append(self.get_all_gender_data(users))
-        data.append(self.get_gender_tag_data(users, one_month_events))
+        data.append(self.get_gender_tag_data(users))
         data.append(self.get_tagins_by_month(tagevent, chosen_date_array))
         data.append(self.get_age_data(users))
         # Send year and month
@@ -20,6 +45,13 @@ class GenerateStats:
         return data
 
     def get_all_gender_data(self, users):
+        """
+        Calculate the amount of different genders in the database.
+
+        :param users: Takes an array with every user in it
+        :type users: Array with user objects
+        :return: Array with the amount of different genders in the database.
+        """
         male_counter = 0
         female_counter = 0
         unknown_counter = 0
@@ -37,7 +69,14 @@ class GenerateStats:
 
         return [male_counter, female_counter, unknown_counter]
 
-    def get_gender_tag_data(self, users, one_month_events):
+    def get_gender_tag_data(self, users):
+        """
+        Calculate the amount of tagevents based on gender type.
+
+        :param users: Takes an array with users as argument
+        :type users: Array with every user objects.
+        :return: Array with the amount of tags based on different genders
+        """
         male_counter = 0
         female_counter = 0
         unknown_counter = 0
@@ -51,6 +90,15 @@ class GenerateStats:
         return [male_counter, female_counter, unknown_counter]
 
     def get_tagins_by_month(self, event, chosen_date_array):
+        """
+        Calculates every tagevent based on year
+
+        :param event: Takes an event database model as argument
+        :param chosen_date_array: Takes an array with a specific date as argument
+        :type event: Database model
+        :type chosen_date_array: Array with dates
+        :return: Array with all tagevents from every month
+        """
         year_arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         current_year = chosen_date_array['year']
@@ -66,6 +114,15 @@ class GenerateStats:
         return year_arr
 
     def get_tagins_by_day(self, event, chosen_date_array):
+        """
+        Calculates every tagevent on every day at a specific month and year
+
+        :param event: Takes an event database model as argument
+        :param chosen_date_array: Takes an array with a specific date as argument
+        :type event: Database model
+        :type chosen_date_array: Array with dates
+        :return: Array with all tagevents on every day from a specific month and year
+        """
 
         current_year = chosen_date_array['year']
         current_month = chosen_date_array['month']
@@ -87,8 +144,17 @@ class GenerateStats:
 
         return day_arr
 
-    # Add optional parameter for user to be able to choose year, month and day
     def get_tagins_by_hour(self, event, chosen_date_array):
+        """
+        Calculates every tagevent on every hour on a specific day
+
+        :param event: Takes an event database model as argument
+        :param chosen_date_array: Takes an array with a specific date as argument
+        :type event: Database model
+        :type chosen_date_array: Array with dates
+        :return: Array with all tagevents on every hour from a specific day
+        """
+
         current_year = chosen_date_array['year']
         current_month = chosen_date_array['month']
         current_day = chosen_date_array['day']
@@ -109,12 +175,19 @@ class GenerateStats:
         return hour_arr
 
     def get_age_data(self, users):
-        # 15-25
-        # 26-35
-        # 36-45
-        # 46-55
-        # 56-65
-        # 65+
+        """
+        Calculates the amount of different age groups of all users from the local database.
+        1. 15-25
+        2. 26-35
+        3. 36-45
+        4. 46-55
+        5. 56-64
+        6. 65+
+
+        :param event: Takes an event database model as argument
+        :type event: Database model
+        :return: Array with the amount of users from all different age groups.
+        """
 
         current_year = int(self.get_current_year_string())
         age_arr = [0, 0, 0, 0, 0, 0]
@@ -141,18 +214,30 @@ class GenerateStats:
         return age_arr
 
     def get_current_year_string(self):
+        """
+
+        :return: Current year as a string
+        """
         now = datetime.now()
         current_year = str(now.year)
 
         return current_year
 
     def get_current_month_string(self):
+        """
+
+        :return: Current month as a string
+        """
         now = datetime.now()
         current_month = str(now.month)
 
         return current_month
 
     def get_current_day_string(self):
+        """
+
+        :return: Current day as a string
+        """
         now = datetime.now()
         current_day = str(now.day)
 
