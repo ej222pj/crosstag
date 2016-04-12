@@ -4,8 +4,13 @@ from crosstag_init import db
 from db_models.user import User
 
 
-# Adding a fortnox user to the local DB
 def add_user_to_local_db_from_fortnox(customer):
+    """
+    Helper script to add a customer from fortnox to the local database.
+
+    :param customer: Takes a customer object as argument
+    :type customer: JSON
+    """
     tmp_usr = User(customer['Name'], customer['Email'], customer['Phone'],
                    customer['Address1'], customer['Address2'], customer['City'],
                    customer['Zipcode'], None, customer['FortnoxID'],
