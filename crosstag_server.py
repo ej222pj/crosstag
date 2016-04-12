@@ -49,7 +49,6 @@ def stream():
             global last_tag_events
             tag = get_last_tag_event()
             user = None
-
             if last_tag_events is None or last_tag_events != tag.index:
                 last_tag_events = tag.index
 
