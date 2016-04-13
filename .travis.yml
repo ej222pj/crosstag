@@ -14,7 +14,7 @@ install:
 before_script:
   - pip3 install -r requirements.txt
 script:
-  - python3 tests/test_script.py
+  - python3 tests/crosstag_api_tests.py
 after_success:
   - echo "Test Success - Branch($TRAVIS_BRANCH) Pull Request($TRAVIS_PULL_REQUEST) Tag($TRAVIS_TAG)"
   - if [[ "$TRAVIS_BRANCH" == "master" ]]; then echo -e "Push Container to Docker Hub"; fi
