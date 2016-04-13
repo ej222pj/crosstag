@@ -280,8 +280,8 @@ def add_new_user():
         flash('Created new user: %s with id: %s' % (form.name.data,
                                                     tmp_usr.index))
         tagevent = get_last_tag_event()
-        fortnox_data = Fortnox()
-        fortnox_data.insert_customer(tmp_usr)
+        #fortnox_data = Fortnox()
+        #fortnox_data.insert_customer(tmp_usr)
         msg = None
         if tagevent is None:
             msg = None
