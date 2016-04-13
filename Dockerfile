@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-MAINTAINER Eric Jennerstrand "ej222pj@student.lnu.se"
+MAINTAINER Eric Jennerstrand "ej222pj@student.lnu.se", Kristoffer Svensson "ks222rt@student.lnu.se"
 RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev build-essential
 COPY . /cloudtag
