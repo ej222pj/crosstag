@@ -80,7 +80,6 @@ def stream():
     return Response(up_stream(), mimetype='text/event-stream')
 
 
-
 # Renders a static page for the tagin view. Shows the person who tags in.
 @app.route('/crosstag/v1.0/static_tagin_page')
 def static_tagin_page():
@@ -393,6 +392,7 @@ def link_user_to_last_tag(user_id):
         user = User.query.filter_by(index=user_id).first()
         return redirect("/edit_user/"+str(user.index))
 
+
 # Returns an users tag.
 @app.route('/crosstag/v1.0/get_tag/<user_index>', methods=['GET'])
 def get_tag(user_index):
@@ -450,7 +450,6 @@ def debt_delete_confirm(id):
 def debt_check():
     debts = Debt.query.all()
     users = User.query.all()
-    debt_and_user_array = []
     multi_array = []
     for debt in debts:
         for user in users:
@@ -679,8 +678,7 @@ def edit_user(user_index=None):
         return "she wrote upon it; no such number, no such zone"
 
 
-@app.route('/%s/v1.0/link_user_to_tag/<user_index>/<tag_id>' % app_name,
-           methods=['POST'])
+@app.route('/%s/v1.0/link_user_to_tag/<user_index>/<tag_id>' % app_name, methods=['POST'])
 def link_user_to_tag(user_index, tag_id):
     user = User.query.filter_by(index=user_index).first()
     user.tag = tag_id
