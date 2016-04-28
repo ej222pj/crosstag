@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, RadioField, DateField, validators
+from wtforms import TextField, PasswordField, validators
 
 
 class Login(Form):
@@ -10,4 +10,4 @@ class Login(Form):
     :param Password: Password of a tenant.
     """
     username = TextField('username', [validators.Length(max=80), validators.DataRequired()])
-    password = TextField('password', [validators.Length(max=80), validators.DataRequired()])
+    password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])

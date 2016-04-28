@@ -58,8 +58,6 @@ def login():
         form = Login()
         if form.validate_on_submit():
             if form.username.data == 'Admin' and form.password.data == 'admin':
-                print('hej')
-                session.expires() =
                 session['loggedIn'] = True
                 session['username'] = form.username
                 session['secret'] = form.password

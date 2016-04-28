@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, RadioField, DateField, validators
+from wtforms import TextField, RadioField, PasswordField, validators
 
 
 class Register(Form):
@@ -18,8 +18,8 @@ class Register(Form):
     :param email: email of the tenant.
     """
     username = TextField('username', [validators.Length(max=80), validators.DataRequired()])
-    password = TextField('password', [validators.Length(max=80), validators.DataRequired()])
-    repeat_password = TextField('repeat_password', [validators.Length(max=80), validators.DataRequired()])
+    password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])
+    repeat_password = PasswordField('repeat_password', [validators.Length(max=80), validators.DataRequired()])
     active_fortnox = RadioField('active_fortnox', [validators.DataRequired()], choices=[('true', 'Yes'), ('false', 'No')])
     gym_name = TextField('gym_name', [validators.Length(max=50), validators.DataRequired()])
     address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
