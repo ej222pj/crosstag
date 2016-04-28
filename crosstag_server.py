@@ -59,6 +59,7 @@ def login():
         if form.validate_on_submit():
             if form.username.data == 'Admin' and form.password.data == 'admin':
                 print('hej')
+                session.expires() =
                 session['loggedIn'] = True
                 session['username'] = form.username
                 session['secret'] = form.password
@@ -81,9 +82,11 @@ def logout():
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    form = Register()
-    return render_template('register.html', title='Register new Tenant', form=form)
-
+    if not check_session():
+        form = Register()
+        return render_template('register.html', title='Register new Tenant', form=form)
+    else:
+        return redirect('/')
 
 # This function will be called by the javascript on the static_tagin_page
 # The function will look for the last tag event and if there is a new tag event,
