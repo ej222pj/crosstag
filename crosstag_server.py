@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from optparse import OptionParser
 import config as cfg
-from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response
+from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
@@ -32,11 +32,33 @@ app_name = 'crosstag'
 last_tag_events = None
 
 
+def check_session():
+    if session.get('loggedIn') is not None:
+        if session['loggedIn'] and session.get('username') is not None and session.get('secret') is not None:
+            return True
+        else:
+            return False
+
+    return False
+
+
 @app.route('/')
 @app.route('/index')
-@app.route('/%s' % app_name)
 def index():
-    return render_template('index.html')
+    if check_session():
+        return render_template('index.html')
+    else:
+        redirect('/login')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    render_template('login.html')
+
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
+    render_template('registration.html')
 
 
 # This function will be called by the javascript on the static_tagin_page
