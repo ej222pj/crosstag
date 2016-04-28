@@ -16,6 +16,7 @@ from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
 from forms.new_user import NewUser
 from forms.search_user import SearchUser
+from forms.login import Login
 from fortnox.fortnox import Fortnox
 from server_helper_scripts.get_inactive_members import get_inactive_members
 from server_helper_scripts.get_last_tag_event import get_last_tag_event
@@ -38,7 +39,6 @@ def check_session():
             return True
         else:
             return False
-
     return False
 
 
@@ -48,17 +48,19 @@ def index():
     if check_session():
         return render_template('index.html')
     else:
-        redirect('/login')
+        return redirect("/login")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    render_template('login.html')
+
+    form = Login()
+    return render_template('login.html', title='Login', form=form)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    render_template('registration.html')
+    return render_template('registration.html')
 
 
 # This function will be called by the javascript on the static_tagin_page
