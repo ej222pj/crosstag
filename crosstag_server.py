@@ -39,7 +39,6 @@ def check_session():
             return True
         else:
             return False
-
     return False
 
 
