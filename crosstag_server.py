@@ -53,8 +53,29 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = Login()
-    return render_template('login.html', title='Login',form=form)
+    if not check_session():
+        form = Login()
+        if form.validate_on_submit():
+            if form.username.data == 'Admin' and form.password.data == 'admin':
+                print('hej')
+                session['loggedIn'] = True
+                session['username'] = form.username
+                session['secret'] = form.password
+                return redirect('/')
+            else:
+                flash('Wrong username or password')
+
+        return render_template('login.html', title='Login',form=form)
+    else:
+        return redirect('/')
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('loggedIn', None)
+    session.pop('username', None)
+    session.pop('secret', None)
+    return redirect('/')
 
 
 @app.route('/registration', methods=['GET', 'POST'])
