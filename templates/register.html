@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../static/favicon.ico">
+
+    {% if title %}
+    <title>{{title}} - Crosstag</title>
+    {% else %}
+    <title>Crosstag</title>
+    {% endif %}
+    {% block scripts %}{% endblock%}
+
+    <!-- Bootstrap core CSS -->
+    <link href="../../static/bootstrap.css" rel="stylesheet">
+    <link href="../../static/jumbotron-narrow.css" rel="stylesheet">
+    <script type="text/javascript" src="../../static/ie-emulation-modes-warning.js"></script>
+    <script type="text/javascript" src="../../static/d3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+          </ul>
+        </nav>
+        <!--<h3 class="text-muted">Crosstag</h3> -->
+      </div>
+
+        <div class="page-header">
+
+            <h1>CROSSTAG</h1>
+        </div>
+
+    {# Added some css to the tagged in user #}
+
+        <h1>Login</h1>
+        <form action="" method="post" name="register" class="form-horizontal" role="form">
+            {{form.hidden_tag()}}
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
+                        <div class="col-sm-10">
+                            {{form.username(size=80, placeholder='Username')}}
+                        </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.password(size=80, placeholder='Pasword', id='password')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.repeat_password(size=80, placeholder='Repeat Pasword', id='password')}}
+                        </div>
+                </div>
+
+                {{form.active_fortnox()}}
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.gym_name(size=80, placeholder='Gym name')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.address(size=80, placeholder='Street name')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.phone(size=80, placeholder='Phone number')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.zip_code(size=80, placeholder='Zip Code')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.city(size=80, placeholder='City')}}
+                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            {{form.email(size=80, placeholder='Email')}}
+                        </div>
+                </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <input type="submit" value="Register" class="btn btn-default">
+                </div>
+            </div>
+        </form>
+
+      <footer class="footer">
+        <p>&copy; Crosstag 2013-2016</p>
+      </footer>
+
+    </div> <!-- /container -->
+    <script src="../../static/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
