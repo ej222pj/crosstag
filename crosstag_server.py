@@ -17,6 +17,7 @@ from forms.new_tag import NewTag
 from forms.new_user import NewUser
 from forms.search_user import SearchUser
 from forms.login import Login
+from forms.registration import Register
 from fortnox.fortnox import Fortnox
 from server_helper_scripts.get_inactive_members import get_inactive_members
 from server_helper_scripts.get_last_tag_event import get_last_tag_event
@@ -65,7 +66,7 @@ def login():
             else:
                 flash('Wrong username or password')
 
-        return render_template('login.html', title='Login',form=form)
+        return render_template('login.html', title='Login', form=form)
     else:
         return redirect('/')
 
@@ -80,7 +81,8 @@ def logout():
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    return render_template('registration.html')
+    form = Register()
+    return render_template('register.html', title='Register new Tenant', form=form)
 
 
 # This function will be called by the javascript on the static_tagin_page

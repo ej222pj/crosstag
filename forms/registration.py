@@ -20,7 +20,7 @@ class Register(Form):
     username = TextField('username', [validators.Length(max=80), validators.DataRequired()])
     password = TextField('password', [validators.Length(max=80), validators.DataRequired()])
     repeat_password = TextField('repeat_password', [validators.Length(max=80), validators.DataRequired()])
-    active_fortnox = RadioField('active_fortnox', [validators.DataRequired()], choices=[('Yes', 'true'), ('No', 'false')])
+    active_fortnox = RadioField('active_fortnox', [validators.DataRequired()], choices=[('true', 'Yes'), ('false', 'No')])
     gym_name = TextField('gym_name', [validators.Length(max=50), validators.DataRequired()])
     address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
     phone = TextField('phone', [validators.Length(max=20), validators.DataRequired()])
