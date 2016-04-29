@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import smtplib
+import bcrypt
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -58,9 +59,11 @@ def login():
         form = Login()
         if form.validate_on_submit():
             if form.username.data == 'Admin' and form.password.data == 'admin':
+            # if bcrypt.hashpw(password, stored_hash) == stored_hash:
+                # Use above to match passwords
                 session['loggedIn'] = True
-                session['username'] = form.username
-                session['secret'] = form.password
+                session['username'] = form.username.data
+                session['secret'] = hashed_password
                 return redirect('/')
             else:
                 flash('Wrong username or password')
@@ -82,6 +85,12 @@ def logout():
 def registration():
     if not check_session():
         form = Register()
+        # 1 Get password from form
+        password = form.password.data.encode('utf-8')
+        # 2 Hash the password
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        # 3 Save the password in the db
+        # TODO: Save password in db
         return render_template('register.html', title='Register new Tenant', form=form)
     else:
         return redirect('/')
