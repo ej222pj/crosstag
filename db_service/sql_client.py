@@ -20,10 +20,14 @@ class SqlClient():
                 my_connection = pypyodbc.connect(connection_string)
                 cursor = my_connection.cursor()
 
-                cursor.execute('exec CreateUserLogin(?,?,?,?,?,?,?,?,?,?)',
-                (tenant['username'], tenant['password'], tenant['active_fortnox'],
-                 tenant['gym_name'], tenant['address'], tenant['phone'], tenant['zip_code'],
-                 tenant['city'], tenant['email'], tenant['pass']))
+                cursor.execute("{call CreateUserLogin('"+ tenant['username'] +"','"+ tenant['password']+"','"+ tenant['active_fortnox']+"','"+
+                tenant['gym_name']+"','"+ tenant['address']+"','"+ tenant['phone']+"','"+ tenant['zip_code']+"','"+
+                tenant['city']+"','"+ tenant['email']+"','"+ tenant['pass']+"' )}")
+
+                #cursor.execute('exec CreateUserLogin(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                #(tenant['username'], tenant['password'], tenant['active_fortnox'],
+                 #tenant['gym_name'], tenant['address'], tenant['phone'], tenant['zip_code'],
+                 #tenant['city'], tenant['email'], tenant['pass']))
 
                 cursor.commit()
                 cursor.close()

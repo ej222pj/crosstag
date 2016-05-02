@@ -95,7 +95,7 @@ def registration():
             # 2 Hash the password
             hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
             # 3 Save the Member in the db
-            registerd_member = {'username': form.username.data,
+            registered_member = {'username': form.username.data,
                                 'password': hashed_password,
                                 'active_fortnox': form.active_fortnox.data,
                                 'gym_name': form.gym_name.data,
@@ -107,7 +107,7 @@ def registration():
                                 'pass': client.cfg.TENANT_PASSWORD+form.username.data}
 
             cl = client.SqlClient()
-            if cl.do_registration(registerd_member):
+            if cl.do_registration(registered_member):
                 print('SUCCESSSSSS!!!!!')
                 return redirect('/')
 
