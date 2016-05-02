@@ -93,8 +93,13 @@ def registration():
         password = form.password.data.encode('utf-8')
         # 2 Hash the password
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        # 3 Save the password in the db
-        # TODO: Save password in db
+        # 3 Save the Member in the db
+        registerd_member = {form.username.data, hashed_password, form.active_fortnox.data, form.gym_name.data,
+                            form.address.data, form.phone.data, form.zip_code.data, form.city.data, form.email.data,
+                            cfg.TENANT_PASSWORD+form.username.data}
+
+        cl = cient.SqlClient()
+        cl.do_registration
         return render_template('register.html', title='Register new Tenant', form=form)
     else:
         return redirect('/')
