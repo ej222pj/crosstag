@@ -2,3 +2,4 @@ __pycache__/
 forms/__pycache__/
 crosstag_db.db
 dev_db.db
+db_service/sql_client_cfg.py
