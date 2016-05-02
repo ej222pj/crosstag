@@ -89,17 +89,28 @@ def logout():
 def registration():
     if not check_session():
         form = Register()
-        # 1 Get password from form
-        password = form.password.data.encode('utf-8')
-        # 2 Hash the password
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        # 3 Save the Member in the db
-        registerd_member = {form.username.data, hashed_password, form.active_fortnox.data, form.gym_name.data,
-                            form.address.data, form.phone.data, form.zip_code.data, form.city.data, form.email.data,
-                            cfg.TENANT_PASSWORD+form.username.data}
+        if form.validate_on_submit():
+            # 1 Get password from form
+            password = form.password.data.encode('utf-8')
+            # 2 Hash the password
+            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+            # 3 Save the Member in the db
+            registerd_member = {'username': form.username.data,
+                                'password': hashed_password,
+                                'active_fortnox': form.active_fortnox.data,
+                                'gym_name': form.gym_name.data,
+                                'address': form.address.data,
+                                'phone': form.phone.data,
+                                'zip_code': form.zip_code.data,
+                                'city': form.city.data,
+                                'email': form.email.data,
+                                'pass': client.cfg.TENANT_PASSWORD+form.username.data}
 
-        cl = cient.SqlClient()
-        cl.do_registration
+            cl = client.SqlClient()
+            if cl.do_registration(registerd_member):
+                print('SUCCESSSSSS!!!!!')
+                return redirect('/')
+
         return render_template('register.html', title='Register new Tenant', form=form)
     else:
         return redirect('/')

@@ -21,18 +21,16 @@ class SqlClient():
                 cursor = my_connection.cursor()
 
                 cursor.execute('exec CreateUserLogin(?,?,?,?,?,?,?,?,?,?)',
-                (tenant[0], tenant[1], tenant[2], tenant[3],tenant[4], tenant[5], tenant[6], tenant[7], tenant[8], tenant[9]))
+                (tenant['username'], tenant['password'], tenant['active_fortnox'],
+                 tenant['gym_name'], tenant['address'], tenant['phone'], tenant['zip_code'],
+                 tenant['city'], tenant['email'], tenant['pass']))
+
+                cursor.commit()
+                cursor.close()
+                my_connection.close()
+
+                return True
 
             except pypyodbc.DatabaseError as error:
                 print(error.value)
                 print('FATALITY')
-
-    def try_connection(self):
-        print('try connection')
-        try:
-            connString = self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
-            myConnection = pypyodbc.connect(connString)
-            print('Connection works!!!')
-        except pypyodbc.DatabaseError as error:
-            print(error.value)
-            print('FATALITY, bummer')
