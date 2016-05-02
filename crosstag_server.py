@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 from optparse import OptionParser
 import config as cfg
 from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
+from db_service import sql_client as client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
@@ -61,9 +62,12 @@ def login():
             if form.username.data == 'Admin' and form.password.data == 'admin':
             # if bcrypt.hashpw(password, stored_hash) == stored_hash:
                 # Use above to match passwords
+                cl = client.SqlClient()
+                cl.try_connection()
                 session['loggedIn'] = True
                 session['username'] = form.username.data
-                session['secret'] = hashed_password
+                #session['secret'] = hashed_password
+                session['secret'] = 'mm'
                 return redirect('/')
             else:
                 flash('Wrong username or password')
