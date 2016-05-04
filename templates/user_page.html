@@ -43,7 +43,9 @@
                         <td>{{debt.amount}} SEK</td>
                         <td>{{debt.create_date}}</td>
                         <td>
-                            <form id="tjuue" action="../debt_delete_confirm/{{ debt.id }}" method="get" >
+{#                            <form id="tjuue" action="../debt_delete_confirm/{{ debt.id }}" method="get" >#}
+                            <form id="tjuue" action="/debt_delete/{{ debt.id }}" method="post"
+                                  onsubmit="return confirm('Do you really want to delete this debt?')">
                             <input type="submit"  value="Delete Debt" onclick="">
                             </form>
                         </td>
