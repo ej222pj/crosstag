@@ -1,9 +1,10 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
+from datetime import datetime, timedelta
 
 
-class SqlClient():
-    def __init__(self, username=cfg.USERNAME, password=cfg.PASSWORD):
+class DebtSqlClient():
+    def __init__(self, username, password):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
@@ -13,16 +14,30 @@ class SqlClient():
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
 
-    def do_registration(self, tenant):
+    def get_debt(self, id=0):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call CreateUserLogin('" + tenant['username'] + "','" + tenant['password'] + "','" +
-                           tenant['active_fortnox'] + "','" + tenant['gym_name'] + "','" + tenant['address'] + "','" +
-                           tenant['phone'] + "','" + tenant['zip_code'] + "','" + tenant['city'] + "','" +
-                           tenant['email'] + "','" + tenant['pass'] + "' )}")
+            cursor.execute("{call GetDebt('" + id + "')}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return value
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
+
+
+    def add_dept(self, amount, product='', create_date=datetime.now(), uid=0):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call AddDebt('" + amount + "','" +  product + "','" +  create_date + "','" + uid + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
@@ -30,20 +45,19 @@ class SqlClient():
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
-            print('FATALITY')
 
-    def do_login(self, username):
+
+    def remove_debt(self, id):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call LoginUser('" + username + "')}")
-            value = cursor.fetchall()
-
+            cursor.execute("{call DeleteDebt('" + id + "')}")
+            cursor.commit()
             cursor.close()
             my_connection.close()
-            return value[0][0]
+            return True
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
