@@ -30,6 +30,21 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
+    def does_member_exist(self, fortnox_id):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call DoesMemberExists('" + fortnox_id + "')}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return value[0][0]
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
 
     def add_member(self, fortnox_id=0, firstname='', lastname='', email='', phone='', address='', address2='',
                     city='', zip_code=0, tag_id='', gender='', ssn='', expiry_date='2000-01-01 00:00:00.000000',
@@ -52,19 +67,25 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-
-    def update_member(self, id, firstname, lastname, email, phone, address, address2, city, zip_code, tag_id, gender,
-                       ssn, expiry_date, status):
+    def update_member(self, firstname, lastname, email, phone, address, address2, city, zip_code, tag_id, gender,
+                       ssn, expiry_date, status, id=None, fortnox_id=None):
 
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call UpdateUser('" + id + "','" + firstname + "','" + lastname + "','" +
-                           email + "','" + phone + "','" + address + "','" + address2 + "','" + city + "','" +
-                           zip_code + "','" + tag_id + "','" + gender + "','" + ssn + "','" + expiry_date + "','" +
-                           status + "')}")
+            if id is None:
+                cursor.execute("{call UpdateFortnoxUser('" + fortnox_id + "','" + firstname + "','" + lastname + "','" +
+                               email + "','" + phone + "','" + address + "','" + address2 + "','" + city + "','" +
+                               zip_code + "','" + tag_id + "','" + gender + "','" + ssn + "','" + expiry_date + "','" +
+                               status + "')}")
+            else:
+                cursor.execute("{call UpdateUser('" + id + "','" + firstname + "','" + lastname + "','" +
+                               email + "','" + phone + "','" + address + "','" + address2 + "','" + city + "','" +
+                               zip_code + "','" + tag_id + "','" + gender + "','" + ssn + "','" + expiry_date + "','" +
+                               status + "')}")
+
             cursor.commit()
             cursor.close()
             my_connection.close()
