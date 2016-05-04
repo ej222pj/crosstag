@@ -23,11 +23,27 @@ class SqlClient():
                            tenant['active_fortnox'] + "','" + tenant['gym_name'] + "','" + tenant['address'] + "','" +
                            tenant['phone'] + "','" + tenant['zip_code'] + "','" + tenant['city'] + "','" +
                            tenant['email'] + "','" + tenant['pass'] + "' )}")
+            cursor.commit()
             cursor.close()
             my_connection.close()
-
             return True
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
             print('FATALITY')
+
+    def do_login(self, username):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call LoginUser('" + username + "')}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return value[0][0]
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)

@@ -38,7 +38,7 @@ last_tag_events = None
 
 def check_session():
     if session.get('loggedIn') is not None:
-        if session['loggedIn'] and session.get('username') is not None and session.get('secret') is not None:
+        if session['loggedIn'] and session.get('username') is not None:
             return True
         else:
             return False
@@ -59,18 +59,19 @@ def login():
     if not check_session():
         form = Login()
         if form.validate_on_submit():
-            if form.username.data == 'Admin' and form.password.data == 'admin':
-            # if bcrypt.hashpw(password, stored_hash) == stored_hash:
-                # Use above to match passwords
-                cl = client.SqlClient()
-                cl.try_connection()
-                session['loggedIn'] = True
-                session['username'] = form.username.data
-                #session['secret'] = hashed_password
-                session['secret'] = 'mm'
-                return redirect('/')
+            cl = client.SqlClient()
+            stored_hash = cl.do_login(form.username.data)
+            if stored_hash is not None:
+                if bcrypt.hashpw(form.password.data, stored_hash) == stored_hash:
+                    # Use above to match passwords
+                    session['loggedIn'] = True
+                    session['username'] = form.username.data
+                    flash('Welcome %s' % (form.username.data))
+                    return redirect('/')
+                else:
+                    flash('Wrong username or password')
             else:
-                flash('Wrong username or password')
+                flash('Wrong username')
 
         return render_template('login.html', title='Login', form=form)
     else:
