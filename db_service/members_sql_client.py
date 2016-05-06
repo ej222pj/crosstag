@@ -42,7 +42,10 @@ class MembersSqlClient():
 
             cursor.close()
             my_connection.close()
-            return value[0][0]
+            if value[0][0] is None:
+                return True
+            else:
+                return False
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
@@ -50,6 +53,7 @@ class MembersSqlClient():
     def add_member(self, member):
         connection_string = self.get_connection_string()
         try:
+            print('Add med function')
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
             member['create_date'] = str(datetime.now())
@@ -59,7 +63,7 @@ class MembersSqlClient():
                            member['zip_code'] + "','" + member['tag_id'] + "','" + member['gender'] + "','" +
                            member['ssn'] + "','" + member['expiry_date'] + ' 00:00:00.0000000' + "','" +
                            member['create_date'] + "','" + member['status'] + "','" + member['tagcounter'] + "','" +
-                           member['last_tag_timestamp'] + '0' "')}")
+                           member['last_tag_timestamp'] + '0' + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
@@ -72,19 +76,22 @@ class MembersSqlClient():
 
         connection_string = self.get_connection_string()
         try:
+            print('update function')
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            if member['id'] is None:
+            if member['id'] is 0:
                 cursor.execute("{call GetUserId('" + member['fortnox_id'] + "')}")
-                member['id'] = cursor.fetchall()[0][0]
+                value = cursor.fetchall()[0][0]
+                if value is not None:
+                    member['id'] = value
 
-            cursor.execute("{call UpdateUser('" + member['fortnox_id'] + "','" + member['firstname'] + "','" +
-                           member['lastname'] + "','" + member['email'] + "','" + member['phone'] + "','" +
-                           member['address'] + "','" + member['address2'] + "','" + member['city'] + "','" +
-                           member['zip_code'] + "','" + member['tag_id'] + "','" + member['gender'] + "','" +
-                           member['ssn'] + "','" + member['expiry_date'] + ' 00:00:00.0000000' "','" +
-                           member['status'] + "')}")
+            cursor.execute("{call UpdateUser('" + str(member['id']) + "','" +
+                           member['firstname'] + "','" + member['lastname'] + "','" + member['email'] + "','" +
+                           member['phone'] + "','" + member['address'] + "','" + member['address2'] + "','" +
+                           member['city'] + "','" + member['zip_code'] + "','" + member['tag_id'] + "','" +
+                           member['gender'] + "','" + member['ssn'] + "','" +
+                           member['expiry_date'] + ' 00:00:00.0000000' "','" + member['status'] + "')}")
 
             cursor.commit()
             cursor.close()

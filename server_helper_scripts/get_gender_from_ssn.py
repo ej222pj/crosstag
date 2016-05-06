@@ -17,4 +17,4 @@ def get_gender_from_ssn(customer):
         else:
             return 'unknown'
     except:
-        return None
+        return 'unknown'

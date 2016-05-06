@@ -22,6 +22,9 @@ def sync_from_fortnox():
         for element in customers:
             for customer in element:
                 name = customer['Name'].split()
+                print(customer['Address2'])
+                if len(name) < 2:
+                    name.append('')
                 cust = sql_user.SQLUser(None, customer['CustomerNumber'],
                                         name[0], name[1], customer['Email'],
                                         customer['Phone'], customer['Address1'],
@@ -33,18 +36,12 @@ def sync_from_fortnox():
                 ret.append(cust.dict())
 
         cl = client.MembersSqlClient()
-        # for customer in ret:
-        #     if User.query.filter_by(fortnox_id=customer['FortnoxID']).first() is not None:
-        #         update_user_in_local_db_from_fortnox(customer)
-        #     else:
-        #         add_user_to_local_db_from_fortnox(customer)
-        # TODO - Send in customer object instead of all parameters. Do a Stored procedure for updating fortnox user.
         for customer in ret:
-            if cl.does_member_exist(customer['fortnox_id']) is None:
+            if cl.does_member_exist(customer['fortnox_id']):
                 cl.add_member(customer)
             else:
                 cl.update_member(customer)
 
-        flash("Members from Fortnox is added to the database!")
+        flash("Members from Fortnox is added/updated to the database!")
     except:
-        flash("Error retriving from Fortnox, Wrong credentials?")
+        flash("Something happend while adding/updating from fortnox")
