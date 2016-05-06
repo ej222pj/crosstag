@@ -12,6 +12,7 @@ from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
 from db_models import user
+from db_models import sql_user
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
@@ -26,6 +27,7 @@ from server_helper_scripts.sync_from_fortnox import sync_from_fortnox
 from statistics_scripts.generate_statistics import GenerateStats
 
 User = user.User
+Sqluser = sql_user.SQLUser
 Tagevent = tagevent.Tagevent
 Debt = debt.Debt
 DetailedTagevent = detailedtagevent.DetailedTagevent
@@ -64,7 +66,7 @@ def login():
     if not check_session():
         form = Login()
         if form.validate_on_submit():
-            cl = registration_client.SqlClient()
+            cl = registration_client.RegisterLoginSqlClient()
             stored_hash = cl.do_login(form.username.data)
             if stored_hash is not None:
                 if bcrypt.hashpw(form.password.data, stored_hash) == stored_hash:
@@ -111,7 +113,7 @@ def registration():
                                  'email': form.email.data,
                                  'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data}
 
-            cl = registration_client.SqlClient()
+            cl = registration_client.RegisterLoginSqlClient()
             if cl.do_registration(registered_member):
                 flash('Registration done, you can now log in')
                 return redirect('/')
@@ -332,20 +334,21 @@ def add_new_user():
         if form.validate_on_submit():
             mc = member_client.MembersSqlClient()
 
-            tmp_usr = {None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
+            tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
                            form.address.data, form.address2.data, form.city.data,
                            form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
-                           None, form.status.data, None, None}
-            mc.add_member(tmp_usr)
-            flash('Created new user: %s ' % form.name.data)
-            tagevent = get_last_tag_event()
+                           None, form.status.data, None, None)
+            mc.add_member(tmp_usr.dict())
+
+            flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
+            # tagevent = get_last_tag_event()
             #fortnox_data = Fortnox()
             #fortnox_data.insert_customer(tmp_usr)
             msg = None
-            if tagevent is None:
-                msg = None
-            else:
-                msg = (tmp_usr.index, tagevent.tag_id)
+            # if tagevent is None:
+                # msg = None
+            # else:
+                # msg = (tmp_usr.index, tagevent.tag_id)
             form = NewUser()
             return render_template('new_user.html',
                                    title='New User',
