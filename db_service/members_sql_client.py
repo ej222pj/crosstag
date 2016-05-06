@@ -46,19 +46,19 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-    def add_member(self, fortnox_id=0, firstname='', lastname='', email='', phone='', address='', address2='',
-                    city='', zip_code=0, tag_id='', gender='', ssn='', expiry_date='2000-01-01 00:00:00.000000',
-                    create_date=datetime.now(), status='', tagcounter=0, last_tag_timestamp='2000-01-01 00:00:00.000000'
-                    ):
+    def add_member(self, member):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call AddUser('" + fortnox_id + "','" +  firstname + "','" +  lastname + "','" +
-                           email + "','" +  phone + "','" +  address+ "','" + address2 + "','" + city + "','" +
-                           zip_code + "','" +  tag_id + "','" +  gender + "','" +  ssn + "','" +  expiry_date + "','" +
-                           create_date + "','" +  status + "','" +  tagcounter + "','" +  last_tag_timestamp + "')}")
+            cursor.execute("{call AddUser('" + member['fortnox_id'] + "','" + member['firstname'] + "','" +
+                           member['lastname'] + "','" + member['email'] + "','" + member['phone'] + "','" +
+                           member['address'] + "','" + member['address2'] + "','" + member['city'] + "','" +
+                           member['zip_code'] + "','" + member['tag_id'] + "','" + member['gender'] + "','" +
+                           member['ssn'] + "','" + member['expiry_date'] + "','" + member['create_date'] + "','" +
+                           member['status'] + "','" + member['tagcounter'] + "','" + member['last_tag_timestamp'] +
+                           "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
