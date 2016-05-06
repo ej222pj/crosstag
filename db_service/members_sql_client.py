@@ -1,15 +1,16 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
+from flask import session
 from datetime import datetime, timedelta
 
 
 class MembersSqlClient():
-    def __init__(self, username, password):
+    def __init__(self):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
-        self.dbUsername = 'uid=' + username + ';'
-        self.dbPassword = 'pwd=' + password
+        self.dbUsername = 'uid=' + session['username'] + ';'
+        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + session['username']
 
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
@@ -20,7 +21,7 @@ class MembersSqlClient():
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call GetUser('" + id + "')}")
+            cursor.execute("{call GetUser('" + str(id) + "')}")
             value = cursor.fetchall()
 
             cursor.close()
@@ -51,14 +52,14 @@ class MembersSqlClient():
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-
+            member['create_date'] = str(datetime.now())
             cursor.execute("{call AddUser('" + member['fortnox_id'] + "','" + member['firstname'] + "','" +
                            member['lastname'] + "','" + member['email'] + "','" + member['phone'] + "','" +
                            member['address'] + "','" + member['address2'] + "','" + member['city'] + "','" +
                            member['zip_code'] + "','" + member['tag_id'] + "','" + member['gender'] + "','" +
-                           member['ssn'] + "','" + member['expiry_date'] + "','" + member['create_date'] + "','" +
-                           member['status'] + "','" + member['tagcounter'] + "','" + member['last_tag_timestamp'] +
-                           "')}")
+                           member['ssn'] + "','" + member['expiry_date'] + ' 00:00:00.0000000' + "','" +
+                           member['create_date'] + "','" + member['status'] + "','" + member['tagcounter'] + "','" +
+                           member['last_tag_timestamp'] + '0' "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
@@ -67,24 +68,23 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-    def update_member(self, firstname, lastname, email, phone, address, address2, city, zip_code, tag_id, gender,
-                       ssn, expiry_date, status, id=None, fortnox_id=None):
+    def update_member(self, member):
 
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            if id is None:
-                cursor.execute("{call UpdateFortnoxUser('" + fortnox_id + "','" + firstname + "','" + lastname + "','" +
-                               email + "','" + phone + "','" + address + "','" + address2 + "','" + city + "','" +
-                               zip_code + "','" + tag_id + "','" + gender + "','" + ssn + "','" + expiry_date + "','" +
-                               status + "')}")
-            else:
-                cursor.execute("{call UpdateUser('" + id + "','" + firstname + "','" + lastname + "','" +
-                               email + "','" + phone + "','" + address + "','" + address2 + "','" + city + "','" +
-                               zip_code + "','" + tag_id + "','" + gender + "','" + ssn + "','" + expiry_date + "','" +
-                               status + "')}")
+            if member['id'] is None:
+                cursor.execute("{call GetUserId('" + member['fortnox_id'] + "')}")
+                member['id'] = cursor.fetchall()[0][0]
+
+            cursor.execute("{call UpdateUser('" + member['fortnox_id'] + "','" + member['firstname'] + "','" +
+                           member['lastname'] + "','" + member['email'] + "','" + member['phone'] + "','" +
+                           member['address'] + "','" + member['address2'] + "','" + member['city'] + "','" +
+                           member['zip_code'] + "','" + member['tag_id'] + "','" + member['gender'] + "','" +
+                           member['ssn'] + "','" + member['expiry_date'] + ' 00:00:00.0000000' "','" +
+                           member['status'] + "')}")
 
             cursor.commit()
             cursor.close()
