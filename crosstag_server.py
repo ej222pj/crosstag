@@ -7,6 +7,7 @@ from optparse import OptionParser
 import config as cfg
 from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
 from db_service import register_login_sql_client as registration_client
+from db_service import members_sql_client as member_client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
@@ -324,21 +325,19 @@ def remove_user(index):
 
 
 # Adds an user to the local DB. Gets all the values from a form in the HTML page.
-@app.route('/add_new_user', methods=['GET', 'POST'])
+@app.route('/new_user', methods=['GET', 'POST'])
 def add_new_user():
     if check_session():
         form = NewUser()
-        print("errors", form.errors)
         if form.validate_on_submit():
-            tmp_usr = User(form.name.data, form.email.data, form.phone.data,
+            mc = member_client.MembersSqlClient()
+
+            tmp_usr = {None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
                            form.address.data, form.address2.data, form.city.data,
-                           form.zip_code.data, form.tag_id.data, form.fortnox_id.data,
-                           form.expiry_date.data, form.birth_date.data,
-                           form.gender.data)
-            db.session.add(tmp_usr)
-            db.session.commit()
-            flash('Created new user: %s with id: %s' % (form.name.data,
-                                                        tmp_usr.index))
+                           form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
+                           None, form.status.data, None, None}
+            mc.add_member(tmp_usr)
+            flash('Created new user: %s ' % form.name.data)
             tagevent = get_last_tag_event()
             #fortnox_data = Fortnox()
             #fortnox_data.insert_customer(tmp_usr)

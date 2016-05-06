@@ -11,15 +11,15 @@ Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_
 <form action="" method="post" name="new_user" class="form-horizontal" role="form">
     {{form.hidden_tag()}}
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-2 control-label">Fullname</label>
+            <label for="inputEmail3" class="col-sm-2 control-label">Firstname</label>
                 <div class="col-sm-10">
-                    {{form.name(size=80, placeholder='Firstname')}}
+                    {{form.firstname(size=80, placeholder='Firstname')}}
                 </div>
         </div>
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-2 control-label">Fullname</label>
+            <label for="inputEmail3" class="col-sm-2 control-label">Lastname</label>
                 <div class="col-sm-10">
-                    {{form.name(size=80, placeholder='Lastname')}}
+                    {{form.lastname(size=80, placeholder='Lastname')}}
                 </div>
         </div>
         <div class="form-group">
@@ -59,47 +59,36 @@ Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_
                 </div>
         </div>
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-2 control-label">Tag</label>
+            <label for="inputEmail3" class="col-sm-2 control-label">Tag ID</label>
                 <div class="col-sm-10">
-                    {{form.tag_id(size=80, value=data.tag_id)}}
+                    {{form.tag_id(size=80, value='')}}
                 </div>
         </div>
+
           {{form.gender()}}
 
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-2 control-label">Social Security Number</label>
                 <div class="col-sm-10">
-                    {{form.birth_date(type="datetime", placeholder='1990-01-01')}}
+                    {{form.ssn(type="datetime", placeholder='1990-01-01')}}
                 </div>
         </div>
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-2 control-label">Expiry date</label>
                 <div class="col-sm-10">
-                    {% if data.expiry_date == "" or data.expiry_date == "None" %}
-                    {{form.expiry_date(size=80, value="")}}
-                    {% else %}
-                    {{form.expiry_date(size=80, value=data.expiry_date)}}
-                    {% endif %}
+                     {{form.expiry_date(type="datetime", placeholder='2020-01-01')}}
 
                 </div>
         </div>
         <div class="form_group">
             <label for="inputEmail3" class="col-sm-2 control-label">Membership Status*</label>
-            <br>
-            <br>
-            <div class="radio">
-                {{form.status(size=80, value=data.gender)}}
-            </div>
+            {{form.status()}}
         </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <input type="submit" value="Create" class="btn btn-default">
         </div>
     </div>
-
-    <form action="/crosstag/v1.0/link_user_to_last_tag/{{data.index}}" method="post" name="Link tag">
-        <span><input type="submit" class="btn btn-default" value="Link user to last system tagevent"></span>
-    </form>
 
 </form>
 {% endblock %}
