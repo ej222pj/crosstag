@@ -25,7 +25,6 @@ class SQLTenant:
         """
         return {'id': self.id,
                 'username': self.username,
-                'password': self.password,
                 'active_fortnox': self.active_fortnox,
                 'api_key': self.api_key,
                 'general_info_id': self.general_info_id,

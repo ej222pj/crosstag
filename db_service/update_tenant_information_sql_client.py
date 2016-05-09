@@ -1,5 +1,6 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
+from db_models import sql_tenant as tenant
 from datetime import datetime, timedelta
 
 
@@ -14,25 +15,22 @@ class UpdateTenantInformationSqlClient():
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
 
-    def get_tenants(self):
+    def get_tenants(self, username=''):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call GetMembers('" + session['username'] + "')}")
-            value = cursor.fetchall()
+            cursor.execute("{call GetMembers('" + username + "')}")
+            values = cursor.fetchall()
 
             cursor.close()
             my_connection.close()
             return_array = []
-            #for users in value:
-             #   return_array.append(user.SQLUser(users[0], users[1], users[2],
-             #                                    users[3], users[4], users[5],
-              #                                   users[6], users[7], users[8],
-               #                                  users[9], users[10], users[11],
-                #                                 users[12], users[13], users[14],
-                 #                                users[15], users[16], users[17]))
+            for tenants in values:
+                return_array.append(tenant.SQLTenant(tenants[0], tenants[1], tenants[2], tenants[3], tenants[4],
+                                                     tenants[5], tenants[6], tenants[7], tenants[8], tenants[9],
+                                                     tenants[10]))
             return return_array
 
         except pypyodbc.DatabaseError as error:
@@ -43,12 +41,6 @@ class UpdateTenantInformationSqlClient():
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-
-            if member['id'] is 0:
-                cursor.execute("{call GetUserId('" + member['fortnox_id'] + "')}")
-                value = cursor.fetchall()[0][0]
-                if value is not None:
-                    member['id'] = value
 
             cursor.execute("{call UpdateUser('" + str(member['id']) + "','" +
                            member['firstname'] + "','" + member['lastname'] + "','" + member['email'] + "','" +
