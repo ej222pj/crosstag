@@ -98,7 +98,6 @@ class Fortnox:
                 headers=cfg.fortnox,
                 data=json.dumps({
                     "Customer": {
-                        "Name": user.name,
                         "Email": user.email,
                         "Address1": user.address,
                         "Address2": user.address2,

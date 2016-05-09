@@ -257,15 +257,17 @@ def last_tagin():
 @app.route('/all_users/<filter>', methods=['GET', 'POST'])
 def all_users(filter=None):
     if check_session():
-        ret = []
+        ret, users = [], []
         counter = 0
-        users = []
-        # Lists all users
-        if filter == "all":
-            users = User.query.order_by("expiry_date desc").all()
+
+        cl = member_client.MembersSqlClient()
+        users = cl.get_member(0)
+
         # List users depending on the membership
-        elif filter:
-            users = User.query.filter(User.status == filter.title())
+        if filter is not 'all':
+            users = [x for x in users if x.status == filter.title()]
+
+        users = sorted(users, key=lambda user: user.firstname)
         for hit in users:
             counter += 1
             js = hit.dict()
@@ -315,12 +317,12 @@ def last_tagins():
 
 
 # Deletes an user from the local DB based on their index
-@app.route('/%s/%s/remove_user/<index>' % (app_name, version), methods=['POST'])
-def remove_user(index):
+@app.route('/%s/%s/remove_user/<user_id>' % (app_name, version), methods=['POST'])
+def remove_user(user_id):
     if check_session():
-        user = User.query.filter_by(index=index).first()
-        db.session.delete(user)
-        db.session.commit()
+        cl = member_client.MembersSqlClient()
+        cl.remove_member(user_id)
+        flash('Member was removed!')
         return redirect("/all_users/all")
     else:
         return redirect_not_logged_in()
@@ -527,10 +529,10 @@ def debt_check():
 
 
 # Renders a HTML page with a new created debt
-@app.route('/debt_create/<id_test>', methods=['GET', 'POST'])
-def debt_create(id_test):
+@app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
+def debt_create(user_id):
     if check_session():
-        user = User.query.filter_by(index=id_test).first()
+        user = User.query.filter_by(index=user_id).first()
         form = NewDebt()
         test = datetime.now()
         print("errors", form.errors)
@@ -539,7 +541,7 @@ def debt_create(id_test):
             db.session.add(tmp_debt)
             db.session.commit()
             flash('Debt added for %s' % (user.name))
-            return redirect("/user_page/"+id_test)
+            return redirect("/user_page/" + user_id)
         return render_template('debt_create.html',
                                title='Debt Create',
                                form=form,
@@ -642,15 +644,19 @@ def get_recent_events():
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
     if check_session():
-        user = User.query.filter_by(index=user_index).first()
-        debts = Debt.query.filter_by(uid=user.index)
+        #user = User.query.filter_by(index=user_index).first()
+        #debts = Debt.query.filter_by(uid=user.index)
+        cl = member_client.MembersSqlClient()
+        user = cl.get_member(user_index)
+        tagevents = []
+        debts = []
         if user is None:
             return "No user Found"
         else:
-            tagevents = get_tagevents_user_dict(user_index)
+            #tagevents = get_tagevents_user_dict(user_index)
             return render_template('user_page.html',
                                    title='User Page',
-                                   data=user.dict(),
+                                   data=user[0].dict(),
                                    tags=tagevents,
                                    debts=debts)
     else:
@@ -674,13 +680,18 @@ def clear_tagcounter():
 @app.route('/edit_user/<user_index>', methods=['GET', 'POST'])
 def edit_user(user_index=None):
     if check_session():
-        user = User.query.filter_by(index=user_index).first()
+        cl = member_client.MembersSqlClient()
+        user = cl.get_member(user_index)[0]
+
         if user is None:
             return "No user have this ID"
+
         form = EditUser(obj=user)
-        tagevents = get_tagevents_user_dict(user_index)
+        tagevents = []
+        #tagevents = get_tagevents_user_dict(user_index)
         if form.validate_on_submit():
-            user.name = form.name.data
+            user.firstname = form.firstname.data
+            user.lastname = form.lastname.data
             user.email = form.email.data
             user.phone = form.phone.data
             user.address = form.address.data
@@ -691,11 +702,13 @@ def edit_user(user_index=None):
             user.gender = form.gender.data
             user.expiry_date = form.expiry_date.data
             user.status = form.status.data
-            db.session.commit()
+
+            cl.update_member(user.dict())
             # If we successfully edited the user, redirect back to userpage.
-            fortnox_data = Fortnox()
-            fortnox_data.update_customer(user)
-            return redirect("/user_page/"+str(user.index))
+            # fortnox_data = Fortnox()
+            # fortnox_data.update_customer(user)
+            return redirect("/user_page/"+str(user.id))
+
         if user:
             return render_template('edit_user.html',
                                    title='Edit User',

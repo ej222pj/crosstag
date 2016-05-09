@@ -20,7 +20,8 @@ class EditUser(Form):
     :param status: Status of the users membership.
 
     """
-    name = TextField('name', [validators.Length(max=80), validators.DataRequired()])
+    firstname = TextField('name', [validators.Length(max=80), validators.DataRequired()])
+    lastname = TextField('name', [validators.Length(max=80), validators.DataRequired()])
     email = TextField('email', [validators.Length(max=120), validators.Email()])
     phone = TextField('phone', validators=[])
     address = TextField('address', [validators.Length(max=50), validators.DataRequired()])

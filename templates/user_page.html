@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>{{data.name}}<span style="margin-left: 2%;" class="btn btn-info btn-xs"><a href='/edit_user/{{data.index}}'>Edit user</a></span></h2>
+<h2>{{data.firstname}} {{data.lastname}}<span style="margin-left: 2%;" class="btn btn-info btn-xs"><a href='/edit_user/{{data.id}}'>Edit user</a></span></h2>
 
     <p>E-mail : {{ data.email }}</p>
     <p>Phone : {{ data.phone }}</p>

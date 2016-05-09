@@ -44,12 +44,13 @@ Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_
 	<tbody>
 		<thead>
 			<tr>
-				<th>Name</th> <th>Member Status</th>  <th>E-mail</th> <th>Expire Date</th> <th>Linked Tag</th> <th></th>
+				<th>Firstname</th> <th>Lastname</th> <th>Member Status</th>  <th>E-mail</th> <th>Expire Date</th> <th>Linked Tag</th> <th></th>
 			</tr>
 		</thead>
 				{% for hit in hits %}
 				<tr>
-					<td>{{hit.name}}</td>
+					<td>{{hit.firstname}}</td>
+                    <td>{{hit.lastname}}</td>
                     <td>{% if hit.status == "Active" or hit.status == "Special"%}
                         <p style="color:green">{{hit.status}}</p>
                         {% elif hit.status == "Frozen" %}
@@ -69,7 +70,7 @@ Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_
                             <p style="color:green">Yes</p>
                         {% endif %}
                     </td>
-                    <td><a style="text-decoration: underline;" href='/user_page/{{hit.index}}'>Info</a> </td>
+                    <td><a style="text-decoration: underline;" href='/user_page/{{hit.id}}'>Info</a> </td>
 				</tr>
 				{% endfor %}
 	</tbody>

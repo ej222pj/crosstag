@@ -1,5 +1,6 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
+from db_models import sql_user as user
 from flask import session
 from datetime import datetime, timedelta
 
@@ -26,7 +27,15 @@ class MembersSqlClient():
 
             cursor.close()
             my_connection.close()
-            return value
+            return_array = []
+            for users in value:
+                return_array.append(user.SQLUser(users[0], users[1], users[2],
+                                                 users[3], users[4], users[5],
+                                                 users[6], users[7], users[8],
+                                                 users[9], users[10], users[11],
+                                                 users[12], users[13], users[14],
+                                                 users[15], users[16], users[17]))
+            return return_array
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
@@ -107,7 +116,7 @@ class MembersSqlClient():
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call DeleteUser('" + id + "')}")
+            cursor.execute("{call DeleteUser('" + str(id) + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
