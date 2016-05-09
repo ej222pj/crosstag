@@ -62,7 +62,6 @@ class MembersSqlClient():
     def add_member(self, member):
         connection_string = self.get_connection_string()
         try:
-            print('Add med function')
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
             member['create_date'] = str(datetime.now())
@@ -85,7 +84,6 @@ class MembersSqlClient():
 
         connection_string = self.get_connection_string()
         try:
-            print('update function')
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
@@ -110,13 +108,13 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-    def remove_member(self, id):
+    def remove_member(self, user_id):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call DeleteUser('" + str(id) + "')}")
+            cursor.execute("{call DeleteUser('" + str(user_id) + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()

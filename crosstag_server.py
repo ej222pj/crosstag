@@ -8,11 +8,13 @@ import config as cfg
 from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
 from db_service import register_login_sql_client as registration_client
 from db_service import members_sql_client as member_client
+from db_service import debt_sql_client as debt_client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
 from db_models import user
 from db_models import sql_user
+from db_models import sql_debt
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
@@ -532,16 +534,13 @@ def inactive_check():
 
 
 # Delets a debt from a user. Redirects to "user page"
-@app.route('/debt_delete/<id>', methods=['POST'])
-def debt_delete(id):
+@app.route('/debt_delete/<debt_id>/<user_id>', methods=['POST'])
+def debt_delete(debt_id, user_id):
     if check_session():
-        debts = Debt.query.filter_by(id=id).first()
-        users = User.query.filter_by(index=debts.uid).first()
-        db.session.delete(debts)
-        db.session.commit()
-        flash('Deleted debt: %s from member %s' % (debts.amount,
-                                                   users.name))
-        return redirect("/user_page/"+str(users.index))
+        dcl = debt_client.DebtSqlClient()
+        dcl.remove_debt(debt_id)
+        flash('Debt was deleted!')
+        return redirect("/user_page/"+str(user_id))
     else:
         return redirect_not_logged_in()
 
@@ -570,16 +569,17 @@ def debt_check():
 @app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
 def debt_create(user_id):
     if check_session():
-        user = User.query.filter_by(index=user_id).first()
+        cl = member_client.MembersSqlClient()
+        dcl = debt_client.DebtSqlClient()
+        user = cl.get_member(user_id)[0]
         form = NewDebt()
-        test = datetime.now()
-        print("errors", form.errors)
+
         if form.validate_on_submit():
-            tmp_debt = Debt(form.amount.data, user.index, form.product.data, test)
-            db.session.add(tmp_debt)
-            db.session.commit()
-            flash('Debt added for %s' % (user.name))
+            debt = sql_debt.SQLDebt(form.amount.data, user.id, form.product.data, None, None)
+            dcl.add_dept(debt.dict())
+            flash('Debt added for %s' % (user.firstname + " " + user.lastname))
             return redirect("/user_page/" + user_id)
+
         return render_template('debt_create.html',
                                title='Debt Create',
                                form=form,
@@ -682,19 +682,23 @@ def get_recent_events():
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
     if check_session():
-        #user = User.query.filter_by(index=user_index).first()
-        #debts = Debt.query.filter_by(uid=user.index)
+        debts, tagevents = [], []
         cl = member_client.MembersSqlClient()
-        user = cl.get_member(user_index)
-        tagevents = []
-        debts = []
+        dbl = debt_client.DebtSqlClient()
+        user = cl.get_member(user_index)[0]
+
         if user is None:
             return "No user Found"
         else:
+            retdepts = dbl.get_debt(user.id)
+            if retdepts is not []:
+                for debt in retdepts:
+                    js = debt.dict()
+                    debts.append(js)
             #tagevents = get_tagevents_user_dict(user_index)
             return render_template('user_page.html',
                                    title='User Page',
-                                   data=user[0].dict(),
+                                   data=user.dict(),
                                    tags=tagevents,
                                    debts=debts)
     else:
