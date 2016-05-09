@@ -549,18 +549,19 @@ def debt_delete(debt_id, user_id):
 @app.route('/debts', methods=['GET'])
 def debt_check():
     if check_session():
-        debts = Debt.query.all()
-        users = User.query.all()
-        multi_array = []
-        for debt in debts:
-            for user in users:
-                if debt.uid == user.index:
-                    debt_and_user_array = {'debt': debt, 'user': user}
-                    multi_array.append(debt_and_user_array)
+        dcl = debt_client.DebtSqlClient()
+        debt_array = dcl.get_debt()
+        print(debt_array)
+        # TODO - KEEP WORKING HERE TOMORROW!!!
+        # for debt in debt_array:
+        #     for user in users:
+        #         if debt.uid == user.index:
+        #             debt_and_user_array = {'debt': debt, 'user': user}
+        #             multi_array.append(debt_and_user_array)
 
         return render_template('debt_check.html',
                                title='Check',
-                               hits=multi_array)
+                               hits=debt_array)
     else:
         return redirect_not_logged_in()
 

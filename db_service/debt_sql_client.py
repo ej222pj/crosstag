@@ -27,8 +27,18 @@ class DebtSqlClient():
             cursor.close()
             my_connection.close()
             return_array = []
-            for debt in value:
-                return_array.append(sql_debt.SQLDebt(debt[1], debt[4], debt[2], debt[3], debt[0]))
+            if user_id is not 0:
+                for debt in value:
+                    return_array.append(sql_debt.SQLDebt(debt[1], debt[4], debt[2], debt[3], debt[0]))
+            else:
+                for debt in value:
+                    return_array.append({'amount': debt[0],
+                                         'product': debt[1],
+                                         'id': debt[2],
+                                         'uid': debt[3],
+                                         'create_date': debt[4][:-17],
+                                         'firstname': debt[5],
+                                         'lastname': debt[6]})
             return return_array
 
         except pypyodbc.DatabaseError as error:
