@@ -20,6 +20,9 @@ from forms.new_user import NewUser
 from forms.search_user import SearchUser
 from forms.login import Login
 from forms.registration import Register
+from forms.edit_tenant import EditTenant
+from forms.edit_general_information import EditGeneralInformation
+from forms.edit_fortnox_information import EditFortnoxInformation
 from fortnox.fortnox import Fortnox
 from server_helper_scripts.get_inactive_members import get_inactive_members
 from server_helper_scripts.get_last_tag_event import get_last_tag_event
@@ -119,6 +122,41 @@ def registration():
                 return redirect('/')
 
         return render_template('register.html', title='Register new Tenant', form=form)
+    else:
+        return redirect('/')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if check_session():
+        form = EditTenant()
+        return render_template('settings.html', title='Settings Tab',
+                               form=form,
+                               data='',
+                               error=form.errors)
+    else:
+        return redirect('/')
+
+@app.route('/general_information', methods=['GET', 'POST'])
+def general_information():
+    if check_session():
+        form = EditGeneralInformation()
+        return render_template('general_information.html', title='General Information Tab',
+                               form=form,
+                               data='',
+                               error=form.errors)
+    else:
+        return redirect('/')
+
+
+@app.route('/fortnox_information', methods=['GET', 'POST'])
+def fortnox_information():
+    if check_session():
+        form = EditFortnoxInformation()
+        return render_template('fortnox_information.html', title='Settings Tab',
+                               form=form,
+                               data='',
+                               error=form.errors)
     else:
         return redirect('/')
 
