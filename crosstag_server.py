@@ -135,10 +135,12 @@ def settings():
 
         clt = update_tenant_client.UpdateTenantInformationSqlClient()
         current_tenant = clt.get_tenants(session['username'])[0]
+
         if current_tenant is None:
             return "No user have this ID"
 
         form = EditTenant(obj=current_tenant)
+
         if form.validate_on_submit():
             # Get Tenants password for confirmation
             cl = registration_client.RegisterLoginSqlClient()
@@ -160,6 +162,9 @@ def settings():
                           'image': form.image.data,
                           'background_color': form.background_color.data}
                 clt.update_tenant_information(tenant)
+
+                return redirect('/')
+
         return render_template('settings.html', title='Settings Tab',
                                form=form,
                                data=current_tenant.dict(),
@@ -170,10 +175,37 @@ def settings():
 @app.route('/general_information', methods=['GET', 'POST'])
 def general_information():
     if check_session():
-        form = EditGeneralInformation()
+        clt = update_tenant_client.UpdateTenantInformationSqlClient()
+        current_tenant = clt.get_tenants(session['username'])[0]
+
+        if current_tenant is None:
+            return "No user have this ID"
+
+        form = EditGeneralInformation(obj=current_tenant)
+
+        if form.validate_on_submit():
+            # Get Tenants password for confirmation
+            cl = registration_client.RegisterLoginSqlClient()
+            stored_hash = cl.do_login(session['username'])
+
+            if stored_hash is not None:
+                hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
+
+                tenant = {'id': current_tenant.id,
+                          'password': hashed_pass,
+                          'gym_name': form.gym_name.data,
+                          'address': form.address.data,
+                          'phone': form.phone.data,
+                          'zip_code': form.zip_code.data,
+                          'city': form.city.data,
+                          'email': form.email.data}
+                clt.update_tenant_general_information(tenant)
+
+                return redirect('/')
+
         return render_template('general_information.html', title='General Information Tab',
                                form=form,
-                               data='',
+                               data=current_tenant.dict(),
                                error=form.errors)
     else:
         return redirect('/')
