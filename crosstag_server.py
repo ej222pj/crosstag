@@ -140,15 +140,18 @@ def settings():
 
         form = EditTenant(obj=current_tenant)
         if form.validate_on_submit():
+            # Get Tenants password for confirmation
             cl = registration_client.RegisterLoginSqlClient()
             stored_hash = cl.do_login(session['username'])
 
             if stored_hash is not None:
                 hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
 
+                # Saves new pass from form
                 hashed_new_pass = form.new_password.data
-                if form.new_password.data is not '':
-                    hashed_new_pass = bcrypt.hashpw(form.new_password.data, bcrypt.gensalt())
+                # if the new pass is not empty, hash it
+                if hashed_new_pass is not '':
+                    hashed_new_pass = bcrypt.hashpw(hashed_new_pass, bcrypt.gensalt())
 
                 tenant = {'id': current_tenant.id,
                           'password': hashed_pass,
