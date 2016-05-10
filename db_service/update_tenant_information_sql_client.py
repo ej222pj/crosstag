@@ -64,7 +64,7 @@ class UpdateTenantInformationSqlClient():
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-            
+
             cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
                            tenant['active_fortnox'] + "','" + tenant['image'] + "','" + tenant['background_color']
                            + "','" + tenant['new_password'] + "')}")
