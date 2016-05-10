@@ -42,7 +42,6 @@ class UpdateTenantInformationSqlClient():
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-            print(tenant['new_password'])
             if tenant['new_password'] is '':
                 cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
                                tenant['active_fortnox'] + "','" + tenant['image'] + "','" +
@@ -60,18 +59,20 @@ class UpdateTenantInformationSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-    def do_login(self, username):
+    def update_tenant_gym_information(self, tenant):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call LoginUser('" + username + "')}")
-            value = cursor.fetchall()
+            cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
+                           tenant['active_fortnox'] + "','" + tenant['image'] + "','" + tenant['background_color']
+                           + "','" + tenant['new_password'] + "')}")
 
+            cursor.commit()
             cursor.close()
             my_connection.close()
-            return value[0][0]
+            return True
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
