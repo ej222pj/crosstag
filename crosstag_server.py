@@ -9,6 +9,7 @@ from crosstag_init import app, db, jsonify, render_template, flash, redirect, Re
 from db_service import register_login_sql_client as registration_client
 from db_service import members_sql_client as member_client
 from db_service import debt_sql_client as debt_client
+from db_service import update_tenant_information_sql_client as update_tenant_client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
@@ -131,7 +132,28 @@ def registration():
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if check_session():
+        cl = update_tenant_client.UpdateTenantInformationSqlClient()
+        tenant = cl.get_tenants(user_index)[0]
+
+        if tenant is None:
+            return "No user have this ID"
+
+        # obj=tenant
         form = EditTenant()
+
+        if form.validate_on_submit():
+            tenant.username = form.username
+            tenant.active_fortnox = form.active_fortnox
+            tenant.api_key = form.api_key
+            tenant.general_info_id = form.general_info_id
+            tenant.gym_name = form.gym_name
+            tenant.address = form.address
+            tenant.phone = form.phone
+            tenant.zip_code = form.zip_code
+            tenant.city = form.city
+            tenant.email = form.email
+
+            cl.update_tenant_information(user.dict())
         return render_template('settings.html', title='Settings Tab',
                                form=form,
                                data='',
@@ -551,13 +573,6 @@ def debt_check():
     if check_session():
         dcl = debt_client.DebtSqlClient()
         debt_array = dcl.get_debt()
-        print(debt_array)
-        # TODO - KEEP WORKING HERE TOMORROW!!!
-        # for debt in debt_array:
-        #     for user in users:
-        #         if debt.uid == user.index:
-        #             debt_and_user_array = {'debt': debt, 'user': user}
-        #             multi_array.append(debt_and_user_array)
 
         return render_template('debt_check.html',
                                title='Check',
