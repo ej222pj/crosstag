@@ -59,6 +59,22 @@ class MembersSqlClient():
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
+    def search_user_on_tag(self, tag_id):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call SearchUserOnTag('" + tag_id + "')}")
+            value = cursor.fetchall()[0][0]
+
+            cursor.close()
+            my_connection.close()
+            return value
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
+
     def add_member(self, member):
         connection_string = self.get_connection_string()
         try:
