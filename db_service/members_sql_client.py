@@ -33,8 +33,8 @@ class MembersSqlClient():
                                                  users[3], users[4], users[5],
                                                  users[6], users[7], users[8],
                                                  users[9], users[10], users[11],
-                                                 users[12], users[13], users[14],
-                                                 users[15], users[16], users[17]))
+                                                 users[12], users[13][:-12], users[14][:-12],
+                                                 users[15], users[16], users[17][:-6]))
             return return_array
 
         except pypyodbc.DatabaseError as error:
