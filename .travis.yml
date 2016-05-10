@@ -2,6 +2,12 @@ sudo: required
 language: python
 python:
   - "3.4"
+env:
+  - database_server=$database_server
+  - database_name=$database_name
+  - database_password=$database_password
+  - database_username=$database_username
+  - database_tenantpw=$database_tenantpw
 services:
   - docker
 before_install:
