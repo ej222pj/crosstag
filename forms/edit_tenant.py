@@ -15,9 +15,9 @@ class EditTenant(Form):
     :param background_color: Background color
     """
     password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])
-    new_password = PasswordField('new_password', [validators.Length(max=80), validators.DataRequired()])
-    repeat_new_password = PasswordField('repeat_new_password', [validators.Length(max=80), validators.DataRequired()])
+    new_password = PasswordField('new_password', [validators.Length(max=80)])
+    repeat_new_password = PasswordField('repeat_new_password', [validators.Length(max=80)])
     active_fortnox = RadioField('active_fortnox', [validators.DataRequired()],
                                 choices=[('true', 'Yes'), ('false', 'No')])
-    image = TextField('image', [validators.Length(max=80), validators.DataRequired()])
-    background_color = TextField('background_color', [validators.Length(max=80), validators.DataRequired()])
+    image = TextField('image', [validators.Length(max=80)])
+    background_color = TextField('background_color', [validators.Length(max=80)])

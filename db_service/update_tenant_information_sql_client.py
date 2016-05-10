@@ -27,10 +27,11 @@ class UpdateTenantInformationSqlClient():
             cursor.close()
             my_connection.close()
             return_array = []
+            print(values[0][0])
             for tenants in values:
                 return_array.append(tenant.SQLTenant(tenants[0], tenants[1], tenants[2], tenants[3], tenants[4],
                                                      tenants[5], tenants[6], tenants[7], tenants[8], tenants[9],
-                                                     tenants[10]))
+                                                     tenants[10], tenants[11], tenants[12]))
             return return_array
 
         except pypyodbc.DatabaseError as error:
@@ -41,13 +42,15 @@ class UpdateTenantInformationSqlClient():
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-
-            cursor.execute("{call UpdateUser('" + str(member['id']) + "','" +
-                           member['firstname'] + "','" + member['lastname'] + "','" + member['email'] + "','" +
-                           member['phone'] + "','" + member['address'] + "','" + member['address2'] + "','" +
-                           member['city'] + "','" + member['zip_code'] + "','" + member['tag_id'] + "','" +
-                           member['gender'] + "','" + member['ssn'] + "','" +
-                           member['expiry_date'] + ' 00:00:00.0000000' "','" + member['status'] + "')}")
+            print(tenant['new_password'])
+            if tenant['new_password'] is '':
+                cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
+                               tenant['active_fortnox'] + "','" + tenant['image'] + "','" +
+                               tenant['background_color'] + "')}")
+            else:
+                cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
+                               tenant['active_fortnox'] + "','" + tenant['image'] + "','" + tenant['background_color']
+                               + "','" + tenant['new_password'] + "')}")
 
             cursor.commit()
             cursor.close()

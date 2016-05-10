@@ -132,31 +132,34 @@ def registration():
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if check_session():
-        cl = update_tenant_client.UpdateTenantInformationSqlClient()
-        tenant = cl.get_tenants(user_index)[0]
 
-        if tenant is None:
+        clt = update_tenant_client.UpdateTenantInformationSqlClient()
+        current_tenant = clt.get_tenants(session['username'])[0]
+        if current_tenant is None:
             return "No user have this ID"
 
-        # obj=tenant
-        form = EditTenant()
-
+        form = EditTenant(obj=current_tenant)
         if form.validate_on_submit():
-            tenant.username = form.username
-            tenant.active_fortnox = form.active_fortnox
-            tenant.api_key = form.api_key
-            tenant.general_info_id = form.general_info_id
-            tenant.gym_name = form.gym_name
-            tenant.address = form.address
-            tenant.phone = form.phone
-            tenant.zip_code = form.zip_code
-            tenant.city = form.city
-            tenant.email = form.email
+            cl = registration_client.RegisterLoginSqlClient()
+            stored_hash = cl.do_login(session['username'])
 
-            cl.update_tenant_information(user.dict())
+            if stored_hash is not None:
+                hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
+
+                hashed_new_pass = form.new_password.data
+                if form.new_password.data is not '':
+                    hashed_new_pass = bcrypt.hashpw(form.new_password.data, bcrypt.gensalt())
+
+                tenant = {'id': current_tenant.id,
+                          'password': hashed_pass,
+                          'new_password': hashed_new_pass,
+                          'active_fortnox': form.active_fortnox.data,
+                          'image': form.image.data,
+                          'background_color': form.background_color.data}
+                clt.update_tenant_information(tenant)
         return render_template('settings.html', title='Settings Tab',
                                form=form,
-                               data='',
+                               data=current_tenant.dict(),
                                error=form.errors)
     else:
         return redirect('/')
