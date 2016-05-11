@@ -504,38 +504,18 @@ def tagin_user():
 def search_user():
     if check_session():
         form = SearchUser()
-        print(str(form.validate_on_submit()))
-        print("errors", form.errors)
-        hits = []
         if form.validate_on_submit():
-            if form.index.data:
-                user_index = form.index.data
-                users = User.query.filter_by(index=user_index)
-                hits.extend(users)
-            if form.fortnox_id.data:
-                fortnox_id = form.fortnox_id.data
-                users = User.query.filter_by(fortnox_id=fortnox_id)
-                hits.extend(users)
-            if form.name.data:
-                name = form.name.data
-                users = User.query.filter(User.name.ilike('%' + name + '%'))
-                hits.extend(users)
-            if form.email.data:
-                email = form.email.data
-                users = User.query.filter_by(email=email)
-                hits.extend(users)
-            if form.phone.data:
-                phone = form.phone.data
-                users = User.query.filter_by(phone=phone)
-                hits.extend(users)
-            ret = []
-            for hit in hits:
-                js = hit.dict()
-                ret.append(js)
+            mc = member_client.MembersSqlClient()
+
+            tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, None, None, None,
+                              form.city.data, None, None, None, None, None, None, None, None, None)
+
+            users = mc.search_user(tmp_usr.dict())
+
             return render_template('search_user.html',
                                    title='Search User',
                                    form=form,
-                                   hits=ret)
+                                   hits=users)
         return render_template('search_user.html',
                                title='Search User',
                                form=form)

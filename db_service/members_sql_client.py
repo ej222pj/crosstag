@@ -29,12 +29,10 @@ class MembersSqlClient():
             my_connection.close()
             return_array = []
             for users in value:
-                return_array.append(user.SQLUser(users[0], users[1], users[2],
-                                                 users[3], users[4], users[5],
-                                                 users[6], users[7], users[8],
-                                                 users[9], users[10], users[11],
-                                                 users[12], users[13][:-12], users[14][:-12],
-                                                 users[15], users[16], users[17][:-6]))
+                return_array.append(user.SQLUser(users[0], users[1], users[2], users[3], users[4], users[5], users[6],
+                                                 users[7], users[8], users[9], users[10], users[11], users[12],
+                                                 users[13][:-12], users[14][:-12], users[15], users[16],
+                                                 users[17][:-6]))
             return return_array
 
         except pypyodbc.DatabaseError as error:
@@ -135,6 +133,31 @@ class MembersSqlClient():
             cursor.close()
             my_connection.close()
             return True
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
+
+    def search_user(self, search_user_object):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call SearchUsers('" + search_user_object['firstname'] + "','" +
+                           search_user_object['lastname'] + "','" + search_user_object['email'] + "','" +
+                           search_user_object['city'] + "')}")
+
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return_array = []
+            for users in value:
+                return_array.append(user.SQLUser(users[0], users[1], users[2],users[3], users[4], users[5], users[6],
+                                                 users[7], users[8], users[9], users[10], users[11], users[12],
+                                                 users[13][:-12], users[14][:-12], users[15], users[16],
+                                                 users[17][:-6]))
+            return return_array
 
         except pypyodbc.DatabaseError as error:
             print(error.value)

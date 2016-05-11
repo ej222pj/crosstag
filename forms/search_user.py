@@ -6,14 +6,13 @@ class SearchUser(Form):
     """
     A representation of the form for searching a user.
 
-    :param index: Index of the user in the database.
-    :param name: Name of the user.
+    :param firstname: Firstname of the user.
+    :param lastname: Lastname of the user.
+    :param city: City of the user.
     :param email: Emailaddress of the user.
-    :param phone: Phonenumber of the user.
-    :param fortnox_id: Fortnox number of the user.
     """
-    index = TextField('name', validators=[])
-    name = TextField('name', validators=[])
+
+    firstname = TextField('firstname', validators=[])
+    lastname = TextField('lastname', validators=[])
+    city = TextField('email', validators=[])
     email = TextField('email', validators=[])
-    phone = TextField('phone', validators=[])
-    fortnox_id = TextField('fortnox_id', validators=[])
