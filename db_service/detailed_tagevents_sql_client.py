@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import session
 
 
-class DetailedTageventsSqlClient():
+class DetailedTageventsSqlClient:
     def __init__(self, username, password):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'

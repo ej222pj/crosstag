@@ -7,7 +7,7 @@ from optparse import OptionParser
 import config as cfg
 from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
 from db_service import register_login_sql_client as registration_client
-from db_service import members_sql_client as member_client
+from db_service import users_sql_client as user_client
 from db_service import debt_sql_client as debt_client
 from db_service import update_tenant_information_sql_client as update_tenant_client
 from db_models import debt
@@ -107,8 +107,8 @@ def registration():
             password = form.password.data.encode('utf-8')
             # 2 Hash the password
             hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-            # 3 Save the Member in the db
-            registered_member = {'username': form.username.data,
+            # 3 Save the Tenant in the db
+            registered_tenant = {'username': form.username.data,
                                  'password': hashed_password,
                                  'active_fortnox': form.active_fortnox.data,
                                  'gym_name': form.gym_name.data,
@@ -120,7 +120,7 @@ def registration():
                                  'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data}
 
             cl = registration_client.RegisterLoginSqlClient()
-            if cl.do_registration(registered_member):
+            if cl.do_registration(registered_tenant):
                 flash('Registration done, you can now log in')
                 return redirect('/')
 
@@ -360,8 +360,8 @@ def all_users(filter=None):
         ret, users = [], []
         counter = 0
 
-        cl = member_client.MembersSqlClient()
-        users = cl.get_member(0)
+        cl = user_client.UsersSqlClient()
+        users = cl.get_users(0)
 
         # List users depending on the membership
         if filter is not 'all':
@@ -420,8 +420,8 @@ def last_tagins():
 @app.route('/%s/%s/remove_user/<user_id>' % (app_name, version), methods=['POST'])
 def remove_user(user_id):
     if check_session():
-        cl = member_client.MembersSqlClient()
-        cl.remove_member(user_id)
+        cl = user_client.UsersSqlClient()
+        cl.remove_user(user_id)
         flash('Member was removed!')
         return redirect("/all_users/all")
     else:
@@ -434,13 +434,13 @@ def add_new_user():
     if check_session():
         form = NewUser()
         if form.validate_on_submit():
-            mc = member_client.MembersSqlClient()
+            mc = user_client.UsersSqlClient()
 
             tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
                            form.address.data, form.address2.data, form.city.data,
                            form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
                            None, form.status.data, None, None)
-            mc.add_member(tmp_usr.dict())
+            mc.add_user(tmp_usr.dict())
 
             flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
             # tagevent = get_last_tag_event()
@@ -505,7 +505,7 @@ def search_user():
     if check_session():
         form = SearchUser()
         if form.validate_on_submit():
-            mc = member_client.MembersSqlClient()
+            mc = user_client.UsersSqlClient()
 
             tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, None, None, None,
                               form.city.data, None, None, None, None, None, None, None, None, None)
@@ -603,9 +603,9 @@ def debt_check():
 @app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
 def debt_create(user_id):
     if check_session():
-        cl = member_client.MembersSqlClient()
+        cl = user_client.UsersSqlClient()
         dcl = debt_client.DebtSqlClient()
-        user = cl.get_member(user_id)[0]
+        user = cl.get_users(user_id)[0]
         form = NewDebt()
 
         if form.validate_on_submit():
@@ -717,9 +717,9 @@ def get_recent_events():
 def user_page(user_index=None):
     if check_session():
         debts, tagevents = [], []
-        cl = member_client.MembersSqlClient()
+        cl = user_client.UsersSqlClient()
         dbl = debt_client.DebtSqlClient()
-        user = cl.get_member(user_index)[0]
+        user = cl.get_users(user_index)[0]
 
         if user is None:
             return "No user Found"
@@ -756,8 +756,8 @@ def clear_tagcounter():
 @app.route('/edit_user/<user_index>', methods=['GET', 'POST'])
 def edit_user(user_index=None):
     if check_session():
-        cl = member_client.MembersSqlClient()
-        user = cl.get_member(user_index)[0]
+        cl = user_client.UsersSqlClient()
+        user = cl.get_users(user_index)[0]
 
         if user is None:
             return "No user have this ID"
@@ -779,7 +779,7 @@ def edit_user(user_index=None):
             user.expiry_date = form.expiry_date.data
             user.status = form.status.data
 
-            cl.update_member(user.dict())
+            cl.update_user(user.dict())
             # If we successfully edited the user, redirect back to userpage.
             # fortnox_data = Fortnox()
             # fortnox_data.update_customer(user)

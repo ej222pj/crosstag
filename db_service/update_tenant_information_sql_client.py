@@ -4,7 +4,7 @@ from db_models import sql_tenant as tenant
 from datetime import datetime, timedelta
 
 
-class UpdateTenantInformationSqlClient():
+class UpdateTenantInformationSqlClient:
     def __init__(self):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
@@ -21,7 +21,7 @@ class UpdateTenantInformationSqlClient():
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call GetMembers('" + username + "')}")
+            cursor.execute("{call GetTenants('" + username + "')}")
             values = cursor.fetchall()
 
             cursor.close()
@@ -43,11 +43,11 @@ class UpdateTenantInformationSqlClient():
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
             if tenant['new_password'] is '':
-                cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
+                cursor.execute("{call UpdateTenant('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
                                tenant['active_fortnox'] + "','" + tenant['image'] + "','" +
                                tenant['background_color'] + "')}")
             else:
-                cursor.execute("{call UpdateMember('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
+                cursor.execute("{call UpdateTenant('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
                                tenant['active_fortnox'] + "','" + tenant['image'] + "','" + tenant['background_color']
                                + "','" + tenant['new_password'] + "')}")
 

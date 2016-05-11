@@ -3,7 +3,7 @@ from db_service import sql_client_cfg as cfg
 from datetime import datetime, timedelta
 
 
-class StatisticTageventsSqlClient():
+class StatisticTageventsSqlClient:
     def __init__(self, username, password):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'

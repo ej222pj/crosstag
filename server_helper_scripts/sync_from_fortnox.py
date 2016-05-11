@@ -4,7 +4,7 @@ from server_helper_scripts.add_user_to_local_db_from_fortnox import add_user_to_
 from db_models.user import User
 from db_models import sql_user
 from fortnox.fortnox import Fortnox
-from db_service import members_sql_client as client
+from db_service import users_sql_client as client
 from server_helper_scripts.strip_ssn import strip_ssn
 from server_helper_scripts.get_gender_from_ssn import get_gender_from_ssn
 
@@ -35,12 +35,12 @@ def sync_from_fortnox():
                                         None, None)
                 ret.append(cust.dict())
 
-        cl = client.MembersSqlClient()
+        cl = client.UsersSqlClient()
         for customer in ret:
-            if cl.does_member_exist(customer['fortnox_id']):
-                cl.add_member(customer)
+            if cl.does_user_exist(customer['fortnox_id']):
+                cl.add_user(customer)
             else:
-                cl.update_member(customer)
+                cl.update_user(customer)
 
         flash("Members from Fortnox is added/updated to the database!")
     except:
