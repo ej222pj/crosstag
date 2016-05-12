@@ -5,6 +5,7 @@ import bcrypt
 from datetime import datetime, timedelta
 from optparse import OptionParser
 import config as cfg
+from flask import request
 from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
 from db_service import register_login_sql_client as registration_client
 from db_service import users_sql_client as user_client
@@ -79,7 +80,7 @@ def login():
                     # Use above to match passwords
                     session['loggedIn'] = True
                     session['username'] = form.username.data
-                    flash('Welcome %s' % (form.username.data))
+                    flash('Welcome %s' % form.username.data)
                     return redirect('/')
                 else:
                     flash('Wrong username or password')
