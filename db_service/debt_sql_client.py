@@ -6,7 +6,7 @@ from flask import session
 
 
 class DebtSqlClient:
-    def __init__(self,):
+    def __init__(self):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'

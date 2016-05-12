@@ -3,24 +3,21 @@ from datetime import datetime
 
 class SQLDetailedTagevent:
     """
-    DetailTagevent - A representation of the database model.
+    DetailedTagevent - A representation of the database model.
     """
-    def __init__(self, tag):
+    def __init__(self, id=0, tag_id='', timestamp='', uid=0):
         """
         Called when creating a new Detailedtagevent
 
-        :param tag: Tagnumber of the tag
-        :type tag: String (20)
         """
-        self.tag_id = tag
-        self.timestamp = datetime.now()
-        users = User.query.filter_by(tag_id=self.tag_id)
-        js = None
-        for user in users:
-            js = user.dict()
 
-        if js is not None:
-            self.uid = js['index']
+        self.id = id
+        self.tag_id = tag_id
+        self.timestamp = datetime.now()
+        self.uid = uid
+
+        if self.id is None:
+            self.id = 0
 
     def dict(self):
         """
@@ -28,6 +25,8 @@ class SQLDetailedTagevent:
         :return: Dictionary representation of the tag class
         :rtype: Dictionary
         """
-        return {'id': str(self.id), 'timestamp': str(self.timestamp),
-                'tag_id': self.tag_id, 'uid': str(self.uid)}
+        return {'id': str(self.id),
+                'tag_id': self.tag_id,
+                'timestamp': str(self.timestamp),
+                'uid': str(self.uid)}
 

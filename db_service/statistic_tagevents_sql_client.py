@@ -4,12 +4,12 @@ from datetime import datetime, timedelta
 
 
 class StatisticTageventsSqlClient:
-    def __init__(self, username, password):
+    def __init__(self):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
-        self.dbUsername = 'uid=' + username + ';'
-        self.dbPassword = 'pwd=' + password
+        self.dbUsername = 'uid=' + session['username'] + ';'
+        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + session['username']
 
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
@@ -31,13 +31,14 @@ class StatisticTageventsSqlClient:
             print(error.value)
 
 
-    def add_statistic_tagevents(self, timestamp=datetime.now(), amount=0, clockstamp=0):
+    def add_statistic_tagevents(self, statistic_tagevent):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call AddStatisticTagevents('" + timestamp + "','" +  amount + "','" +  clockstamp  + "')}")
+            cursor.execute("{call AddStatisticTagevents('" + statistic_tagevent['timestamp'] + "','" +
+                           statistic_tagevent['amount'] + "','" +  statistic_tagevent['clockstamp'] + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()

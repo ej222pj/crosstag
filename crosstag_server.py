@@ -11,12 +11,14 @@ from db_service import register_login_sql_client as registration_client
 from db_service import users_sql_client as user_client
 from db_service import debt_sql_client as debt_client
 from db_service import update_tenant_information_sql_client as update_tenant_client
+from db_service import detailed_tagevents_sql_client as detailed_tag_client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
 from db_models import user
 from db_models import sql_user
 from db_models import sql_debt
+from db_models import sql_detailed_tagevent
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
@@ -35,6 +37,7 @@ from statistics_scripts.generate_statistics import GenerateStats
 
 User = user.User
 Sqluser = sql_user.SQLUser
+Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
 Tagevent = tagevent.Tagevent
 Debt = debt.Debt
 DetailedTagevent = detailedtagevent.DetailedTagevent
@@ -322,27 +325,15 @@ def get_events_from_user_by_tag_id(tag_id):
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>' % (app_name, version))
 def tagevent(tag_id):
-    date = datetime.now()
-    now = datetime.now()
-    hour = now.hour
-    now = str(now)
-    user = User.query.filter(User.tag_id == tag_id).first()
-    detailedtag = DetailedTagevent(tag_id)
-    db.session.add(detailedtag)
-    timestampquery = now[:10]
-    tmp_tag = Tagevent.query.filter(Tagevent.timestamp.contains(timestampquery)).filter(Tagevent.clockstamp.contains(hour)).first()
-    if user is not None:
-        user.tagcounter += 1
-        user.last_tag_timestamp = date
+    cl = user_client.UsersSqlClient()
+    user = cl.search_user_on_tag(tag_id)
+    print(user)
+    tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user.id)
 
-        if tmp_tag is None or tmp_tag == None:
-            tmp_tag = Tagevent()
-            tmp_tag.amount = 1
-            db.session.add(tmp_tag)
-        else:
-            tmp_tag.amount += 1
-    db.session.commit()
-    return "%s server tagged %s" % (detailedtag.timestamp, tag_id)
+    cl = detailed_tag_client.DetailedTageventsSqlClient()
+    cl.add_detailed_tagevents(tmp__detailed_tagevent.dict())
+
+    return "%s server tagged %s" % (tmp__detailed_tagevent.datetime.now(), tag_id)
 
 
 # Returns the last tag event
