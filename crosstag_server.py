@@ -18,7 +18,7 @@ from db_models import tagevent
 from db_models import user
 from db_models import sql_user
 from db_models import sql_debt
-from db_models import sql_detailed_tagevent
+from db_models import sql_tagevent
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
@@ -37,7 +37,7 @@ from statistics_scripts.generate_statistics import GenerateStats
 
 User = user.User
 Sqluser = sql_user.SQLUser
-Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
+Sql_detailed_tag = sql_tagevent.SQLDetailedTagevent
 Tagevent = tagevent.Tagevent
 Debt = debt.Debt
 DetailedTagevent = detailedtagevent.DetailedTagevent
@@ -331,7 +331,7 @@ def tagevent(tag_id):
     tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user.id)
 
     cl = detailed_tag_client.DetailedTageventsSqlClient()
-    cl.add_detailed_tagevents(tmp__detailed_tagevent.dict())
+    cl.add_tagevents(tmp__detailed_tagevent.dict())
 
     return "%s server tagged %s" % (tmp__detailed_tagevent.datetime.now(), tag_id)
 

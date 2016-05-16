@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import session
 
 
-class DetailedTageventsSqlClient:
+class TageventsSqlClient:
     def __init__(self):
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
@@ -31,14 +31,30 @@ class DetailedTageventsSqlClient:
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
-    def add_detailed_tagevents(self, detailed_tagevent):
+    def get_statistic_tagevents(self, id=0):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call GetStatisticTagevents('" + id + "')}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return value
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
+
+    def add_tagevents(self, detailed_tagevent):
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
             cursor.execute("{call AddDetailedTagevents('" + detailed_tagevent['tag_id'] + "','" +
-                           detailed_tagevent['timestamp'] + "','" + detailed_tagevent['uid'] + "')}")
+                           detailed_tagevent['timestamp'] + "0" + "','" + detailed_tagevent['uid'] + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()
