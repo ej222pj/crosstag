@@ -73,25 +73,29 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if not check_session():
-        form = Login()
-        if form.validate_on_submit():
-            cl = registration_client.RegisterLoginSqlClient()
-            stored_hash = cl.do_login(form.username.data)
-            if stored_hash is not None:
-                if bcrypt.hashpw(form.password.data, stored_hash) == stored_hash:
-                    # Use above to match passwords
-                    session['loggedIn'] = True
-                    session['username'] = form.username.data
-                    flash('Welcome %s' % form.username.data)
-                    return redirect('/')
+    try:
+        if not check_session():
+            form = Login()
+            if form.validate_on_submit():
+                cl = registration_client.RegisterLoginSqlClient()
+                stored_hash = cl.do_login(form.username.data)
+                if stored_hash is not None:
+                    if bcrypt.hashpw(form.password.data, stored_hash) == stored_hash:
+                        # Use above to match passwords
+                        session['loggedIn'] = True
+                        session['username'] = form.username.data
+                        flash('Welcome %s' % form.username.data)
+                        return redirect('/')
+                    else:
+                        flash('Wrong username or password')
                 else:
-                    flash('Wrong username or password')
-            else:
-                flash('Wrong username')
+                    flash('Wrong username')
 
-        return render_template('login.html', title='Login', form=form)
-    else:
+            return render_template('login.html', title='Login', form=form)
+        else:
+            return redirect('/')
+    except:
+        flash('Error Trying to login, please try again.')
         return redirect('/')
 
 
@@ -104,126 +108,143 @@ def logout():
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    if not check_session():
-        form = Register()
-        if form.validate_on_submit():
-            # 1 Get password from form
-            password = form.password.data.encode('utf-8')
-            # 2 Hash the password
-            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-            # 3 Save the Tenant in the db
-            registered_tenant = {'username': form.username.data,
-                                 'password': hashed_password,
-                                 'active_fortnox': form.active_fortnox.data,
-                                 'gym_name': form.gym_name.data,
-                                 'address': form.address.data,
-                                 'phone': form.phone.data,
-                                 'zip_code': form.zip_code.data,
-                                 'city': form.city.data,
-                                 'email': form.email.data,
-                                 'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data}
+    try:
+        if not check_session():
+            form = Register()
+            if form.validate_on_submit():
+                # 1 Get password from form
+                password = form.password.data.encode('utf-8')
+                # 2 Hash the password
+                hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+                # 3 Save the Tenant in the db
+                registered_tenant = {'username': form.username.data,
+                                     'password': hashed_password,
+                                     'active_fortnox': form.active_fortnox.data,
+                                     'gym_name': form.gym_name.data,
+                                     'address': form.address.data,
+                                     'phone': form.phone.data,
+                                     'zip_code': form.zip_code.data,
+                                     'city': form.city.data,
+                                     'email': form.email.data,
+                                     'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data}
 
-            cl = registration_client.RegisterLoginSqlClient()
-            if cl.do_registration(registered_tenant):
-                flash('Registration done, you can now log in')
-                return redirect('/')
+                cl = registration_client.RegisterLoginSqlClient()
+                if cl.do_registration(registered_tenant):
+                    flash('Registration done, you can now log in')
+                    return redirect('/')
 
-        return render_template('register.html', title='Register new Tenant', form=form)
-    else:
+            return render_template('register.html', title='Register new Tenant', form=form)
+        else:
+            return redirect('/')
+
+    except:
+        flash('Error when trying to register, please try again.')
         return redirect('/')
 
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    if check_session():
+    try:
+        if check_session():
 
-        clt = update_tenant_client.UpdateTenantInformationSqlClient()
-        current_tenant = clt.get_tenants(session['username'])[0]
+            clt = update_tenant_client.UpdateTenantInformationSqlClient()
+            current_tenant = clt.get_tenants(session['username'])[0]
 
-        if current_tenant is None:
-            return "No user have this ID"
+            if current_tenant is None:
+                return "No user have this ID"
 
-        form = EditTenant(obj=current_tenant)
+            form = EditTenant(obj=current_tenant)
 
-        if form.validate_on_submit():
-            # Get Tenants password for confirmation
-            cl = registration_client.RegisterLoginSqlClient()
-            stored_hash = cl.do_login(session['username'])
+            if form.validate_on_submit():
+                # Get Tenants password for confirmation
+                cl = registration_client.RegisterLoginSqlClient()
+                stored_hash = cl.do_login(session['username'])
 
-            if stored_hash is not None:
-                hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
+                if stored_hash is not None:
+                    hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
 
-                # Saves new pass from form
-                hashed_new_pass = form.new_password.data
-                # if the new pass is not empty, hash it
-                if hashed_new_pass is not '':
-                    hashed_new_pass = bcrypt.hashpw(hashed_new_pass, bcrypt.gensalt())
+                    # Saves new pass from form
+                    hashed_new_pass = form.new_password.data
+                    # if the new pass is not empty, hash it
+                    if hashed_new_pass is not '':
+                        hashed_new_pass = bcrypt.hashpw(hashed_new_pass, bcrypt.gensalt())
 
-                tenant = {'id': current_tenant.id,
-                          'password': hashed_pass,
-                          'new_password': hashed_new_pass,
-                          'active_fortnox': form.active_fortnox.data,
-                          'image': form.image.data,
-                          'background_color': form.background_color.data}
-                clt.update_tenant_information(tenant)
+                    tenant = {'id': current_tenant.id,
+                              'password': hashed_pass,
+                              'new_password': hashed_new_pass,
+                              'active_fortnox': form.active_fortnox.data,
+                              'image': form.image.data,
+                              'background_color': form.background_color.data}
+                    clt.update_tenant_information(tenant)
 
-                return redirect('/')
+                    return redirect('/')
 
-        return render_template('settings.html', title='Settings Tab',
-                               form=form,
-                               data=current_tenant.dict(),
-                               error=form.errors)
-    else:
+            return render_template('settings.html', title='Settings Tab',
+                                   form=form,
+                                   data=current_tenant.dict(),
+                                   error=form.errors)
+        else:
+            return redirect('/')
+    except:
+        flash('Error Updating information, please try again.')
         return redirect('/')
 
 @app.route('/general_information', methods=['GET', 'POST'])
 def general_information():
-    if check_session():
-        clt = update_tenant_client.UpdateTenantInformationSqlClient()
-        current_tenant = clt.get_tenants(session['username'])[0]
+    try:
+        if check_session():
+            clt = update_tenant_client.UpdateTenantInformationSqlClient()
+            current_tenant = clt.get_tenants(session['username'])[0]
 
-        if current_tenant is None:
-            return "No user have this ID"
+            if current_tenant is None:
+                return "No user have this ID"
 
-        form = EditGeneralInformation(obj=current_tenant)
+            form = EditGeneralInformation(obj=current_tenant)
 
-        if form.validate_on_submit():
-            # Get Tenants password for confirmation
-            cl = registration_client.RegisterLoginSqlClient()
-            stored_hash = cl.do_login(session['username'])
+            if form.validate_on_submit():
+                # Get Tenants password for confirmation
+                cl = registration_client.RegisterLoginSqlClient()
+                stored_hash = cl.do_login(session['username'])
 
-            if stored_hash is not None:
-                hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
+                if stored_hash is not None:
+                    hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
 
-                tenant = {'id': current_tenant.id,
-                          'password': hashed_pass,
-                          'gym_name': form.gym_name.data,
-                          'address': form.address.data,
-                          'phone': form.phone.data,
-                          'zip_code': form.zip_code.data,
-                          'city': form.city.data,
-                          'email': form.email.data}
-                clt.update_tenant_general_information(tenant)
+                    tenant = {'id': current_tenant.id,
+                              'password': hashed_pass,
+                              'gym_name': form.gym_name.data,
+                              'address': form.address.data,
+                              'phone': form.phone.data,
+                              'zip_code': form.zip_code.data,
+                              'city': form.city.data,
+                              'email': form.email.data}
+                    clt.update_tenant_general_information(tenant)
 
-                return redirect('/')
+                    return redirect('/')
 
-        return render_template('general_information.html', title='General Information Tab',
-                               form=form,
-                               data=current_tenant.dict(),
-                               error=form.errors)
-    else:
+            return render_template('general_information.html', title='General Information Tab',
+                                   form=form,
+                                   data=current_tenant.dict(),
+                                   error=form.errors)
+        else:
+            return redirect('/')
+    except:
+        flash('Error Updating general information, please try again.')
         return redirect('/')
 
 
 @app.route('/fortnox_information', methods=['GET', 'POST'])
 def fortnox_information():
-    if check_session():
-        form = EditFortnoxInformation()
-        return render_template('fortnox_information.html', title='Settings Tab',
-                               form=form,
-                               data='',
-                               error=form.errors)
-    else:
+    try:
+        if check_session():
+            form = EditFortnoxInformation()
+            return render_template('fortnox_information.html', title='Settings Tab',
+                                   form=form,
+                                   data='',
+                                   error=form.errors)
+        else:
+            return redirect('/')
+    except:
+        flash('Error Updating fortnox information, please try again.')
         return redirect('/')
 
 
@@ -325,19 +346,22 @@ def get_events_from_user_by_tag_id(tag_id):
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>' % (app_name, version))
 def tagevent(tag_id, api_key):
-    cl = registration_client.RegisterLoginSqlClient()
-    username = cl.get_tenant_with_api_key(api_key)
+    try:
+        cl = registration_client.RegisterLoginSqlClient()
+        username = cl.get_tenant_with_api_key(api_key)
 
-    # Test api key: 2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B
-    cl = user_client.UsersSqlClient(username[0]['username'])
-    user = cl.search_user_on_tag(tag_id)
+        # Test api key: 2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B
+        cl = user_client.UsersSqlClient(username[0]['username'])
+        user = cl.search_user_on_tag(tag_id)
 
-    tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
+        tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
 
-    cl = tag_client.TageventsSqlClient(username[0]['username'])
-    cl.add_tagevents(tmp__detailed_tagevent.dict())
+        cl = tag_client.TageventsSqlClient(username[0]['username'])
+        cl.add_tagevents(tmp__detailed_tagevent.dict())
 
-    return "%s server tagged %s" % (datetime.now(), tag_id)
+        return "%s server tagged %s" % (datetime.now(), tag_id)
+    except:
+        return "Can't create a tag with that Tag ID or Api Key"
 
 
 # Returns the last tag event
@@ -352,29 +376,33 @@ def last_tagin():
 # Renders a HTML page with filter on membership
 @app.route('/all_users/<filter>', methods=['GET', 'POST'])
 def all_users(filter=None):
-    if check_session():
-        ret, users = [], []
-        counter = 0
+    try:
+        if check_session():
+            ret, users = [], []
+            counter = 0
 
-        cl = user_client.UsersSqlClient()
-        users = cl.get_users(0)
+            cl = user_client.UsersSqlClient()
+            users = cl.get_users(0)
 
-        # List users depending on the membership
-        if filter is not 'all':
-            users = [x for x in users if x.status == filter.title()]
+            # List users depending on the membership
+            if filter is not 'all':
+                users = [x for x in users if x.status == filter.title()]
 
-        users = sorted(users, key=lambda user: user.firstname)
-        for hit in users:
-            counter += 1
-            js = hit.dict()
-            ret.append(js)
-        return render_template('all_users.html',
-                               title='All Users',
-                               hits=ret,
-                               filter=filter,
-                               count=counter)
-    else:
-        return redirect_not_logged_in()
+            users = sorted(users, key=lambda user: user.firstname)
+            for hit in users:
+                counter += 1
+                js = hit.dict()
+                ret.append(js)
+            return render_template('all_users.html',
+                                   title='All Users',
+                                   hits=ret,
+                                   filter=filter,
+                                   count=counter)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Showing all users, please try again.')
+        return redirect('/')
 
 
 # Returns a user based on tag_id, in form of a dictionary
@@ -390,68 +418,78 @@ def get_user_data_tag_dict(tag_id):
 # Renders a HTML page with the last 10 tag events
 @app.route('/last_tagins', methods=['GET'])
 def last_tagins():
-    if check_session():
-        ret = []
-        cl = tag_client.TageventsSqlClient()
-        detailed_tagevents = cl.get_detailed_tagevents(0, 10)
+    try:
+        if check_session():
+            ret = []
+            cl = tag_client.TageventsSqlClient()
+            detailed_tagevents = cl.get_detailed_tagevents(0, 10)
 
-        for hit in detailed_tagevents:
-            js = hit.dict()
-            ret.append(js)
+            for hit in detailed_tagevents:
+                js = hit.dict()
+                ret.append(js)
 
-        return render_template('last_tagevents.html',
-                               title='Last Tagins',
-                               hits=ret)
-    else:
-        return redirect_not_logged_in()
+            return render_template('last_tagevents.html',
+                                   title='Last Tagins',
+                                   hits=ret)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error showing last tagins, please try again.')
+        return redirect('/')
 
 
 # Deletes an user from the local DB based on their index
 @app.route('/%s/%s/remove_user/<user_id>' % (app_name, version), methods=['POST'])
 def remove_user(user_id):
-    if check_session():
-        cl = user_client.UsersSqlClient()
-        cl.remove_user(user_id)
-        flash('Member was removed!')
-        return redirect("/all_users/all")
-    else:
-        return redirect_not_logged_in()
-
+    try:
+        if check_session():
+            cl = user_client.UsersSqlClient()
+            cl.remove_user(user_id)
+            flash('Member was removed!')
+            return redirect("/all_users/all")
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Removing a user, please try again.')
+        return redirect('/')
 
 # Adds an user to the local DB. Gets all the values from a form in the HTML page.
 @app.route('/new_user', methods=['GET', 'POST'])
 def add_new_user():
-    if check_session():
-        form = NewUser()
-        if form.validate_on_submit():
-            mc = user_client.UsersSqlClient()
-
-            tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
-                           form.address.data, form.address2.data, form.city.data,
-                           form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
-                           None, form.status.data, None, None)
-            mc.add_user(tmp_usr.dict())
-
-            flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
-            # tagevent = get_last_tag_event()
-            #fortnox_data = Fortnox()
-            #fortnox_data.insert_customer(tmp_usr)
-            msg = None
-            # if tagevent is None:
-                # msg = None
-            # else:
-                # msg = (tmp_usr.index, tagevent.tag_id)
+    try:
+        if check_session():
             form = NewUser()
+            if form.validate_on_submit():
+                mc = user_client.UsersSqlClient()
+
+                tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
+                               form.address.data, form.address2.data, form.city.data,
+                               form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
+                               None, form.status.data, None, None)
+                mc.add_user(tmp_usr.dict())
+
+                flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
+                # tagevent = get_last_tag_event()
+                #fortnox_data = Fortnox()
+                #fortnox_data.insert_customer(tmp_usr)
+                msg = None
+                # if tagevent is None:
+                    # msg = None
+                # else:
+                    # msg = (tmp_usr.index, tagevent.tag_id)
+                form = NewUser()
+                return render_template('new_user.html',
+                                       title='New User',
+                                       form=form,
+                                       message=msg)
             return render_template('new_user.html',
                                    title='New User',
-                                   form=form,
-                                   message=msg)
-        return render_template('new_user.html',
-                               title='New User',
-                               form=form)
-    else:
-        return redirect_not_logged_in()
-
+                                   form=form)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Creating a new user, please try again.')
+        return redirect('/')
 
 # TODO - SHALL IT EXIST OR NOT?!
 # Renders a HTML page which has the same function as the crosstag_reader dummy function.
@@ -492,25 +530,29 @@ def tagin_user():
 # Renders a HTML page with a form to search for a specific user or many users.
 @app.route('/search_user', methods=['GET', 'POST'])
 def search_user():
-    if check_session():
-        form = SearchUser()
-        if form.validate_on_submit():
-            mc = user_client.UsersSqlClient()
+    try:
+        if check_session():
+            form = SearchUser()
+            if form.validate_on_submit():
+                mc = user_client.UsersSqlClient()
 
-            tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, None, None, None,
-                              form.city.data, None, None, None, None, None, None, None, None, None)
+                tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, None, None, None,
+                                  form.city.data, None, None, None, None, None, None, None, None, None)
 
-            users = mc.search_user(tmp_usr.dict())
+                users = mc.search_user(tmp_usr.dict())
 
+                return render_template('search_user.html',
+                                       title='Search User',
+                                       form=form,
+                                       hits=users)
             return render_template('search_user.html',
                                    title='Search User',
-                                   form=form,
-                                   hits=users)
-        return render_template('search_user.html',
-                               title='Search User',
-                               form=form)
-    else:
-        return redirect_not_logged_in()
+                                   form=form)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Searching for a user, please try again.')
+        return redirect('/')
 
 
 # Will bind the last tag to an user by a POST, when finished it will redirect to the "edit user" page.
@@ -566,51 +608,62 @@ def inactive_check():
 # Delets a debt from a user. Redirects to "user page"
 @app.route('/debt_delete/<debt_id>/<user_id>', methods=['POST'])
 def debt_delete(debt_id, user_id):
-    if check_session():
-        dcl = debt_client.DebtSqlClient()
-        dcl.remove_debt(debt_id)
-        flash('Debt was deleted!')
-        return redirect("/user_page/"+str(user_id))
-    else:
-        return redirect_not_logged_in()
+    try:
+        if check_session():
+            dcl = debt_client.DebtSqlClient()
+            dcl.remove_debt(debt_id)
+            flash('Debt was deleted!')
+            return redirect("/user_page/"+str(user_id))
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Deleting debt, please try again.')
+        return redirect('/')
 
 
 # Renders a HTML page with all users and their debts
 @app.route('/debts', methods=['GET'])
 def debt_check():
-    if check_session():
-        dcl = debt_client.DebtSqlClient()
-        debt_array = dcl.get_debt()
+    try:
+        if check_session():
+            dcl = debt_client.DebtSqlClient()
+            debt_array = dcl.get_debt()
 
-        return render_template('debt_check.html',
-                               title='Check',
-                               hits=debt_array)
-    else:
-        return redirect_not_logged_in()
+            return render_template('debt_check.html',
+                                   title='Check',
+                                   hits=debt_array)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Showing debt, please try again.')
+        return redirect('/')
 
 
 # Renders a HTML page with a new created debt
 @app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
 def debt_create(user_id):
-    if check_session():
-        cl = user_client.UsersSqlClient()
-        dcl = debt_client.DebtSqlClient()
-        user = cl.get_users(user_id)[0]
-        form = NewDebt()
+    try:
+        if check_session():
+            cl = user_client.UsersSqlClient()
+            dcl = debt_client.DebtSqlClient()
+            user = cl.get_users(user_id)[0]
+            form = NewDebt()
 
-        if form.validate_on_submit():
-            debt = sql_debt.SQLDebt(form.amount.data, user.id, form.product.data, None, None)
-            dcl.add_dept(debt.dict())
-            flash('Debt added for %s' % (user.firstname + " " + user.lastname))
-            return redirect("/user_page/" + user_id)
+            if form.validate_on_submit():
+                debt = sql_debt.SQLDebt(form.amount.data, user.id, form.product.data, None, None)
+                dcl.add_dept(debt.dict())
+                flash('Debt added for %s' % (user.firstname + " " + user.lastname))
+                return redirect("/user_page/" + user_id)
 
-        return render_template('debt_create.html',
-                               title='Debt Create',
-                               form=form,
-                               error=form.errors)
-    else:
-        return redirect_not_logged_in()
-
+            return render_template('debt_create.html',
+                                   title='Debt Create',
+                                   form=form,
+                                   error=form.errors)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Creating debt, please try again.')
+        return redirect('/')
 
 # Renders a HTML page with all the statistics
 @app.route('/statistics', methods=['GET'])
@@ -667,11 +720,15 @@ def statistics_by_date(_month, _day, _year):
 # Syncs the local database with customers from fortnox
 @app.route('/%s/%s/fortnox/' % (app_name, version), methods=['GET'])
 def fortnox_users():
-    if check_session():
-        sync_from_fortnox()
-        return redirect("/")
-    else:
-        return redirect_not_logged_in()
+    try:
+        if check_session():
+            sync_from_fortnox()
+            return redirect("/")
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Syncing from fortnox, please try again.')
+        return redirect('/')
 
 
 # Returns an array with recent tag events
@@ -705,28 +762,32 @@ def get_recent_events():
 # Renders a HTML page with a user and it debts
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
-    if check_session():
-        debts, tagevents = [], []
-        cl = user_client.UsersSqlClient()
-        dbl = debt_client.DebtSqlClient()
-        user = cl.get_users(user_index)[0]
+    try:
+        if check_session():
+            debts, tagevents = [], []
+            cl = user_client.UsersSqlClient()
+            dbl = debt_client.DebtSqlClient()
+            user = cl.get_users(user_index)[0]
 
-        if user is None:
-            return "No user Found"
+            if user is None:
+                return "No user Found"
+            else:
+                retdepts = dbl.get_debt(user.id)
+                if retdepts is not []:
+                    for debt in retdepts:
+                        js = debt.dict()
+                        debts.append(js)
+                #tagevents = get_tagevents_user_dict(user_index)
+                return render_template('user_page.html',
+                                       title='User Page',
+                                       data=user.dict(),
+                                       tags=tagevents,
+                                       debts=debts)
         else:
-            retdepts = dbl.get_debt(user.id)
-            if retdepts is not []:
-                for debt in retdepts:
-                    js = debt.dict()
-                    debts.append(js)
-            #tagevents = get_tagevents_user_dict(user_index)
-            return render_template('user_page.html',
-                                   title='User Page',
-                                   data=user.dict(),
-                                   tags=tagevents,
-                                   debts=debts)
-    else:
-        return redirect_not_logged_in()
+            return redirect_not_logged_in()
+    except:
+        flash('Error Showing a user page, please try again.')
+        return redirect('/')
 
 
 # TODO - WHAT SHOULD WE DO HERE
@@ -745,48 +806,51 @@ def clear_tagcounter():
 # Renders a HTML page to edit an user
 @app.route('/edit_user/<user_index>', methods=['GET', 'POST'])
 def edit_user(user_index=None):
-    if check_session():
-        cl = user_client.UsersSqlClient()
-        user = cl.get_users(user_index)[0]
+    try:
+        if check_session():
+            cl = user_client.UsersSqlClient()
+            user = cl.get_users(user_index)[0]
 
-        if user is None:
-            return "No user have this ID"
+            if user is None:
+                return "No user have this ID"
 
-        form = EditUser(obj=user)
-        tagevents = []
-        #tagevents = get_tagevents_user_dict(user_index)
-        if form.validate_on_submit():
-            user.firstname = form.firstname.data
-            user.lastname = form.lastname.data
-            user.email = form.email.data
-            user.phone = form.phone.data
-            user.address = form.address.data
-            user.address2 = form.address2.data
-            user.city = form.city.data
-            user.zip_code = form.zip_code.data
-            user.tag_id = form.tag_id.data
-            user.gender = form.gender.data
-            user.expiry_date = form.expiry_date.data
-            user.status = form.status.data
+            form = EditUser(obj=user)
+            tagevents = []
+            #tagevents = get_tagevents_user_dict(user_index)
+            if form.validate_on_submit():
+                user.firstname = form.firstname.data
+                user.lastname = form.lastname.data
+                user.email = form.email.data
+                user.phone = form.phone.data
+                user.address = form.address.data
+                user.address2 = form.address2.data
+                user.city = form.city.data
+                user.zip_code = form.zip_code.data
+                user.tag_id = form.tag_id.data
+                user.gender = form.gender.data
+                user.expiry_date = form.expiry_date.data
+                user.status = form.status.data
 
-            cl.update_user(user.dict())
-            # If we successfully edited the user, redirect back to userpage.
-            # fortnox_data = Fortnox()
-            # fortnox_data.update_customer(user)
-            return redirect("/user_page/"+str(user.id))
+                cl.update_user(user.dict())
+                # If we successfully edited the user, redirect back to userpage.
+                # fortnox_data = Fortnox()
+                # fortnox_data.update_customer(user)
+                return redirect("/user_page/"+str(user.id))
 
-        if user:
-            return render_template('edit_user.html',
-                                   title='Edit User',
-                                   form=form,
-                                   data=user.dict(),
-                                   tags=tagevents,
-                                   error=form.errors)
+            if user:
+                return render_template('edit_user.html',
+                                       title='Edit User',
+                                       form=form,
+                                       data=user.dict(),
+                                       tags=tagevents,
+                                       error=form.errors)
+            else:
+                return "she wrote upon it; no such number, no such zone"
         else:
-            return "she wrote upon it; no such number, no such zone"
-    else:
-        return redirect_not_logged_in()
-
+            return redirect_not_logged_in()
+    except:
+        flash('Error Editing a user, please try again.')
+        return redirect('/')
 
 # TODO - APIKEY HERE?
 @app.route('/%s/%s/link_user_to_tag/<user_index>/<tag_id>' % (app_name, version), methods=['POST'])
