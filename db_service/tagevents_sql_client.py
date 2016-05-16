@@ -1,16 +1,19 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
+from db_models import sql_tagevent as tagevent
 from datetime import datetime, timedelta
 from flask import session
 
 
 class TageventsSqlClient:
-    def __init__(self):
+    def __init__(self, username=''):
+        if session.get('username') is not None:
+            username = session['username']
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
-        self.dbUsername = 'uid=' + session['username'] + ';'
-        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + session['username']
+        self.dbUsername = 'uid=' + username + ';'
+        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + username
 
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
@@ -21,12 +24,18 @@ class TageventsSqlClient:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call GetDetailedTagevents('" + id + "','" + number_of_tagevents + "')}")
+            cursor.execute("{call GetDetailedTagevents('" + str(id) + "','" + str(number_of_tagevents) + "')}")
             value = cursor.fetchall()
 
             cursor.close()
             my_connection.close()
-            return value
+
+            return_array = []
+            for detailed_tagevent in value:
+                return_array.append(tagevent.SQLDetailedTagevent(detailed_tagevent[0], detailed_tagevent[1],
+                                                                 detailed_tagevent[2], detailed_tagevent[3]))
+
+            return return_array
 
         except pypyodbc.DatabaseError as error:
             print(error.value)

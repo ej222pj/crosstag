@@ -48,3 +48,25 @@ class RegisterLoginSqlClient:
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
+
+    def get_tenant_with_api_key(self, api_key):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call GetTenantWithApiKey('" + api_key + "')}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+
+            return_array = []
+            for username in value:
+                return_array.append({'username': username[0]})
+
+
+            return return_array
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)

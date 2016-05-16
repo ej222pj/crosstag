@@ -323,17 +323,21 @@ def get_events_from_user_by_tag_id(tag_id):
 
 # TODO - APIKEY HERE?!
 # Retrieves a tag and stores it in the database.
-@app.route('/%s/%s/tagevent/<tag_id>' % (app_name, version))
-def tagevent(tag_id):
-    cl = user_client.UsersSqlClient()
-    user = cl.search_user_on_tag(tag_id)
-    print(user)
-    tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user.id)
+@app.route('/%s/%s/tagevent/<tag_id>/<api_key>' % (app_name, version))
+def tagevent(tag_id, api_key):
+    cl = registration_client.RegisterLoginSqlClient()
+    username = cl.get_tenant_with_api_key(api_key)
 
-    cl = tag_client.TageventsSqlClient()
+    # Test api key: 2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B
+    cl = user_client.UsersSqlClient(username[0]['username'])
+    user = cl.search_user_on_tag(tag_id)
+
+    tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
+
+    cl = tag_client.TageventsSqlClient(username[0]['username'])
     cl.add_tagevents(tmp__detailed_tagevent.dict())
 
-    return "%s server tagged %s" % (tmp__detailed_tagevent.datetime.now(), tag_id)
+    return "%s server tagged %s" % (datetime.now(), tag_id)
 
 
 # Returns the last tag event
@@ -387,24 +391,14 @@ def get_user_data_tag_dict(tag_id):
 @app.route('/last_tagins', methods=['GET'])
 def last_tagins():
     if check_session():
-        #cl = tag_client.TageventsSqlClient()
-        #detailed_tagevents = cl.get_detailed_tagevents
-
-
         ret = []
-        events = DetailedTagevent.query.all()[-10:]
-        for hit in events:
+        cl = tag_client.TageventsSqlClient()
+        detailed_tagevents = cl.get_detailed_tagevents(0, 10)
+
+        for hit in detailed_tagevents:
             js = hit.dict()
-            tag = js['tag_id']
-            try:
-                user = get_user_data_tag_dict(tag)
-                js['user_index'] = user["index"]
-                js['user_name'] = user['name']
-            except:
-                js['user_index'] = None
-                js['user_name'] = "No user connected to this tag"
             ret.append(js)
-        ret.reverse()
+
         return render_template('last_tagevents.html',
                                title='Last Tagins',
                                hits=ret)

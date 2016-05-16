@@ -38,12 +38,12 @@ class CrosstagReader(object):
         while True:
             if ser.inWaiting() > 0:
                 data = ser.readline()
-                if len(data) < 12:
-                    continue
+
                 now = datetime.now()
                 ser.flushOutput()
-                data = data.strip()
-                tag_nbr = data[1:]
+                data_splited = data.split()
+                tag_nbr = data_splited[0]
+                api_key = data_splited[1]
                 if len(tag_nbr) != 12:
                     logging.error('%s reader ERROR [%s] is too long.",\
                                   " len(tag_nbr): %d' % (now, tag_nbr,
@@ -52,12 +52,12 @@ class CrosstagReader(object):
                     # audio signal and visual signal.
                     continue
                 try:
-                    print('%s reader tagging [%s]' % (now, tag_nbr))
-                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s" % (server, port, tag_nbr)]
+                    print('%s reader tagging [%s] [%s]' % (now, tag_nbr, api_key))
+                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key)]
 
                     unsent = (grequests.get(url) for url in urls)
                     res = grequests.map(unsent)
-                    res = grequests.get("http://%s:%d/crosstag/v1.0/tagevent/%s" % (server, port, tag_nbr), timeout=3)
+                    res = grequests.get("http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key), timeout=3)
 
                     now = datetime.now()
 
@@ -75,28 +75,30 @@ class CrosstagReader(object):
         while True:
             tag_nbr = '00000000'
             answer = input("Send a tag_event?: ")
-            if "e" in answer or "q" in answer:
+            answer_splitted = answer.split()
+            api_key = answer_splitted[1]
+            if "e" in answer_splitted[0] or "q" in answer_splitted[0]:
                 now = datetime.now()
                 logging.info("%s reader exiting due to user command" % (now))
                 sys.exit(0)
-            elif len(answer) == 8:
-                tag_nbr = answer
-            elif answer is "":
+            elif len(answer_splitted[0]) == 8:
+                tag_nbr = answer_splitted[0]
+            elif answer_splitted[0] is "":
                 tag_nbr = str(randint(10000000, 99999999))
-            elif int(answer) > 0 and int(answer) <= 9:
-                tag_nbr = ('%s' % answer) * 8
+            elif int(answer_splitted[0]) > 0 and int(answer_splitted[0]) <= 9:
+                tag_nbr = ('%s' % answer_splitted[0]) * 8
 
             now = datetime.now()
             print('%s reader tagging [%s]' % (now, tag_nbr))
 
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s" % (server, port, tag_nbr)]
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key)]
 
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
 
             now = datetime.now()
 
-            logging.info("%s reader tagging result: [%s]" % (now, tag_nbr))
+            logging.info("%s reader tagging result: [%s] [%s]" % (now, tag_nbr, api_key))
 
 
 if __name__ == '__main__':

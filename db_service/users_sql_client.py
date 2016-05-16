@@ -6,12 +6,14 @@ from datetime import datetime, timedelta
 
 
 class UsersSqlClient:
-    def __init__(self):
+    def __init__(self, username=''):
+        if session.get('username') is not None:
+            username = session['username']
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
-        self.dbUsername = 'uid=' + session['username'] + ';'
-        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + session['username']
+        self.dbUsername = 'uid=' + username + ';'
+        self.dbPassword = 'pwd=' + cfg.TENANT_PASSWORD + username
 
     def get_connection_string(self):
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
@@ -62,9 +64,8 @@ class UsersSqlClient:
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
-
             cursor.execute("{call SearchUserOnTag('" + tag_id + "')}")
-            value = cursor.fetchall()[0][0]
+            value = cursor.fetchall()
 
             cursor.close()
             my_connection.close()
