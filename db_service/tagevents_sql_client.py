@@ -54,7 +54,8 @@ class TageventsSqlClient:
             cursor = my_connection.cursor()
 
             cursor.execute("{call AddDetailedTagevents('" + detailed_tagevent['tag_id'] + "','" +
-                           detailed_tagevent['timestamp'] + "0" + "','" + detailed_tagevent['uid'] + "')}")
+                           detailed_tagevent['timestamp'] + "0" + "','" + str(detailed_tagevent['timestamp'])[11:-13]
+                           + "','" + detailed_tagevent['uid'] + "')}")
             cursor.commit()
             cursor.close()
             my_connection.close()

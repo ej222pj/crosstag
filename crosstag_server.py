@@ -11,7 +11,7 @@ from db_service import register_login_sql_client as registration_client
 from db_service import users_sql_client as user_client
 from db_service import debt_sql_client as debt_client
 from db_service import update_tenant_information_sql_client as update_tenant_client
-from db_service import detailed_tagevents_sql_client as detailed_tag_client
+from db_service import tagevents_sql_client as tag_client
 from db_models import debt
 from db_models import detailedtagevent
 from db_models import tagevent
@@ -330,7 +330,7 @@ def tagevent(tag_id):
     print(user)
     tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user.id)
 
-    cl = detailed_tag_client.DetailedTageventsSqlClient()
+    cl = tag_client.TageventsSqlClient()
     cl.add_tagevents(tmp__detailed_tagevent.dict())
 
     return "%s server tagged %s" % (tmp__detailed_tagevent.datetime.now(), tag_id)
@@ -387,6 +387,10 @@ def get_user_data_tag_dict(tag_id):
 @app.route('/last_tagins', methods=['GET'])
 def last_tagins():
     if check_session():
+        #cl = tag_client.TageventsSqlClient()
+        #detailed_tagevents = cl.get_detailed_tagevents
+
+
         ret = []
         events = DetailedTagevent.query.all()[-10:]
         for hit in events:
