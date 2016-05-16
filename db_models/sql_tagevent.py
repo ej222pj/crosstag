@@ -13,11 +13,13 @@ class SQLDetailedTagevent:
 
         self.id = id
         self.tag_id = tag_id
-        self.timestamp = datetime.now()
+        self.timestamp = timestamp
         self.uid = uid
 
         if self.id is None:
             self.id = 0
+        if self.timestamp is '':
+            self.timestamp = datetime.now()
 
     def dict(self):
         """

@@ -558,19 +558,30 @@ def search_user():
 # Will bind the last tag to an user by a POST, when finished it will redirect to the "edit user" page.
 @app.route('/%s/%s/link_user_to_last_tag/<user_id>' % (app_name, version), methods=['GET', 'POST'])
 def link_user_to_last_tag(user_id):
-    if check_session():
-        try:
-            tagevent = get_last_tag_event()
-            user = User.query.filter_by(index=user_id).first()
-            user.tag_id = tagevent.tag_id
-            db.session.commit()
-            return redirect("/edit_user/"+str(user.index))
-        except:
-            flash("No tagging has happened")
-            user = User.query.filter_by(index=user_id).first()
-            return redirect("/edit_user/"+str(user.index))
-    else:
-        return redirect_not_logged_in()
+    try:
+        if check_session():
+            try:
+                tc = tag_client.TageventsSqlClient()
+                tagevent = tc.get_detailed_tagevents(0, 1)[0]
+
+                cl = user_client.UsersSqlClient()
+                user = cl.get_users(user_id)[0]
+
+                if user is None:
+                    return "No user have this ID"
+
+                user.tag_id = tagevent.tag_id
+                cl.update_user(user.dict())
+
+                return redirect("/edit_user/"+str(user_id))
+            except:
+                flash("No tagging has happened")
+                return redirect("/edit_user/"+str(user_id))
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error linking user to last tag, please try again.')
+        return redirect('/')
 
 #TODO - APIKEY OR SESSION?
 # Returns an users tag.
@@ -580,18 +591,13 @@ def get_tag(user_index):
     return str(user.tag_id)
 
 
-#TODO - APIKEY OR SESSION?
 # Returns the 20 last tag events by a user.
 @app.route('/%s/%s/get_tagevents_user_dict/<user_index>' % (app_name, version), methods=['GET'])
 def get_tagevents_user_dict(user_index):
-    tag_id = get_tag(user_index)
-    events = DetailedTagevent.query.filter_by(tag_id=tag_id)[-20:]
-    ret = []
-    for hit in events:
-        js = hit.dict()
-        ret.append(js)
-    ret.reverse()
-    return ret
+    tc = tag_client.TageventsSqlClient()
+    tagevent = tc.get_detailed_tagevents(user_index, 20)
+
+    return tagevent
 
 
 # Renders a HTML page with all inactive members.
@@ -777,7 +783,7 @@ def user_page(user_index=None):
                     for debt in retdepts:
                         js = debt.dict()
                         debts.append(js)
-                #tagevents = get_tagevents_user_dict(user_index)
+                tagevents = get_tagevents_user_dict(user_index)
                 return render_template('user_page.html',
                                        title='User Page',
                                        data=user.dict(),

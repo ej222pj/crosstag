@@ -65,12 +65,12 @@
     <tbody>
         <thead>
             <tr>
-                <th>Index</th> <th>Timestamp</th><th>Tag-ID</th>
+                <th>ID</th> <th>Timestamp</th><th>Tag-ID</th>
             </tr>
         </thead>
                 {% for tag in tags %}
                 <tr>
-                    <td>{{tag.index}}</td> <td>{{tag.timestamp}}</td> <td>{{tag.tag_id}}</td>
+                    <td>{{tag.id}}</td> <td>{{tag.timestamp}}</td> <td>{{tag.tag_id}}</td>
                 </tr>
                 {% endfor %}
     </tbody>
