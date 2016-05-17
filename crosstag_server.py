@@ -711,8 +711,12 @@ def statistics_by_date(_month, _day, _year):
     if check_session():
         chosen_date_array = {'year': _year, 'month': _month, 'day': _day}
         gs = GenerateStats()
-        users = User.query.all()
-        event = Tagevent
+
+        ucl = user_client.UsersSqlClient()
+        tcl = tag_client.TageventsSqlClient()
+        users = ucl.get_users()
+        tagevents = tcl.get_statistic_tagevents()
+        
         default_date = datetime.now()
         selected_date = default_date.replace(day=int(_day), month=int(_month), year=int(_year))
         week_day_name = selected_date.strftime('%A')
@@ -720,7 +724,7 @@ def statistics_by_date(_month, _day, _year):
         custom_date_day = {'weekday': week_day_name + ' ' + str(selected_date.day) + '/' + str(selected_date.month) + '/' + str(selected_date.year)}
         custom_date_month = {'month': month_name + ' ' + str(selected_date.year)}
         # Send the data to a method who returns an multi dimensional array with statistics.
-        ret = gs.get_data(users, event, chosen_date_array)
+        ret = gs.get_data(users, tagevents, chosen_date_array)
         return render_template('statistics.html',
                                plot_paths='',
                                data=ret,
