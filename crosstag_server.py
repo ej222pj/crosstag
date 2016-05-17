@@ -379,25 +379,23 @@ def all_users(filter=None):
     try:
         if check_session():
             ret, users = [], []
-            counter = 0
 
             cl = user_client.UsersSqlClient()
             users = cl.get_users(0)
 
             # List users depending on the membership
-            if filter is not 'all':
+            if filter != 'all':
                 users = [x for x in users if x.status == filter.title()]
 
             users = sorted(users, key=lambda user: user.firstname)
             for hit in users:
-                counter += 1
                 js = hit.dict()
                 ret.append(js)
             return render_template('all_users.html',
                                    title='All Users',
                                    hits=ret,
                                    filter=filter,
-                                   count=counter)
+                                   count=len(users))
         else:
             return redirect_not_logged_in()
     except:
@@ -672,17 +670,20 @@ def statistics():
         default_date = datetime.now()
         default_date_array = {'year': str(default_date.year), 'month': str(default_date.strftime('%m')), 'day':str(default_date.strftime('%d'))}
         gs = GenerateStats()
-        # Chosenyear, chosenmonth, chosenday
-        # Fetch the data from the database.
-        users = User.query.all()
-        event = Tagevent
+
+        # users = User.query.all()
+        # event = Tagevent
+        ucl = user_client.UsersSqlClient()
+        tcl = tag_client.TageventsSqlClient()
+        users = ucl.get_users()
+        tagevents = tcl.get_statistic_tagevents()
         week_day_name = default_date.strftime('%A')
         month_name = default_date.strftime('%B')
         custom_date_day = {'weekday': week_day_name + ' ' + str(default_date.day) + '/' + str(default_date.month) + '/' +
                            str(default_date.year)}
         custom_date_month = {'month': month_name + ' ' + str(default_date.year)}
         # Send the data to a method who returns an multi dimensional array with statistics.
-        ret = gs.get_data(users, event, default_date_array)
+        ret = gs.get_data(users, tagevents, default_date_array)
         return render_template('statistics.html',
                                plot_paths='',
                                data=ret,

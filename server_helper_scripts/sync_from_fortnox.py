@@ -22,7 +22,6 @@ def sync_from_fortnox():
         for element in customers:
             for customer in element:
                 name = customer['Name'].split()
-                print(customer['Address2'])
                 if len(name) < 2:
                     name.append('')
                 cust = sql_user.SQLUser(None, customer['CustomerNumber'],

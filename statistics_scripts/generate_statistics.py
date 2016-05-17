@@ -100,17 +100,19 @@ class GenerateStats:
         :return: Array with all tagevents from every month
         """
         year_arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-        current_year = chosen_date_array['year']
-
-        timestamps = event.query.filter(event.timestamp.contains(current_year))
+        timestamps = [x for x in event if chosen_date_array['year'] in x.timestamp]
 
         for timestamp in timestamps:
             for x in range(1, 13):
-                if x == timestamp.timestamp.month:
+                if x < 10:
+                    y = chosen_date_array['year'] + '-0' + str(x)
+                else:
+                    y = chosen_date_array['year'] + '-' + str(x)
+
+                if y == timestamp.timestamp[:7]:
                     year_arr[x-1] += timestamp.amount
 
-        year_arr.append(int(current_year))
+        year_arr.append(int(chosen_date_array['year']))
         return year_arr
 
     def get_tagins_by_day(self, event, chosen_date_array):
@@ -123,23 +125,21 @@ class GenerateStats:
         :type chosen_date_array: Array with dates
         :return: Array with all tagevents on every day from a specific month and year
         """
-
-        current_year = chosen_date_array['year']
-        current_month = chosen_date_array['month']
-
-        date_query = current_year + '-' + current_month
-
-        useless_tuple = monthrange(int(current_year), int(current_month))
-
+        date_query = chosen_date_array['year'] + '-' + chosen_date_array['month']
+        useless_tuple = monthrange(int(chosen_date_array['year']), int(chosen_date_array['month']))
         days_in_month = useless_tuple[1]
-
         day_arr = [0]*days_in_month
 
-        timestamps = event.query.filter(event.timestamp.contains(date_query))
-
+        # timestamps = event.query.filter(event.timestamp.contains(date_query))
+        timestamps = [x for x in event if date_query in x.timestamp]
         for timestamp in timestamps:
             for x in range(1, days_in_month+1):
-                if x == timestamp.timestamp.day:
+                if x < 10:
+                    y = date_query + '-0' + str(x)
+                else:
+                    y = date_query + '-' +str(x)
+
+                if y == timestamp.timestamp[:10]:
                     day_arr[x-1] += timestamp.amount
 
         return day_arr
@@ -154,15 +154,7 @@ class GenerateStats:
         :type chosen_date_array: Array with dates
         :return: Array with all tagevents on every hour from a specific day
         """
-
-        current_year = chosen_date_array['year']
-        current_month = chosen_date_array['month']
-        current_day = chosen_date_array['day']
-
-        date_query = current_year + '-' + current_month + '-' + current_day
-
-        print(date_query)
-
+        date_query = chosen_date_array['year'] + '-' + chosen_date_array['month'] + '-' + chosen_date_array['day']
         timestamps = event.query.filter(event.timestamp.contains(date_query))
 
         hour_arr = [0]*24

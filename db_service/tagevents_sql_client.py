@@ -1,6 +1,7 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
 from db_models import sql_tagevent as tagevent
+from db_models import sql_statistic_tagevent as statistic_tagevent
 from datetime import datetime, timedelta
 from flask import session
 
@@ -46,12 +47,19 @@ class TageventsSqlClient:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
 
-            cursor.execute("{call GetStatisticTagevents('" + id + "')}")
+            cursor.execute("{call GetStatisticTagevents('" + str(id) + "')}")
             value = cursor.fetchall()
 
             cursor.close()
             my_connection.close()
-            return value
+
+            return_array = []
+            for statistics_tagevent in value:
+                return_array.append(statistic_tagevent.SQLStatisticTagevent(statistics_tagevent[0],
+                                                                            statistics_tagevent[1][:-8],
+                                                                            statistics_tagevent[2],
+                                                                            statistics_tagevent[3]))
+            return return_array
 
         except pypyodbc.DatabaseError as error:
             print(error.value)
