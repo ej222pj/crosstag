@@ -64,7 +64,7 @@ Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_
                     <td>{{hit.email}}</td>
                     <td>{{hit.expiry_date}}</td>
                     <td>
-                        {% if hit.tag_id == "None" or hit.tag_id == ""  or not hit.tag_id %}
+                        {% if hit.tag_id == "None" or hit.tag_id == ""  or not hit.tag_id or hit.tag_id == " " %}
                             <p style="color:red">No</p>
                         {% else %}
                             <p style="color:green">Yes</p>
