@@ -155,8 +155,8 @@ class GenerateStats:
         :return: Array with all tagevents on every hour from a specific day
         """
         date_query = chosen_date_array['year'] + '-' + chosen_date_array['month'] + '-' + chosen_date_array['day']
-        timestamps = event.query.filter(event.timestamp.contains(date_query))
-
+        # timestamps = event.query.filter(event.timestamp.contains(date_query))
+        timestamps = [x for x in event if date_query in x.timestamp]
         hour_arr = [0]*24
 
         for timestamp in timestamps:
