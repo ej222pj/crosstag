@@ -40,6 +40,28 @@ class UsersSqlClient:
         except pypyodbc.DatabaseError as error:
             print(error.value)
 
+    def get_inactive_users(self):
+        connection_string = self.get_connection_string()
+        try:
+            my_connection = pypyodbc.connect(connection_string)
+            cursor = my_connection.cursor()
+
+            cursor.execute("{call GetInactiveUsers()}")
+            value = cursor.fetchall()
+
+            cursor.close()
+            my_connection.close()
+            return_array = []
+            for users in value:
+                return_array.append(user.SQLUser(users[0], users[1], users[2], users[3], users[4], users[5], users[6],
+                                                 users[7], users[8], users[9], users[10], users[11], users[12],
+                                                 users[13][:-12], users[14][:-12], users[15], users[16],
+                                                 users[17][:-6]))
+            return return_array
+
+        except pypyodbc.DatabaseError as error:
+            print(error.value)
+
     def does_user_exist(self, fortnox_id):
         connection_string = self.get_connection_string()
         try:

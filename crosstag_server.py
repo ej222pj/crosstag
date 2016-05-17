@@ -601,13 +601,21 @@ def get_tagevents_user_dict(user_index):
 # Renders a HTML page with all inactive members.
 @app.route('/inactive_check', methods=['GET'])
 def inactive_check():
-    if check_session():
-        return render_template('inactive_check.html',
-                               title='Check',
-                               hits=get_inactive_members())
-    else:
-        return redirect_not_logged_in()
+    try:
+        if check_session():
+            ret = []
+            mc = user_client.UsersSqlClient()
+            users = mc.get_inactive_users()
 
+
+            return render_template('inactive_check.html',
+                                   title='Inactive Members',
+                                   hits=users)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error Showing Inctive Users, please try again.')
+        return redirect('/')
 
 # Delets a debt from a user. Redirects to "user page"
 @app.route('/debt_delete/<debt_id>/<user_id>', methods=['POST'])
@@ -677,8 +685,6 @@ def statistics():
         default_date_array = {'year': str(default_date.year), 'month': str(default_date.strftime('%m')), 'day':str(default_date.strftime('%d'))}
         gs = GenerateStats()
 
-        # users = User.query.all()
-        # event = Tagevent
         ucl = user_client.UsersSqlClient()
         tcl = tag_client.TageventsSqlClient()
         users = ucl.get_users()
