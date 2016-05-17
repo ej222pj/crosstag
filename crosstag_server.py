@@ -241,8 +241,8 @@ def fortnox_information():
 
 
 # Retrieves a tag and stores it in the database.
-@app.route('/%s/%s/tagevent/<tag_id>/<api_key>' % (app_name, version))
-def tagevent(tag_id, api_key):
+@app.route('/%s/%s/tagevent/<tag_id>/<api_key>/<timestamp>' % (app_name, version))
+def tagevent(tag_id, api_key, timestamp):
     cl = registration_client.RegisterLoginSqlClient()
     username = cl.get_tenant_with_api_key(api_key)
     if username[0]['username'] is not None:
@@ -250,7 +250,8 @@ def tagevent(tag_id, api_key):
             cl = user_client.UsersSqlClient(username[0]['username'])
             user = cl.search_user_on_tag(tag_id)
 
-            tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
+            timestamp = timestamp.replace('%', ' ')
+            tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, timestamp, user[0][0])
 
             cl = tag_client.TageventsSqlClient(username[0]['username'])
             cl.add_tagevents(tmp__detailed_tagevent.dict())

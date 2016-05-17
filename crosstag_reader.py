@@ -14,7 +14,8 @@ import time
 from random import randint
 
 API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
-SERVER = 'crosstag-aef3e521.74c00c5a.svc.dockerapp.io'
+# SERVER = 'crosstag-aef3e521.74c00c5a.svc.dockerapp.io'
+SERVER = 'localhost'
 PORT = 80
 
 # TODO: 2014-11-29 lujo: Refactor this. All of it. Just get to it.
@@ -92,7 +93,7 @@ class CrosstagReader(object):
             now = datetime.now()
             print('%s reader tagging [%s]' % (now, tag_nbr))
 
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY)]
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY, str(now))]
 
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
