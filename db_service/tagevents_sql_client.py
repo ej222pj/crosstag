@@ -34,7 +34,7 @@ class TageventsSqlClient:
             return_array = []
             for detailed_tagevent in value:
                 return_array.append(tagevent.SQLDetailedTagevent(detailed_tagevent[0], detailed_tagevent[1],
-                                                                 detailed_tagevent[2], detailed_tagevent[3]))
+                                                                 detailed_tagevent[2][:-8], detailed_tagevent[3]))
 
             return return_array
 
