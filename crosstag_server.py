@@ -6,16 +6,12 @@ from datetime import datetime, timedelta
 from optparse import OptionParser
 import config as cfg
 from flask import request
-from crosstag_init import app, db, jsonify, render_template, flash, redirect, Response, session
+from crosstag_init import app, jsonify, render_template, flash, redirect, Response, session
 from db_service import register_login_sql_client as registration_client
 from db_service import users_sql_client as user_client
 from db_service import debt_sql_client as debt_client
 from db_service import update_tenant_information_sql_client as update_tenant_client
 from db_service import tagevents_sql_client as tag_client
-from db_models import debt
-from db_models import detailedtagevent
-from db_models import tagevent
-from db_models import user
 from db_models import sql_user
 from db_models import sql_debt
 from db_models import sql_tagevent
@@ -30,17 +26,11 @@ from forms.edit_tenant import EditTenant
 from forms.edit_general_information import EditGeneralInformation
 from forms.edit_fortnox_information import EditFortnoxInformation
 from fortnox.fortnox import Fortnox
-from server_helper_scripts.get_inactive_members import get_inactive_members
-from server_helper_scripts.get_last_tag_event import get_last_tag_event
 from server_helper_scripts.sync_from_fortnox import sync_from_fortnox
 from statistics_scripts.generate_statistics import GenerateStats
 
-User = user.User
 Sqluser = sql_user.SQLUser
 Sql_detailed_tag = sql_tagevent.SQLDetailedTagevent
-Tagevent = tagevent.Tagevent
-Debt = debt.Debt
-DetailedTagevent = detailedtagevent.DetailedTagevent
 
 app.config.from_pyfile('config.py')
 app_name = 'crosstag'
@@ -257,7 +247,7 @@ def stream():
     def up_stream():
         while True:
             global last_tag_events
-            tag = get_last_tag_event()
+            #tag = get_last_tag_event() - NYTT SÄTT FINNS!!!
             user = None
             if last_tag_events is None or last_tag_events != tag.index:
                 last_tag_events = tag.index
@@ -346,22 +336,23 @@ def get_events_from_user_by_tag_id(tag_id):
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>' % (app_name, version))
 def tagevent(tag_id, api_key):
-    try:
-        cl = registration_client.RegisterLoginSqlClient()
-        username = cl.get_tenant_with_api_key(api_key)
+    cl = registration_client.RegisterLoginSqlClient()
+    username = cl.get_tenant_with_api_key(api_key)
+    if username[0]['username'] is not None:
+        try:
+            cl = user_client.UsersSqlClient(username[0]['username'])
+            user = cl.search_user_on_tag(tag_id)
 
-        # Test api key: 2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B
-        cl = user_client.UsersSqlClient(username[0]['username'])
-        user = cl.search_user_on_tag(tag_id)
+            tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
 
-        tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, None, user[0][0])
+            cl = tag_client.TageventsSqlClient(username[0]['username'])
+            cl.add_tagevents(tmp__detailed_tagevent.dict())
 
-        cl = tag_client.TageventsSqlClient(username[0]['username'])
-        cl.add_tagevents(tmp__detailed_tagevent.dict())
-
-        return "%s server tagged %s" % (datetime.now(), tag_id)
-    except:
-        return "Can't create a tag with that Tag ID or Api Key"
+            return "%s server tagged %s" % (datetime.now(), tag_id)
+        except:
+            return "Can't create a tag with that Tag ID or Api Key"
+    else:
+        return "Wrong API-Key"
 
 
 # Returns the last tag event
@@ -467,14 +458,6 @@ def add_new_user():
                 mc.add_user(tmp_usr.dict())
 
                 flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
-                # tagevent = get_last_tag_event()
-                #fortnox_data = Fortnox()
-                #fortnox_data.insert_customer(tmp_usr)
-                msg = None
-                # if tagevent is None:
-                    # msg = None
-                # else:
-                    # msg = (tmp_usr.index, tagevent.tag_id)
                 form = NewUser()
                 return render_template('new_user.html',
                                        title='New User',
@@ -716,7 +699,7 @@ def statistics_by_date(_month, _day, _year):
         tcl = tag_client.TageventsSqlClient()
         users = ucl.get_users()
         tagevents = tcl.get_statistic_tagevents()
-        
+
         default_date = datetime.now()
         selected_date = default_date.replace(day=int(_day), month=int(_month), year=int(_year))
         week_day_name = selected_date.strftime('%A')
@@ -869,13 +852,6 @@ def edit_user(user_index=None):
         flash('Error Editing a user, please try again.')
         return redirect('/')
 
-# TODO - APIKEY HERE?
-@app.route('/%s/%s/link_user_to_tag/<user_index>/<tag_id>' % (app_name, version), methods=['POST'])
-def link_user_to_tag(user_index, tag_id):
-    user = User.query.filter_by(index=user_index).first()
-    user.tag = tag_id
-    db.session.commit()
-    return "OK"
 
 if __name__ == '__main__':
     parser = OptionParser(usage="usage: %prog [options] arg \nTry this: " +
@@ -885,7 +861,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     # config['database_file'] = options.database
     # config['secret_key'] = options.secret
-    db.create_all()
+    #db.create_all()
     # if options.debug:
     app.logger.propagate = False
     app.run(host='0.0.0.0', port=app.config["PORT"], debug=True)

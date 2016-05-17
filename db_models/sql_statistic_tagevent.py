@@ -1,7 +1,4 @@
 from datetime import datetime
-from crosstag_init import db
-from db_models.user import User
-
 
 class SQLStatisticTagevent:
     """

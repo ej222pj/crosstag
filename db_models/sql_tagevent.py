@@ -18,7 +18,7 @@ class SQLDetailedTagevent:
 
         if self.id is None:
             self.id = 0
-        if self.timestamp is '':
+        if self.timestamp is None:
             self.timestamp = datetime.now()
 
     def dict(self):

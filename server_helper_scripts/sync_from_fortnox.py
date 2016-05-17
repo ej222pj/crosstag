@@ -1,7 +1,4 @@
 from crosstag_init import flash
-from server_helper_scripts.update_user_in_local_db_from_fortnox import update_user_in_local_db_from_fortnox
-from server_helper_scripts.add_user_to_local_db_from_fortnox import add_user_to_local_db_from_fortnox
-from db_models.user import User
 from db_models import sql_user
 from fortnox.fortnox import Fortnox
 from db_service import users_sql_client as client

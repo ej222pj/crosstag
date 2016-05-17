@@ -13,6 +13,9 @@ import grequests
 import time
 from random import randint
 
+API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
+SERVER = 'crosstag-aef3e521.74c00c5a.svc.dockerapp.io'
+PORT = 80
 
 # TODO: 2014-11-29 lujo: Refactor this. All of it. Just get to it.
 class CrosstagReader(object):
@@ -53,7 +56,7 @@ class CrosstagReader(object):
                     continue
                 try:
                     print('%s reader tagging [%s] [%s]' % (now, tag_nbr, api_key))
-                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key)]
+                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY)]
 
                     unsent = (grequests.get(url) for url in urls)
                     res = grequests.map(unsent)
@@ -75,30 +78,27 @@ class CrosstagReader(object):
         while True:
             tag_nbr = '00000000'
             answer = input("Send a tag_event?: ")
-            answer_splitted = answer.split()
-            api_key = answer_splitted[1]
-            if "e" in answer_splitted[0] or "q" in answer_splitted[0]:
+            if "e" in answer or "q" in answer:
                 now = datetime.now()
                 logging.info("%s reader exiting due to user command" % (now))
                 sys.exit(0)
-            elif len(answer_splitted[0]) == 8:
-                tag_nbr = answer_splitted[0]
-            elif answer_splitted[0] is "":
+            elif len(answer) == 8:
+                tag_nbr = answer
+            elif answer is "":
                 tag_nbr = str(randint(10000000, 99999999))
-            elif int(answer_splitted[0]) > 0 and int(answer_splitted[0]) <= 9:
-                tag_nbr = ('%s' % answer_splitted[0]) * 8
+            elif int(answer) > 0 and int(answer) <= 9:
+                tag_nbr = ('%s' % answer) * 8
 
             now = datetime.now()
             print('%s reader tagging [%s]' % (now, tag_nbr))
 
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key)]
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY)]
 
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
-
             now = datetime.now()
 
-            logging.info("%s reader tagging result: [%s] [%s]" % (now, tag_nbr, api_key))
+            logging.info("%s reader tagging result: [%s] [%s]" % (now, tag_nbr, API_KEY))
 
 
 if __name__ == '__main__':
