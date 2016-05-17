@@ -238,101 +238,8 @@ def fortnox_information():
         return redirect('/')
 
 
-# TODO - APIKEY HERE?!
-# This function will be called by the javascript on the static_tagin_page
-# The function will look for the last tag event and if there is a new tag event,
-# it will get the user with the tag and the users all tagevents and send it to the page.
-@app.route('/stream')
-def stream():
-    def up_stream():
-        while True:
-            global last_tag_events
-            #tag = get_last_tag_event() - NYTT SÄTT FINNS!!!
-            user = None
-            if last_tag_events is None or last_tag_events != tag.index:
-                last_tag_events = tag.index
-
-                try:
-                    user = User.query.filter_by(tag_id=tag.tag_id).filter(User.status != "Inactive").first().dict()
-                except:
-                    user = None
-
-                if user is not None:
-                    date_handler = lambda user: (
-                    user.isoformat()
-                    if isinstance(user, datetime)
-                    or isinstance(user, date)
-                    else None
-                    )
-                    return 'data: %s\n\n' % json.dumps(user, default=date_handler)
-
-                if user is not None:
-                    date_handler = lambda user: (
-                    user.isoformat()
-                    if isinstance(user, datetime)
-                    or isinstance(user, date)
-                    else None
-                    )
-                    return 'data: %s\n\n' % json.dumps(user, default=date_handler)
-
-            return 'data: %s\n\n' % user
-
-    return Response(up_stream(), mimetype='text/event-stream')
 
 
-# TODO - APIKEY HERE?!
-# Renders a static page for the tagin view. Shows the person who tags in.
-@app.route('/%s/%s/static_tagin_page' % (app_name, version))
-def static_tagin_page():
-    return render_template('static_tagin.html',
-                           title='Static tagins')
-
-
-# TODO - APIKEY HERE?!
-# Is called by the static page, it will send back an array with the top 5 of..
-# those who exercise the most. if there is not five people it will return an empty array.
-@app.route('/%s/%s/static_top_five' % (app_name, version))
-def static_top_five():
-    try:
-        users = User.query.filter(User.status != 'Inactive').filter(User.tag_id is not None).filter(User.tag_id != '')\
-            .order_by(User.tagcounter.desc()).limit(5)
-        arr = []
-        if users is not None:
-            for user in users:
-                person_obj = {'name': user.name, 'amount': user.tagcounter}
-                arr.append(person_obj)
-
-        return jsonify({'json_arr': [arr[0], arr[1], arr[2], arr[3], arr[4]]})
-    except:
-        return jsonify({'json_arr': None})
-
-
-# TODO - APIKEY HERE?!
-# Gets all tags last month, just one event per day.
-@app.route('/%s/%s/get_events_from_user_by_tag_id/<tag_id>' % (app_name, version), methods=['GET'])
-def get_events_from_user_by_tag_id(tag_id):
-    try:
-        gs = GenerateStats()
-        current_year = gs.get_current_year_string()
-        counter = 0
-        now = datetime.now()
-
-        users_tagins = Tagevent.query.filter(Tagevent.tag_id.contains(tag_id)).\
-            filter(Tagevent.timestamp.contains(current_year)).filter(Tagevent.uid != '').filter(Tagevent.uid is not None)
-
-        for tag_event in users_tagins:
-            for days in range(1, 32):
-                if tag_event.timestamp.month == now.month:
-                    if tag_event.timestamp.day == days:
-                        counter += 1
-                        break
-
-        return {"value": counter}
-    except:
-        return {"value": 0}
-
-
-# TODO - APIKEY HERE?!
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>' % (app_name, version))
 def tagevent(tag_id, api_key):
@@ -353,15 +260,6 @@ def tagevent(tag_id, api_key):
             return "Can't create a tag with that Tag ID or Api Key"
     else:
         return "Wrong API-Key"
-
-
-# Returns the last tag event
-@app.route('/%s/%s/last_tagin' % (app_name, version), methods=['GET'])
-def last_tagin():
-    try:
-        return Tagevent.query.all()[-1].json()
-    except:
-        return jsonify({})
 
 
 # Renders a HTML page with filter on membership
@@ -392,16 +290,6 @@ def all_users(filter=None):
     except:
         flash('Error Showing all users, please try again.')
         return redirect('/')
-
-
-# Returns a user based on tag_id, in form of a dictionary
-@app.route('/%s/%s/get_user_data_tag_dict/<tag_id>' % (app_name, version), methods=['GET'])
-def get_user_data_tag_dict(tag_id):
-    if check_session():
-        user = User.query.filter_by(tag_id=tag_id).first()
-        return user.dict()
-    else:
-        return redirect_not_logged_in()
 
 
 # Renders a HTML page with the last 10 tag events
@@ -472,41 +360,6 @@ def add_new_user():
         flash('Error Creating a new user, please try again.')
         return redirect('/')
 
-# TODO - SHALL IT EXIST OR NOT?!
-# Renders a HTML page which has the same function as the crosstag_reader dummy function.
-@app.route('/tagin_user', methods=['GET', 'POST'])
-def tagin_user():
-    if check_session():
-        form = NewTag(csrf_enabled=False)
-        now = datetime.now()
-        currenthour = now.hour
-        nowtostring = str(now)
-        timestampquery = nowtostring[:10]
-        print(str(form.validate_on_submit()))
-        print("errors", form.errors)
-        if form.validate_on_submit():
-            tmp_tag = Tagevent.query.filter(Tagevent.timestamp.contains(timestampquery)).filter(Tagevent.clockstamp.contains(currenthour)).first()
-            user = User.query.filter(User.tag_id == form.tag_id.data).first()
-            detailedtag = DetailedTagevent(form.tag_id.data)
-            db.session.add(detailedtag)
-            if user is not None:
-                user.tagcounter += 1
-                user.last_tag_timestamp = now
-                if tmp_tag is None or tmp_tag == None:
-                    tmp_tag = Tagevent()
-                    tmp_tag.amount = 1
-                    db.session.add(tmp_tag)
-                else:
-                    tmp_tag.amount += 1
-            db.session.commit()
-            flash('New tag created')
-            return render_template('tagin_user.html',
-                                   title='New tag',
-                                   form=form)
-        return render_template('tagin_user.html', title='New tag', form=form)
-    else:
-        return redirect_not_logged_in()
-
 
 # Renders a HTML page with a form to search for a specific user or many users.
 @app.route('/search_user', methods=['GET', 'POST'])
@@ -563,13 +416,6 @@ def link_user_to_last_tag(user_id):
     except:
         flash('Error linking user to last tag, please try again.')
         return redirect('/')
-
-#TODO - APIKEY OR SESSION?
-# Returns an users tag.
-@app.route('/%s/%s/get_tag/<user_index>' % (app_name, version), methods=['GET'])
-def get_tag(user_index):
-    user = User.query.filter_by(index=user_index).first()
-    return str(user.tag_id)
 
 
 # Returns the 20 last tag events by a user.
@@ -731,34 +577,6 @@ def fortnox_users():
         return redirect('/')
 
 
-# Returns an array with recent tag events
-# TODO - EITHER SESSION OR API KEY
-@app.route('/getrecentevents', methods=['GET'])
-def get_recent_events():
-    three_months_ago = datetime.now() - timedelta(weeks=8)
-    tags = Tagevent.query.filter(Tagevent.timestamp > three_months_ago).all()
-    tags_json = {}
-
-    for tag in tags:
-        current = str(tag.timestamp.date())
-        if current in tags_json:
-            tags_json[current] += 1
-        else:
-            tags_json[current] = 1
-
-    # add zeroes to all the unvisited days
-    tmp_date = three_months_ago.date()
-    while tmp_date < datetime.now().date():
-        if str(tmp_date) in tags_json:
-            pass
-        else:
-            tags_json[str(tmp_date)] = 0
-        tmp_date = tmp_date + timedelta(days=1)
-
-    res = [{'datestamp': x, 'count': y} for x, y in tags_json.iteritems()]
-    return json.dumps(res)
-
-
 # Renders a HTML page with a user and it debts
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
@@ -788,19 +606,6 @@ def user_page(user_index=None):
     except:
         flash('Error Showing a user page, please try again.')
         return redirect('/')
-
-
-# TODO - WHAT SHOULD WE DO HERE
-@app.route('/%s/%s/clear_tagcounter/' % (app_name, version), methods=['GET'])
-def clear_tagcounter():
-    users = User.query.filter(User.tagcounter > 0)
-    if users is None:
-            print("she wrote upon it; no such number, no such zone")
-    for user in users:
-        user.tagcounter = 0
-
-    db.session.commit()
-    return redirect('/')
 
 
 # Renders a HTML page to edit an user
@@ -852,6 +657,88 @@ def edit_user(user_index=None):
         flash('Error Editing a user, please try again.')
         return redirect('/')
 
+'''
+# TODO - APIKEY HERE?!
+# This function will be called by the javascript on the static_tagin_page
+# The function will look for the last tag event and if there is a new tag event,
+# it will get the user with the tag and the users all tagevents and send it to the page.
+@app.route('/stream')
+def stream():
+    def up_stream():
+        while True:
+            global last_tag_events
+            # tag = get_last_tag_event() - NYTT SÄTT FINNS!!!
+            user = None
+            if last_tag_events is None or last_tag_events != tag.index:
+                last_tag_events = tag.index
+
+                try:
+                    user = User.query.filter_by(tag_id=tag.tag_id).filter(
+                        User.status != "Inactive").first().dict()
+                except:
+                    user = None
+
+                if user is not None:
+                    date_handler = lambda user: (
+                        user.isoformat()
+                        if isinstance(user, datetime)
+                           or isinstance(user, date)
+                        else None
+                    )
+                    return 'data: %s\n\n' % json.dumps(user, default=date_handler)
+
+                if user is not None:
+                    date_handler = lambda user: (
+                        user.isoformat()
+                        if isinstance(user, datetime)
+                           or isinstance(user, date)
+                        else None
+                    )
+                    return 'data: %s\n\n' % json.dumps(user, default=date_handler)
+
+            return 'data: %s\n\n' % user
+
+    return Response(up_stream(), mimetype='text/event-stream')
+
+# TODO - APIKEY HERE?!
+# Renders a static page for the tagin view. Shows the person who tags in.
+@app.route('/%s/%s/static_tagin_page' % (app_name, version))
+def static_tagin_page():
+    return render_template('static_tagin.html',
+                           title='Static tagins')
+
+# TODO - APIKEY HERE?!
+# Is called by the static page, it will send back an array with the top 5 of..
+# those who exercise the most. if there is not five people it will return an empty array.
+@app.route('/%s/%s/static_top_five' % (app_name, version))
+def static_top_five():
+    try:
+        users = User.query.filter(User.status != 'Inactive').filter(User.tag_id is not None).filter(
+            User.tag_id != '') \
+            .order_by(User.tagcounter.desc()).limit(5)
+        arr = []
+        if users is not None:
+            for user in users:
+                person_obj = {'name': user.name, 'amount': user.tagcounter}
+                arr.append(person_obj)
+
+        return jsonify({'json_arr': [arr[0], arr[1], arr[2], arr[3], arr[4]]})
+    except:
+        return jsonify({'json_arr': None})
+
+
+# TODO - WHAT SHOULD WE DO HERE
+@app.route('/%s/%s/clear_tagcounter/' % (app_name, version), methods=['GET'])
+def clear_tagcounter():
+    users = User.query.filter(User.tagcounter > 0)
+    if users is None:
+        print("she wrote upon it; no such number, no such zone")
+    for user in users:
+        user.tagcounter = 0
+
+    db.session.commit()
+    return redirect('/')
+'''
 
 if __name__ == '__main__':
     parser = OptionParser(usage="usage: %prog [options] arg \nTry this: " +
