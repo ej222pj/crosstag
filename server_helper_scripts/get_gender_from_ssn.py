@@ -7,7 +7,7 @@ def get_gender_from_ssn(customer):
     :return: A string of the gender. Female, Male or Unknown
     """
     ssn_gender_number = customer['OrganisationNumber'][-2:]
-
+    # If the last didget is even, it's a female. If its uneven it's a male.
     try:
         gender_number = int(ssn_gender_number[:1])
         if gender_number % 2 == 0:

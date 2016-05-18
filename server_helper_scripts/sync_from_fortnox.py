@@ -16,9 +16,12 @@ def sync_from_fortnox():
         ret = []
         for element in customers:
             for customer in element:
+                # Split firstname and lastname
                 name = customer['Name'].split()
+                # If the user only got a firstname, add blank to the lastname
                 if len(name) < 2:
                     name.append('')
+
                 cust = sql_user.SQLUser(None, customer['CustomerNumber'],
                                         name[0], name[1], customer['Email'],
                                         customer['Phone'], customer['Address1'],
@@ -30,6 +33,7 @@ def sync_from_fortnox():
                 ret.append(cust.dict())
 
         cl = client.UsersSqlClient()
+        # If the user from Fortnox all ready exists in the database, update it. If it doesn't exist, create a new.
         for customer in ret:
             if cl.does_user_exist(customer['fortnox_id']):
                 cl.add_user(customer)
