@@ -6,12 +6,14 @@ import fortnox_cfg as cfg
 
 class Fortnox:
     """
-     This class will help with the "CRUD" functionality that fortnox API is offering us.
+    Class to Get/Insert/Uptade from and to Fortnox.
+    It can be used to Remove, but we don't need remove in this case.
+    This class will help with the "CRUD" functionality that fortnox API is offering us.
 
-     get_all_customers - Get function to get all customers.
-     get_customer_by_id - Get function to get a customer based on id.
-     insert_customer_by_id - Creates a new customer on fortnox.
-     update_customer - Updates a customer on fortnox.
+    get_all_customers - Get customers function to get all customers.
+    get_customer_by_id - Get customer function to get a customer based on id.
+    insert_customer_by_id - Creates a new customer on fortnox.
+    update_customer - Updates a customer on fortnox.
     """
     def get_all_customers(self):
         """
@@ -22,6 +24,7 @@ class Fortnox:
         try:
             page = 1
             customer_array = []
+            # Can only get 1 page at the time.
             while True:
                 r = requests.get(
                     url='https://api.fortnox.se/3/customers/?page='+str(page),
@@ -42,10 +45,10 @@ class Fortnox:
 
     def get_customer_by_id(self, id):
         """
-        Takes an id as argument and then creates a connection to the fortnox API.
+        Takes an id as argument and then creates a connection to the fortnox API and gets 1 customer.
 
         :param id: Id of an user from fortnox.
-        :type id: Integer
+        :type id: integer
         :return: JSON object of the user
         """
         connection = http.client.HTTPSConnection('api.fortnox.se')
@@ -61,7 +64,7 @@ class Fortnox:
 
     def insert_customer(self, user):
         """
-        Takes an user as argument and then creates a connection to the fortnox API to create a customer.
+        Takes a user as argument and then creates a connection to the fortnox API to create a customer.
 
         :param user: An user representation
         :type user: User class
@@ -92,9 +95,8 @@ class Fortnox:
         :type user: User class
         """
         try:
-            userId = str(user.fortnox_id)
             r = requests.put(
-                url='https://api.fortnox.se/3/customers/'+userId+'/',
+                url='https://api.fortnox.se/3/customers/'+str(user.fortnox_id)+'/',
                 headers=cfg.fortnox,
                 data=json.dumps({
                     "Customer": {
