@@ -258,7 +258,7 @@ def tagevent(tag_id, api_key, timestamp):
         except:
             return "Can't create a tag with that Tag ID or Api Key"
     else:
-        return "Wrong API-Key"
+        raise KeyError('Wrong API-Key')
 
 
 # Renders a HTML page with filter on membership

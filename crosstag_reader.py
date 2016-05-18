@@ -13,7 +13,7 @@ import grequests
 import time
 from random import randint
 
-API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
+API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9'
 # SERVER = 'crosstag-aef3e521.74c00c5a.svc.dockerapp.io'
 SERVER = 'localhost'
 PORT = 80
@@ -57,16 +57,11 @@ class CrosstagReader(object):
                     continue
                 try:
                     print('%s reader tagging [%s] [%s]' % (now, tag_nbr, api_key))
-                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY)]
+                    urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY, str(now))]
 
                     unsent = (grequests.get(url) for url in urls)
                     res = grequests.map(unsent)
-                    res = grequests.get("http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key), timeout=3)
-
-                    now = datetime.now()
-
-
-
+                    # res = grequests.get("http://%s:%d/crosstag/v1.0/tagevent/%s/%s" % (server, port, tag_nbr, api_key), timeout=3)
                     logging.info("%s reader tagging result: [%s]" % (now, tag_nbr))
                 except:  # catch *all* exceptions
                     e = sys.exc_info()[0]
@@ -92,12 +87,13 @@ class CrosstagReader(object):
 
             now = datetime.now()
             print('%s reader tagging [%s]' % (now, tag_nbr))
+            try:
+                urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY, str(now))]
 
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % (SERVER, PORT, tag_nbr, API_KEY, str(now))]
-
-            unsent = (grequests.get(url) for url in urls)
-            res = grequests.map(unsent)
-            now = datetime.now()
+                unsent = (grequests.get(url) for url in urls)
+                res = grequests.map(unsent)
+            except KeyError as error:
+                print(error.value)
 
             logging.info("%s reader tagging result: [%s] [%s]" % (now, tag_nbr, API_KEY))
 

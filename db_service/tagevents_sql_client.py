@@ -1,6 +1,6 @@
 import pypyodbc
 from db_service import sql_client_cfg as cfg
-from db_models import sql_tagevent as tagevent
+from db_models import sql_detailed_tagevent as tagevent
 from db_models import sql_statistic_tagevent as statistic_tagevent
 from datetime import datetime, timedelta
 from flask import session

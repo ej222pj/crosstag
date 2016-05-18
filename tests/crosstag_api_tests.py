@@ -3,18 +3,37 @@ import unittest
 import tempfile
 import grequests
 import sys
+from datetime import datetime
 sys.path.append('./')
-from config import SQLALCHEMY_DATABASE_URI
-import crosstag_server
-
+from db_service import users_sql_client as user_client
 
 class CrosstagApiTestCase(unittest.TestCase):
 
-    def test_pass(self):
-        self.assertEqual(1, 1, 'Expected 1 to equal 1')
+    def test_send_tagevent_pass(self):
+        try:
+            now = datetime.now()
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("0.0.0.0.", 80, "11111111",
+                                                                      '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B', str(now))]
+            unsent = (grequests.get(url) for url in urls)
+            res = grequests.map(unsent)
+            self.assertEqual('[<Response [200]>]', str(res))
+        except KeyError as error:
+            self.fail(error.value)
 
-    def test_fail(self):
-        self.assertEqual(1, 2, 'uh-oh')
+    def test_send_tagevent_fail(self):
+        try:
+            now = datetime.now()
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("0.0.0.0.", 80, "11111111",
+                                                                      '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E', str(now))]
+            unsent = (grequests.get(url) for url in urls)
+            res = grequests.map(unsent)
+            self.assertEqual('[<Response [500]>]', str(res))
+        except KeyError as error:
+            self.fail(error.value)
+
+    def test_get_user_pass(self):
+        self.fail('tja')
+
     '''
     def setUp(self):
         self.db_fd, crosstag_server.app.config[SQLALCHEMY_DATABASE_URI] = tempfile.mkstemp()
