@@ -13,9 +13,8 @@ import grequests
 import time
 from random import randint
 
-API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9'
-# SERVER = 'crosstag-aef3e521.74c00c5a.svc.dockerapp.io'
-SERVER = 'localhost'
+API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
+SERVER = '54.171.91.197'
 PORT = 80
 
 # TODO: 2014-11-29 lujo: Refactor this. All of it. Just get to it.
