@@ -1,3 +1,8 @@
+#
+#   NOT IN USE!
+#   SCRIPT FOR SHOWING WHO HAS TAGGED IN!
+#   WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+#
 # -*- coding: utf-8 -*-
 import os
 from pyfiglet import Figlet
@@ -5,7 +10,6 @@ from optparse import OptionParser
 import requests
 import json
 import time
-#Test commit
 
 class CrosstagViewer(object):
     server = None
