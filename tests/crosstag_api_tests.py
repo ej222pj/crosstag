@@ -4,7 +4,9 @@ import tempfile
 import grequests
 import sys
 from datetime import datetime
-sys.path.append('./')
+sys.path.append('../')
+import crosstag_server
+import db_service
 from db_service import users_sql_client as user_client
 
 class CrosstagApiTestCase(unittest.TestCase):
@@ -12,7 +14,7 @@ class CrosstagApiTestCase(unittest.TestCase):
     def test_send_tagevent_pass(self):
         try:
             now = datetime.now()
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("0.0.0.0.", 80, "11111111",
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
                                                                       '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B', str(now))]
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
@@ -23,16 +25,21 @@ class CrosstagApiTestCase(unittest.TestCase):
     def test_send_tagevent_fail(self):
         try:
             now = datetime.now()
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("0.0.0.0.", 80, "11111111",
+            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
                                                                       '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E', str(now))]
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
             self.assertEqual('[<Response [500]>]', str(res))
         except KeyError as error:
             self.fail(error.value)
-
-    def test_get_user_pass(self):
-        self.fail('tja')
+    #
+    # def test_get_user_pass(self):
+    #     try:
+    #         cl = user_client.UsersSqlClient('Test')
+    #         user = cl.get_users(1)
+    #         print(user)
+    #     except:
+    #         self.fail('failed')
 
     '''
     def setUp(self):
