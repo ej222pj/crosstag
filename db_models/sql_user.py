@@ -1,11 +1,52 @@
 from datetime import datetime
 
-
 class SQLUser:
+    """
+        User - This class is the representation of the database model User.
+    """
     def __init__(self, id=0, fortnox_id=None, firstname='', lastname='', email='', phone='', address='',
                  address2='', city='', zip_code='', tag_id=None, gender='', ssn='', expiry_date=None,
                  create_date=None, status='', tagcounter=None, last_tag_timestamp=None):
+        """
+        Called when creating a new User class.
 
+        :param id: Id of the User
+        :param fortnox_id: Users fortnox ID
+        :param firstname: Users firstname
+        :param lastname: Users lastname
+        :param email: Email to the User
+        :param phone: Users phonenumber
+        :param address: Address to the user
+        :param address2: Second Address to the user
+        :param city: City of the user
+        :param zip_code: Zip Code to the User
+        :param tag_id: Users tag id
+        :param gender: Users gender
+        :param ssn: Users SSN
+        :param expiry_date: Expire date of the users membership
+        :param create_date: Create date of the user
+        :param status: Users gym status
+        :param tagcounter: How many times the user have tagged this month
+        :param last_tag_timestamp: When the last tagin occurred
+        :type id: integer
+        :type fortnox_id: string
+        :type firstname: string
+        :type lastname: string
+        :type email: string
+        :type phone: string
+        :type address: string
+        :type address2: string
+        :type city: string
+        :type zip_code: string
+        :type tag_id: string
+        :type gender: string
+        :type ssn: string
+        :type expiry_date: string
+        :type create_date: string
+        :type status: string
+        :type tagcounter: integer
+        :type last_tag_timestamp: datetime
+        """
         self.id = id
         self.fortnox_id = fortnox_id
         self.firstname = firstname
@@ -42,14 +83,17 @@ class SQLUser:
 
     def dict(self):
         """
-
         :return: Dictionary representation of the user class.
         :rtype: Dictionary
         """
-        return {'id': self.id, 'firstname': self.firstname,
-                'lastname': self.lastname, 'email': self.email,
-                'phone': self.phone, 'address': self.address,
-                'address2': self.address2, 'city': self.city,
+        return {'id': self.id,
+                'firstname': self.firstname,
+                'lastname': self.lastname,
+                'email': self.email,
+                'phone': self.phone,
+                'address': self.address,
+                'address2': self.address2,
+                'city': self.city,
                 'zip_code': self.zip_code,
                 'tag_id': self.tag_id,
                 'fortnox_id': self.fortnox_id,
