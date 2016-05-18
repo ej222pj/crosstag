@@ -658,6 +658,23 @@ def edit_user(user_index=None):
         flash('Error Editing a user, please try again.')
         return redirect('/')
 
+
+if __name__ == '__main__':
+    parser = OptionParser(usage="usage: %prog [options] arg \nTry this: " +
+                          "python crosstag_server.py", version="%prog 1.0")
+    parser.add_option('--debug', dest='debug', default=False, action='store_true',
+                      help="Do you want to run this thing with debug output?")
+    (options, args) = parser.parse_args()
+    # config['database_file'] = options.database
+    # config['secret_key'] = options.secret
+    #db.create_all()
+    # if options.debug:
+    app.logger.propagate = False
+    app.run(host='0.0.0.0', port=app.config["PORT"], debug=True)
+
+#
+#   THE CODE BELOW IS NOT IN USE. BUT WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+#
 '''
 # TODO - APIKEY HERE?!
 # This function will be called by the javascript on the static_tagin_page
@@ -741,15 +758,4 @@ def clear_tagcounter():
     return redirect('/')
 '''
 
-if __name__ == '__main__':
-    parser = OptionParser(usage="usage: %prog [options] arg \nTry this: " +
-                          "python crosstag_server.py", version="%prog 1.0")
-    parser.add_option('--debug', dest='debug', default=False, action='store_true',
-                      help="Do you want to run this thing with debug output?")
-    (options, args) = parser.parse_args()
-    # config['database_file'] = options.database
-    # config['secret_key'] = options.secret
-    #db.create_all()
-    # if options.debug:
-    app.logger.propagate = False
-    app.run(host='0.0.0.0', port=app.config["PORT"], debug=True)
+
