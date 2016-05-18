@@ -14,7 +14,7 @@ from db_service import update_tenant_information_sql_client as update_tenant_cli
 from db_service import tagevents_sql_client as tag_client
 from db_models import sql_user
 from db_models import sql_debt
-from db_models import sql_tagevent
+from db_models import sql_detailed_tagevent
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
 from forms.new_tag import NewTag
@@ -30,7 +30,7 @@ from server_helper_scripts.sync_from_fortnox import sync_from_fortnox
 from statistics_scripts.generate_statistics import GenerateStats
 
 Sqluser = sql_user.SQLUser
-Sql_detailed_tag = sql_tagevent.SQLDetailedTagevent
+Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
 
 app.config.from_pyfile('config.py')
 app_name = 'crosstag'

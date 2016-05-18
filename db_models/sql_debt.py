@@ -10,10 +10,12 @@ class SQLDebt:
         """
         Called when creating a new debt class.
 
+        :param id: Id of the Debt
         :param amount: The value of product
-        :param uid: Id of the user
+        :param uid: Id of the debt owner
         :param product: Name of the product
         :param create_date: Timestamp of creation
+        :type id: integer
         :type amount: integer
         :type uid: foreign key, integer
         :type product: varchar (60)

@@ -3,12 +3,20 @@ from datetime import datetime
 
 class SQLDetailedTagevent:
     """
-    DetailedTagevent - A representation of the database model.
+        DetailedTagevent - This class is the representation of the database model DetailedTagevent.
     """
     def __init__(self, id=0, tag_id='', timestamp='', uid=0):
         """
-        Called when creating a new Detailedtagevent
+        Called when creating a new DetailedTagevent class.
 
+        :param id: Id of the event
+        :param tag_id: The tag_id of the event
+        :param timestamp: Time the event was created
+        :param uid: Owner id of the event
+        :type id: integer
+        :type tag_id: string
+        :type timestamp: datetime
+        :type uid: foreign key, integer
         """
 
         self.id = id
@@ -23,7 +31,6 @@ class SQLDetailedTagevent:
 
     def dict(self):
         """
-
         :return: Dictionary representation of the tag class
         :rtype: Dictionary
         """
