@@ -2,7 +2,6 @@ from crosstag_init import flash
 from db_models import sql_user
 from fortnox.fortnox import Fortnox
 from db_service import users_sql_client as client
-from server_helper_scripts.strip_ssn import strip_ssn
 from server_helper_scripts.get_gender_from_ssn import get_gender_from_ssn
 
 
@@ -10,7 +9,6 @@ def sync_from_fortnox():
     """
     Helper script to sync the local database with the content of the database on fortnox.
     Either updates an existing customer or creates a new.
-
     """
     try:
         fortnox_data = Fortnox()
@@ -27,7 +25,7 @@ def sync_from_fortnox():
                                         customer['Address2'], customer['City'],
                                         customer['ZipCode'], None,
                                         get_gender_from_ssn(customer),
-                                        strip_ssn(customer), None, None, None,
+                                        customer['OrganisationNumber'][:-5], None, None, None,
                                         None, None)
                 ret.append(cust.dict())
 
