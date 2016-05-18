@@ -238,8 +238,6 @@ def fortnox_information():
         return redirect('/')
 
 
-
-
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>/<timestamp>' % (app_name, version))
 def tagevent(tag_id, api_key, timestamp):
