@@ -1,3 +1,10 @@
+/*
+
+NOT IN USE!
+SCRIPT FOR THE STATIC PAGE!
+WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+
+ */
 window.onload = function() {
     
     var counter = 0;
