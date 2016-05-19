@@ -40,6 +40,15 @@
         </div>
 
     {# Added some css to the tagged in user #}
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ form[field_name].label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
 
         <h1>Register</h1>
         <form action="" method="post" name="register" class="form-horizontal" role="form">

@@ -123,7 +123,7 @@ def registration():
                     flash('Registration done, you can now log in')
                     return redirect('/')
 
-            return render_template('register.html', title='Register new Tenant', form=form)
+            return render_template('register.html', title='Register new Tenant', form=form, errors=form.errors)
         else:
             return redirect('/')
 
