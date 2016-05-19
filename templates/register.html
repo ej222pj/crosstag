@@ -39,12 +39,23 @@
             <h1>CROSSTAG</h1>
         </div>
 
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }} </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+          {% block content %}{% endblock %}
+
     {# Added some css to the tagged in user #}
         {% if form.errors %}
             <ul class="errors">
                 {% for field_name, field_errors in form.errors|dictsort if field_errors %}
                     {% for error in field_errors %}
-                        <li>{{ form[field_name].label }}: {{ error }}</li>
+                        <li>{{ error }}</li>
                 {% endfor %}
             {% endfor %}
             </ul>

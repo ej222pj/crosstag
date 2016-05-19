@@ -9,5 +9,7 @@ class Login(Form):
     :param Username: Username of a tenant.
     :param Password: Password of a tenant.
     """
-    username = TextField('username', [validators.Length(max=80), validators.DataRequired()])
-    password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])
+    username = TextField('username', [validators.Length(max=80, message='Username is to long, 80 characters is maximum'),
+                                      validators.DataRequired(message='Username is required')])
+    password = PasswordField('password', [validators.Length(max=80, message='Password is to long, 80 characters is maximum'),
+                                          validators.DataRequired(message='Password is required')])

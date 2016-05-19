@@ -122,11 +122,12 @@ def registration():
                 if cl.do_registration(registered_tenant):
                     flash('Registration done, you can now log in')
                     return redirect('/')
+                else:
+                    flash('Username already exists')
 
             return render_template('register.html', title='Register new Tenant', form=form, errors=form.errors)
         else:
             return redirect('/')
-
     except:
         flash('Error when trying to register, please try again.')
         return redirect('/')
@@ -340,19 +341,15 @@ def add_new_user():
 
                 tmp_usr = Sqluser(None, None, form.firstname.data, form.lastname.data, form.email.data, form.phone.data,
                                form.address.data, form.address2.data, form.city.data,
-                               form.zip_code.data, form.tag_id.data, form.gender.data, form.ssn.data, form.expiry_date.data,
+                               form.zip_code.data, None, form.gender.data, form.ssn.data, form.expiry_date.data,
                                None, form.status.data, None, None)
-                mc.add_user(tmp_usr.dict())
+                user_id = mc.add_user(tmp_usr.dict())
+                return redirect('/user_page/' + str(user_id))
 
-                flash('Created new user: %s %s' % (form.firstname.data, form .lastname.data))
-                form = NewUser()
-                return render_template('new_user.html',
-                                       title='New User',
-                                       form=form,
-                                       message=msg)
             return render_template('new_user.html',
                                    title='New User',
-                                   form=form)
+                                   form=form,
+                                   error=form.errors)
         else:
             return redirect_not_logged_in()
     except:

@@ -111,10 +111,12 @@ class UsersSqlClient:
                            user_to_add['expiry_date'] + ' 00:00:00.0000000' + "','" +
                            user_to_add['create_date'] + "','" + user_to_add['status'] + "','" +
                            user_to_add['tagcounter'] + "','" + user_to_add['last_tag_timestamp'] + '0' + "')}")
+            value = cursor.fetchall()[0]
+
             cursor.commit()
             cursor.close()
             my_connection.close()
-            return True
+            return int(value[0])
 
         except pypyodbc.DatabaseError as error:
             print(error.value)

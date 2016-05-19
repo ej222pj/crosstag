@@ -51,6 +51,16 @@
           {% endwith %}
           {% block content %}{% endblock %}
 
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+
         <h1>Login</h1>
         <form action="" method="post" name="login" class="form-horizontal" role="form">
             {{form.hidden_tag()}}

@@ -22,19 +22,26 @@ class NewUser(Form):
     :param status: Status of the users membership.
 
     """
-    firstname = TextField('firstname', [validators.Length(max=25), validators.DataRequired()])
-    lastname = TextField('lastname', [validators.Length(max=30), validators.DataRequired()])
-    email = TextField('email', [validators.Length(max=120), validators.Email()])
-    phone = TextField('phone', [validators.Length(max=20), validators.DataRequired()])
-    address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
-    address2 = TextField('address2', [validators.Length(max=50)])
-    city = TextField('city', [validators.Length(max=120), validators.DataRequired()])
-    zip_code = TextField('zip_code', validators=[])
-    tag_id = TextField('tag_id', validators=[])
-    ssn = TextField('ssn', [validators.Length(max=14)])
-    gender = RadioField('gender', [validators.DataRequired()], choices=[('male', 'male'), ('female', 'female'),
-                                                                      ('unknown', 'unknown')])
+    firstname = TextField('firstname', [validators.Length(max=25, message='Firstname to long, 25 characters is maximum'),
+                                        validators.DataRequired(message='Firstname is required')])
+    lastname = TextField('lastname', [validators.Length(max=30, message='Lastname to long, 30 characters is maximum'),
+                                      validators.DataRequired(message='Lastname is required')])
+    email = TextField('email', [validators.Length(max=120, message='Email to long, 120 characters is maximum'),
+                                validators.Email(message='Email is not in valid format')])
+    phone = TextField('phone', [validators.Length(max=20, message='Phone number to long, 20 characters is maximum'),
+                                validators.DataRequired(message='Phone number is required')])
+    address = TextField('address', [validators.Length(max=50, message='Address to long, 50 characters is maximum'),
+                                    validators.DataRequired(message='Address is required')])
+    address2 = TextField('address2', [validators.Length(max=50, message='Second address to long, 50 characters is maximum')])
+    city = TextField('city', [validators.Length(max=120, message='City to long, 120 characters is maximum'),
+                              validators.DataRequired(message='City is required')])
+    zip_code = TextField('zip_code', [validators.Length(max=20, message='Zip code is to long, 20 characters is maximum'),
+                                      validators.DataRequired(message='Zip code is required')])
+    ssn = TextField('ssn', [validators.Length(max=14, message='SSN to long, 14 characters is maximum')])
+    gender = RadioField('gender', [validators.DataRequired(message='Gender is required')],
+                                                           choices=[('male', 'male'), ('female', 'female'),
+                                                                    ('unknown', 'unknown')])
     expiry_date = DateField('expiry_date', [validators.Optional()], format='%Y-%m-%d', description="DESC1")
-    status = RadioField('status', [Required()],
+    status = RadioField('status', [validators.DataRequired(message='Status is required')],
                         choices=[('Active', 'active'), ('Inactive', 'inactive'), ('Frozen', 'frozen'), ('Free', 'free'),
                                  ('Special', 'special')])

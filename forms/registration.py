@@ -18,14 +18,24 @@ class Register(Form):
     """
     username = TextField('username', [validators.Length(max=80, message='Username is to long, 80 characters is maximum')
                                     , validators.DataRequired(message='Username is required')])
-    password = PasswordField('password', [validators.Length(max=80),
-                                          validators.DataRequired(),
+    password = PasswordField('password', [validators.Length(max=80, message='Password is to long, 80 characters is maximum'),
+                                          validators.DataRequired(message='Password is required'),
                                           validators.EqualTo('repeat_password', message='Passwords must match')])
-    repeat_password = PasswordField('repeat_password', [validators.Length(max=80), validators.DataRequired()])
-    active_fortnox = RadioField('active_fortnox', [validators.DataRequired()], choices=[('true', 'Yes'), ('false', 'No')])
-    gym_name = TextField('gym_name', [validators.Length(max=50), validators.DataRequired()])
-    address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
-    phone = TextField('phone', [validators.Length(max=20), validators.DataRequired()])
-    zip_code = TextField('zip_code', [validators.Length(max=20), validators.DataRequired()])
-    city = TextField('city', [validators.Length(max=50), validators.DataRequired()])
-    email = TextField('email', [validators.Length(max=50), validators.Email()])
+    repeat_password = PasswordField('repeat_password', [validators.Length(max=80, message='Repeated password is to long, '
+                                                                                          '80 characters is maximum'),
+                                                        validators.DataRequired(message='Repeated password is required')])
+    active_fortnox = RadioField('active_fortnox', [validators.DataRequired(message='You must choose Yes/No for active fortnox')],
+                                                    choices=[('true', 'Yes'), ('false', 'No')])
+    gym_name = TextField('gym_name', [validators.Length(max=50, message='Gym name is to long, 50 characters is maximum'),
+                                      validators.DataRequired(message='Gym name is required')])
+    address = TextField('address', [validators.Length(max=50, message='Address is to long, 50 characters is maximum'),
+                                    validators.DataRequired(message='Address is required')])
+    phone = TextField('phone', [validators.Length(max=20, message='Phone number is to long, 20 characters is maxium'),
+                                validators.DataRequired(message='Phone number is required')])
+    zip_code = TextField('zip_code', [validators.Length(max=20, message='Zip code is to long, 20 characters is maximum'),
+                                      validators.DataRequired(message='Zip code is required')])
+    city = TextField('city', [validators.Length(max=50, message='City is to long, 50 characters is maximum'),
+                              validators.DataRequired(message='City is required')])
+    email = TextField('email', [validators.Length(max=50, message='Email is to long, 50 characters is maximum'),
+                                validators.Email(message='Email not in valid format'),
+                                validators.DataRequired(message='Email is required')])
