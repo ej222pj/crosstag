@@ -13,8 +13,7 @@ import grequests
 import time
 from random import randint
 
-# "test user" API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
-API_KEY = '576AB941-1F01-407C-BB5D-F7990BC978AB'
+API_KEY = '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B'
 SERVER = '54.171.91.197'
 # SERVER = 'localhost'
 PORT = 80
