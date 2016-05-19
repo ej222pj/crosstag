@@ -10,6 +10,10 @@ class SearchUser(Form):
     :param lastname: Lastname of the user.
     :param city: City of the user.
     :param email: Emailaddress of the user.
+    :type firstname: string
+    :type lastname: string
+    :type city: string
+    :type email: string
     """
 
     firstname = TextField('firstname', validators=[])

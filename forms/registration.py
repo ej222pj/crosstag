@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, RadioField, PasswordField, validators
 
+
 class Register(Form):
     """
     A representation of the form for creating a new user.
@@ -10,11 +11,21 @@ class Register(Form):
     :param repeat_password: Repeted password
     :param active_fortnox: Does the tenant have fortnox.
     :param gym_name: Tenants gymname
-    :param phone: Phonenumber of the tenant.
     :param address: Address of the tenant.
+    :param phone: Phonenumber of the tenant.
     :param zip_code: Zip code of the tenant.
     :param city: City of the tenant.
     :param email: email of the tenant.
+    :type username: string (80)
+    :type password: string (80)
+    :type repeat_password: string (80)
+    :type active_fortnox: string (10)
+    :type gym_name: string (50)
+    :type address: string (50)
+    :type phone: string (20)
+    :type zip_code: string (20)
+    :type city: string (50)
+    :type Email: string (50)
     """
     username = TextField('username', [validators.Length(max=80, message='Username is to long, 80 characters is maximum')
                                     , validators.DataRequired(message='Username is required')])

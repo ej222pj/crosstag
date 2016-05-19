@@ -5,7 +5,7 @@ from wtforms.validators import Required
 
 class EditGeneralInformation(Form):
     """
-    A representation of the form for updating a tenants info.
+    A representation of the form for updating a Tenants general info.
 
     :param password: Tenants password for confirmation
     :param gym_name: Tenants Gym name
@@ -14,6 +14,13 @@ class EditGeneralInformation(Form):
     :param zip_code: Tenants Zip
     :param city: Tenants City
     :param Email: Tenants Email
+    :type password: string (80)
+    :type gym_name: string (50)
+    :type address: string (50)
+    :type phone: string (20)
+    :type zip_code: string (20)
+    :type city: string (50)
+    :type Email: string (50)
     """
     password = PasswordField('password', [validators.Length(max=80, message='Password is to long, 80 characters is maximum'),
                                           validators.DataRequired(message='Password is required to save changes')])

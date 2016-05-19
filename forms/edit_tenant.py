@@ -13,6 +13,12 @@ class EditTenant(Form):
     :param active_fortnox: If the tenant got fortnox
     :param image: Gym image
     :param background_color: Background color
+    :type password: string (80)
+    :type new_password: string (80)
+    :type repeat_new_password: string (80)
+    :type active_fortnox: string (10)
+    :type image: string (80)
+    :type background_color: string (80)
     """
     password = PasswordField('password', [validators.Length(max=80, message='Actual password to long, 80 characters is maximum'),
                                           validators.DataRequired(message='Actual password is required to save changes')])
