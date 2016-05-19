@@ -249,17 +249,20 @@ def tagevent(tag_id, api_key, timestamp):
     if username[0]['username'] is not None:
         try:
             cl = user_client.UsersSqlClient(username[0]['username'])
-            user = cl.search_user_on_tag(tag_id)
-
+            user = cl.search_user_on_tag(tag_id)[0][0]
+            if user is None:
+                id = 0
+            else:
+                id = user
             timestamp = timestamp.replace('%', ' ')
-            tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, timestamp, user[0][0])
+            tmp__detailed_tagevent = Sql_detailed_tag(None, tag_id, timestamp, id)
 
             cl = tag_client.TageventsSqlClient(username[0]['username'])
             cl.add_tagevents(tmp__detailed_tagevent.dict())
 
             return "%s server tagged %s" % (datetime.now(), tag_id)
         except:
-            return "Can't create a tag with that Tag ID or Api Key"
+                return "Can't create a tag with that Tag ID or Api Key"
     else:
         raise KeyError('Wrong API-Key')
 
@@ -302,14 +305,9 @@ def last_tagins():
             ret = []
             cl = tag_client.TageventsSqlClient()
             detailed_tagevents = cl.get_detailed_tagevents(0, 10)
-
-            for hit in detailed_tagevents:
-                js = hit.dict()
-                ret.append(js)
-
             return render_template('last_tagevents.html',
                                    title='Last Tagins',
-                                   hits=ret)
+                                   hits=detailed_tagevents)
         else:
             return redirect_not_logged_in()
     except:

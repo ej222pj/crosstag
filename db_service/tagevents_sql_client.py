@@ -65,8 +65,16 @@ class TageventsSqlClient:
 
             return_array = []
             # [:-8] is to remove unnecessary decimals
-            for detailed_tagevent in value:
-                return_array.append(tagevent.SQLDetailedTagevent(detailed_tagevent[0], detailed_tagevent[1],
+            if user_id == 0 and number_of_tagevents != 1:
+                for detailed_tagevent in value:
+                    return_array.append({'tag_id': detailed_tagevent[0],
+                                         'timestamp': detailed_tagevent[1][:-8],
+                                         'uid': detailed_tagevent[2],
+                                         'firstname': detailed_tagevent[3],
+                                         'lastname': detailed_tagevent[4]})
+            else:
+                for detailed_tagevent in value:
+                    return_array.append(tagevent.SQLDetailedTagevent(detailed_tagevent[0], detailed_tagevent[1],
                                                                  detailed_tagevent[2][:-8], detailed_tagevent[3]))
 
             return return_array
