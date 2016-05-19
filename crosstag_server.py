@@ -17,7 +17,6 @@ from db_models import sql_debt
 from db_models import sql_detailed_tagevent
 from forms.edit_user import EditUser
 from forms.new_debt import NewDebt
-from forms.new_tag import NewTag
 from forms.new_user import NewUser
 from forms.search_user import SearchUser
 from forms.login import Login
@@ -39,11 +38,22 @@ last_tag_events = None
 
 
 def redirect_not_logged_in():
+    """
+        Redirect the page if the tenant is not logged in and is trying to reach a page without permission
+
+        :return: redirect to front page
+        """
     flash('You need to login before entering the application')
     return redirect('/')
 
 
 def check_session():
+    """
+        Checks if the tenant is logged in by checking the session for username param and loggedin param
+        This function is called by all other functions that handle tenant templates
+
+        :return: True or false
+        """
     if session.get('loggedIn') is not None:
         if session['loggedIn'] and session.get('username') is not None:
             return True
@@ -55,6 +65,11 @@ def check_session():
 @app.route('/')
 @app.route('/index')
 def index():
+    """
+        Render index template if the user is logged in, if not the user is redirected to the login page
+
+        :return: render template or redirect
+        """
     if check_session():
         return render_template('index.html')
     else:
@@ -63,6 +78,13 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+        GET - Renders a login template for the tenant
+        POST - Validates the login form and check if the values are right. If they pass the tenant is logged in and redirected
+        to the front page again, if not the login templated is rendered with an message.
+
+        :return: Redirect or renders template
+        """
     try:
         if not check_session():
             form = Login()
@@ -91,6 +113,11 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+    """
+        Logouts the tenant. Destroys the session and redirects to the front page again.
+
+        :return: redirect
+        """
     session.pop('loggedIn', None)
     session.pop('username', None)
     return redirect('/')
@@ -98,6 +125,14 @@ def logout():
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
+    """
+        GET - Renders a registration form.
+        POST - Validates the login form and check if the values are right. If they pass the informations is stored in
+        the database and the tenant is registrated and is redirected to the front page.
+        If they fail the registration form is rendered with error messages.
+
+        :return: Redirect or renders template
+        """
     try:
         if not check_session():
             form = Register()
@@ -135,6 +170,14 @@ def registration():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    """
+        GET - Renders a settings form with tenant information
+        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+        the database and the tenant is redirected to the front page.
+        If they fail the settings form is rendered with error messages.
+
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             clt = update_tenant_client.UpdateTenantInformationSqlClient()
@@ -182,6 +225,14 @@ def settings():
 
 @app.route('/general_information', methods=['GET', 'POST'])
 def general_information():
+    """
+        GET - Renders a settings form with general information.
+        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+        the database and the tenant is redirected to the front page.
+        If they fail the settings form is rendered with error messages.
+
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             clt = update_tenant_client.UpdateTenantInformationSqlClient()
@@ -227,6 +278,14 @@ def general_information():
 
 @app.route('/fortnox_information', methods=['GET', 'POST'])
 def fortnox_information():
+    """
+        GET - Renders a settings form for fortnox information
+        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+        the database and the tenant is redirected to the front page.
+        If they fail the settings form is rendered with error messages.
+
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             form = EditFortnoxInformation()
@@ -244,6 +303,20 @@ def fortnox_information():
 # Retrieves a tag and stores it in the database.
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>/<timestamp>' % (app_name, version))
 def tagevent(tag_id, api_key, timestamp):
+    """
+        Gets a tagevent from crosstag_reader with tag_id, api_key and timestamp of the tagevent.
+        Checks if the api-key is valid and then creates the tag and saves it in the database.
+        If the api-key is wrong a KeyError is raised.
+
+        :param tag_id:
+        :param api_key:
+        :param timestamp:
+        :type tag_id: string
+        :type api_key: string
+        :type timestamp: string
+        :return: Redirect or renders template
+        :raises: KeyError
+        """
     cl = registration_client.RegisterLoginSqlClient()
     username = cl.get_tenant_with_api_key(api_key)
     if username[0]['username'] is not None:
@@ -270,6 +343,13 @@ def tagevent(tag_id, api_key, timestamp):
 # Renders a HTML page with filter on membership
 @app.route('/all_users/<filter>', methods=['GET', 'POST'])
 def all_users(filter=None):
+    """
+        Lists all members based on the filter.
+
+        :param filter:
+        :type filter: string
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             ret, users = [], []
@@ -300,6 +380,11 @@ def all_users(filter=None):
 # Renders a HTML page with the last 10 tag events
 @app.route('/last_tagins', methods=['GET'])
 def last_tagins():
+    """
+        Lists the last tagins. At the moment ( 2016-05-19 ) it is the last 10 tags, but this will be changeable
+
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             ret = []
@@ -318,6 +403,13 @@ def last_tagins():
 # Deletes an user from the local DB based on their index
 @app.route('/%s/%s/remove_user/<user_id>' % (app_name, version), methods=['POST'])
 def remove_user(user_id):
+    """
+        Deletes a user from the database.
+
+        :param user_id:
+        :type user_id: integer
+        :return: Redirect
+        """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
@@ -333,6 +425,14 @@ def remove_user(user_id):
 # Adds an user to the local DB. Gets all the values from a form in the HTML page.
 @app.route('/new_user', methods=['GET', 'POST'])
 def add_new_user():
+    """
+        GET - Renders a new user form.
+        POST - Validates the user form and check if the values are right. If they pass the informations is stored in
+        the database and the user is registrated. The tenant is redirected to the user page.
+        If they fail the user form is rendered with error messages.
+
+        :return: Redirect or renders template
+        """
     try:
         if check_session():
             form = NewUser()
@@ -360,6 +460,13 @@ def add_new_user():
 # Renders a HTML page with a form to search for a specific user or many users.
 @app.route('/search_user', methods=['GET', 'POST'])
 def search_user():
+    """
+        GET - Renders a search user form.
+        POST - Takes the value from the form and pass it to the database. Retrieves a list of user/users based on
+        the information that was passed.
+
+        :return: Renders template with the search result
+        """
     try:
         if check_session():
             form = SearchUser()
@@ -388,6 +495,14 @@ def search_user():
 # Will bind the last tag to an user by a POST, when finished it will redirect to the "edit user" page.
 @app.route('/%s/%s/link_user_to_last_tag/<user_id>' % (app_name, version), methods=['GET', 'POST'])
 def link_user_to_last_tag(user_id):
+    """
+        Links the user to the last tag. Grabs the last tag stored in the database and binds it to the specified member.
+        Grabs only a tag that doesnt belong to another member.
+
+        :param user_id:
+        :type user_id: integer
+        :return: Redirect to edit user page
+        """
     try:
         if check_session():
             try:
@@ -414,18 +529,14 @@ def link_user_to_last_tag(user_id):
         return redirect('/')
 
 
-# Returns the 20 last tag events by a user.
-@app.route('/%s/%s/get_tagevents_user_dict/<user_index>' % (app_name, version), methods=['GET'])
-def get_tagevents_user_dict(user_index):
-    tc = tag_client.TageventsSqlClient()
-    tagevent = tc.get_detailed_tagevents(user_index, 20)
-
-    return tagevent
-
-
 # Renders a HTML page with all inactive members.
 @app.route('/inactive_check', methods=['GET'])
 def inactive_check():
+    """
+        Renders a template with a list of all users that have not tagged in for the last 2 weeks
+
+        :return: Renders template with a user list
+        """
     try:
         if check_session():
             ret = []
@@ -439,12 +550,21 @@ def inactive_check():
         else:
             return redirect_not_logged_in()
     except:
-        flash('Error Showing Inctive Users, please try again.')
+        flash('Error Showing Inactive Users, please try again.')
         return redirect('/')
 
 # Delets a debt from a user. Redirects to "user page"
 @app.route('/debt_delete/<debt_id>/<user_id>', methods=['POST'])
 def debt_delete(debt_id, user_id):
+    """
+        Deletes a debt from a user and redirect back to the userpage
+
+        :param debt_id:
+        :param user_id:
+        :type debt_id: integer
+        :type user_id: integer
+        :return: Redirect to user page
+        """
     try:
         if check_session():
             dcl = debt_client.DebtSqlClient()
@@ -461,6 +581,11 @@ def debt_delete(debt_id, user_id):
 # Renders a HTML page with all users and their debts
 @app.route('/debts', methods=['GET'])
 def debt_check():
+    """
+        Renders a template with a list of all users with debts
+
+        :return: Renders template with a list of users
+        """
     try:
         if check_session():
             dcl = debt_client.DebtSqlClient()
@@ -479,6 +604,16 @@ def debt_check():
 # Renders a HTML page with a new created debt
 @app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
 def debt_create(user_id):
+    """
+        GET - Renders a debt form.
+        POST - Validates the debt form and check if the values are right. If they pass the informations is stored in
+        the database and the debt is registrated. The tenant is redirected to the user page.
+        If they fail the debt form is rendered with error messages.
+
+        :param user_id:
+        :type user_id: integer
+        :return: Redirect to edit user page
+        """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
@@ -505,6 +640,17 @@ def debt_create(user_id):
 # Renders a HTML page with all the statistics
 @app.route('/statistics', methods=['GET'])
 def statistics():
+    """
+        Renders statistic from the database on todays date.
+        1. Tags by hour
+        2. Tags by day
+        3. Tags by month
+        4. Number of genders in database
+        5. Number of tags by gender
+        6. Number of age groups in database
+
+        :return: Render template for statistic
+        """
     if check_session():
         default_date = datetime.now()
         default_date_array = {'year': str(default_date.year), 'month': str(default_date.strftime('%m')), 'day':str(default_date.strftime('%d'))}
@@ -533,6 +679,23 @@ def statistics():
 # Renders a HTML page based on month, day and year.
 @app.route('/<_month>/<_day>/<_year>', methods=['GET'])
 def statistics_by_date(_month, _day, _year):
+    """
+        Renders statistic from the database on the specified date from the params.
+        1. Tags by hour
+        2. Tags by day
+        3. Tags by month
+        4. Number of genders in database
+        5. Number of tags by gender
+        6. Number of age groups in database
+
+        :param _month:
+        :param _day:
+        :param _year:
+        :type _month: string
+        :type _day: string
+        :type _year: string
+        :return: Render template for statistic
+        """
     if check_session():
         chosen_date_array = {'year': _year, 'month': _month, 'day': _day}
         gs = GenerateStats()
@@ -562,6 +725,12 @@ def statistics_by_date(_month, _day, _year):
 # Syncs the local database with customers from fortnox
 @app.route('/%s/%s/fortnox/' % (app_name, version), methods=['GET'])
 def fortnox_users():
+    """
+        Syncs the database with users from fortnox database.
+        Add or updates the users.
+
+        :return: Redirect to front page
+        """
     try:
         if check_session():
             sync_from_fortnox()
@@ -576,22 +745,30 @@ def fortnox_users():
 # Renders a HTML page with a user and it debts
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
+    """
+        Renders a template with user information on a specified user.
+
+        :param user_index:
+        :type user_index: integer
+        :return: Renders a template
+        """
     try:
         if check_session():
             debts, tagevents = [], []
             cl = user_client.UsersSqlClient()
-            dbl = debt_client.DebtSqlClient()
             user = cl.get_users(user_index)[0]
 
             if user is None:
                 return "No user Found"
             else:
-                retdepts = dbl.get_debt(user.id)
-                if retdepts is not []:
-                    for debt in retdepts:
+                dbl = debt_client.DebtSqlClient()
+                ret_depts = dbl.get_debt(user.id)
+                if ret_depts is not []:
+                    for debt in ret_depts:
                         js = debt.dict()
                         debts.append(js)
-                tagevents = get_tagevents_user_dict(user_index)
+                tc = tag_client.TageventsSqlClient()
+                tagevents = tc.get_detailed_tagevents(user_index, 20)
                 return render_template('user_page.html',
                                        title='User Page',
                                        data=user.dict(),
@@ -607,6 +784,16 @@ def user_page(user_index=None):
 # Renders a HTML page to edit an user
 @app.route('/edit_user/<user_index>', methods=['GET', 'POST'])
 def edit_user(user_index=None):
+    """
+        GET - Renders a edit user form.
+        POST - Validates the user form and check if the values are right. If they pass the information is stored in
+        the database and the user is updated. The tenant is redirected to the user page.
+        If they fail the edit user form is rendered with error messages.
+
+        :param user_index:
+        :type user_index: integer
+        :return: Renders a template
+        """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
@@ -631,6 +818,7 @@ def edit_user(user_index=None):
                 user.status = form.status.data
 
                 cl.update_user(user.dict())
+                # Not in use at this point. Will be a future feature..
                 # If we successfully edited the user, redirect back to userpage.
                 # fortnox_data = Fortnox()
                 # fortnox_data.update_customer(user)
