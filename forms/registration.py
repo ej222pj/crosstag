@@ -1,7 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, RadioField, PasswordField, validators
 
-
 class Register(Form):
     """
     A representation of the form for creating a new user.
@@ -17,8 +16,11 @@ class Register(Form):
     :param city: City of the tenant.
     :param email: email of the tenant.
     """
-    username = TextField('username', [validators.Length(max=80), validators.DataRequired()])
-    password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])
+    username = TextField('username', [validators.Length(max=80, message='Username is to long, 80 characters is maximum')
+                                    , validators.DataRequired(message='Username is required')])
+    password = PasswordField('password', [validators.Length(max=80),
+                                          validators.DataRequired(),
+                                          validators.EqualTo('repeat_password', message='Passwords must match')])
     repeat_password = PasswordField('repeat_password', [validators.Length(max=80), validators.DataRequired()])
     active_fortnox = RadioField('active_fortnox', [validators.DataRequired()], choices=[('true', 'Yes'), ('false', 'No')])
     gym_name = TextField('gym_name', [validators.Length(max=50), validators.DataRequired()])
