@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 class UpdateTenantInformationSqlClient:
     """
-    Class to Connect to the DB and Get Detailed/Statistic tagevents and Add tagevents
+    Class to Connect to the DB and Get Tenants and Update Tenant information.
 
     __init__ - Creates connection string variables
     get_connection_string - Creates connection string from the variables

@@ -18,8 +18,12 @@ class TageventsSqlClient:
     """
     def __init__(self, username=''):
         """
+        Takes param username.
         Init function that creates the variables for the connection string.
         If session exists, set username to the session variable Username.
+
+        :param username: The Tenants Username.
+        :type username: string
         """
         if session.get('username') is not None:
             username = session['username']
