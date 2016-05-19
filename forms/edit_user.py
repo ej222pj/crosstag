@@ -7,7 +7,8 @@ class EditUser(Form):
     """
     A representation of the form for editing a user.
 
-    :param name: Name of the user, Firstname & Lastname.
+    :param name: Firstname of the user.
+    :param name: Lastname of the user.
     :param email: Emailaddress of the user.
     :param phone: Phonenumber of the user.
     :param address: Address 1 of the user.
@@ -20,8 +21,8 @@ class EditUser(Form):
     :param status: Status of the users membership.
 
     """
-    firstname = TextField('name', [validators.Length(max=80), validators.DataRequired()])
-    lastname = TextField('name', [validators.Length(max=80), validators.DataRequired()])
+    firstname = TextField('firstname', [validators.Length(max=80), validators.DataRequired()])
+    lastname = TextField('lastname', [validators.Length(max=80), validators.DataRequired()])
     email = TextField('email', [validators.Length(max=120), validators.Email()])
     phone = TextField('phone', validators=[])
     address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
