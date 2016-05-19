@@ -7,7 +7,7 @@ from flask import session
 
 class DebtSqlClient:
     """
-    Class to Connect to the DB an /Create/Read/Delete a Debt
+    Class to Connect to the DB and /Create/Read/Delete a Debt
 
     __init__ - Creates connection string variables
     get_connection_string - Creates connection string from the variables

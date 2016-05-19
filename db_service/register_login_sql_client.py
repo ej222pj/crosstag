@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 
 class RegisterLoginSqlClient:
     """
-    Class to Connect to the DB an /Create/Read/Delete a Debt
+    Class to Connect to the DB and Create, Login and Get Tenant
 
     __init__ - Creates connection string variables
+    get_connection_string - Creates connection string from the variables
     do_registration - Creates a new Tenant in the DB when a Tenant tries to register
     do_login - Tries to login the Tenant
     get_tenant_with_api_key - Checks if a Tenant exists when using the rest API
@@ -33,10 +34,11 @@ class RegisterLoginSqlClient:
     def do_registration(self, tenant):
         """
         Takes a Tenant as argument and register it.
+        Return false if username all ready exists.
 
         :param tenant: A Tenant representation
         :type tenant: tenant class
-        :return: True
+        :return: True or False
         """
         connection_string = self.get_connection_string()
         try:
@@ -52,7 +54,8 @@ class RegisterLoginSqlClient:
             cursor.commit()
             cursor.close()
             my_connection.close()
-            
+
+            # Return false if username exists
             if value[0] is None:
                 return False
             else:
@@ -87,6 +90,14 @@ class RegisterLoginSqlClient:
             print(error.value)
 
     def get_tenant_with_api_key(self, api_key):
+        """
+        Takes a api_key and checks if it exists in the DB.
+        Gives back the Tenants username.
+
+        :param api_key: Tenants Api Key
+        :type api_key: string
+        :return: Tenant Username
+        """
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)

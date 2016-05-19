@@ -5,7 +5,19 @@ from datetime import datetime, timedelta
 
 
 class UpdateTenantInformationSqlClient:
+    """
+    Class to Connect to the DB and Get Detailed/Statistic tagevents and Add tagevents
+
+    __init__ - Creates connection string variables
+    get_connection_string - Creates connection string from the variables
+    get_tenants - Get Tenant on username
+    update_tenant_information - Update the Tenants login information
+    update_tenant_general_information - Update the Tenants general information
+    """
     def __init__(self):
+        """
+        Init function that creates the variables for the connection string.
+        """
         self.dbDriver = 'Driver={FreeTDS};'
         self.dbServer = 'Server=' + cfg.SERVER + ';'
         self.dbDatabase = 'Database=' + cfg.DATABASE + ';'
@@ -13,9 +25,22 @@ class UpdateTenantInformationSqlClient:
         self.dbPassword = 'pwd=' + cfg.PASSWORD
 
     def get_connection_string(self):
+        """
+        Creates a connection string for the DB from the variables created in init.
+
+        :return: Connection String
+        """
         return self.dbDriver + self.dbServer + self.dbDatabase + self.dbUsername + self.dbPassword
 
     def get_tenants(self, username=''):
+        """
+        Takes username as parameter.
+        Get Tenant information depending on the Username
+
+        :param username: Tenants Username
+        :type username: string
+        :return: Array of Tenant information
+        """
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
@@ -38,10 +63,19 @@ class UpdateTenantInformationSqlClient:
             print(error.value)
 
     def update_tenant_information(self, tenant):
+        """
+        Takes Tenant representation as parameter.
+        Update the Tenants information
+
+        :param tenant: A Tenant representation
+        :type tenant: Tenant class
+        :return: True
+        """
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
             cursor = my_connection.cursor()
+            # If the Tenant don't want to update password, don't send the password.
             if tenant['new_password'] is '':
                 cursor.execute("{call UpdateTenant('" + str(tenant['id']) + "','" + tenant['password'] + "','" +
                                tenant['active_fortnox'] + "','" + tenant['image'] + "','" +
@@ -60,6 +94,14 @@ class UpdateTenantInformationSqlClient:
             print(error.value)
 
     def update_tenant_general_information(self, tenant):
+        """
+        Takes Tenant representation as parameter.
+        Update the Tenants general information
+
+        :param tenant: A Tenant representation
+        :type tenant: Tenant class
+        :return: True
+        """
         connection_string = self.get_connection_string()
         try:
             my_connection = pypyodbc.connect(connection_string)
