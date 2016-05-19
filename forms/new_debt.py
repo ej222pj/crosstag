@@ -11,5 +11,6 @@ class NewDebt(Form):
     :type amount: Integer
     :type amount: String (60)
     """
-    amount = IntegerField('amount', validators=[])
-    product = TextField('product', [validators.Length(max=60), validators.DataRequired()])
+    amount = IntegerField('amount', [validators.DataRequired(message='Amount is required and must be a number')])
+    product = TextField('product', [validators.Length(max=60, message='Product name is to long, 60 characters is maximum'),
+                                    validators.DataRequired(message='Product is required')])

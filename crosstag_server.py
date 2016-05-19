@@ -137,7 +137,6 @@ def registration():
 def settings():
     try:
         if check_session():
-
             clt = update_tenant_client.UpdateTenantInformationSqlClient()
             current_tenant = clt.get_tenants(session['username'])[0]
 
@@ -145,7 +144,6 @@ def settings():
                 return "No user have this ID"
 
             form = EditTenant(obj=current_tenant)
-
             if form.validate_on_submit():
                 # Get Tenants password for confirmation
                 cl = registration_client.RegisterLoginSqlClient()
@@ -153,22 +151,24 @@ def settings():
 
                 if stored_hash is not None:
                     hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
+                    if hashed_pass == stored_hash:
+                        # Saves new pass from form
+                        hashed_new_pass = form.new_password.data
+                        # if the new pass is not empty, hash it
+                        if hashed_new_pass is not '':
+                            hashed_new_pass = bcrypt.hashpw(hashed_new_pass, bcrypt.gensalt())
 
-                    # Saves new pass from form
-                    hashed_new_pass = form.new_password.data
-                    # if the new pass is not empty, hash it
-                    if hashed_new_pass is not '':
-                        hashed_new_pass = bcrypt.hashpw(hashed_new_pass, bcrypt.gensalt())
-
-                    tenant = {'id': current_tenant.id,
-                              'password': hashed_pass,
-                              'new_password': hashed_new_pass,
-                              'active_fortnox': form.active_fortnox.data,
-                              'image': form.image.data,
-                              'background_color': form.background_color.data}
-                    clt.update_tenant_information(tenant)
-
-                    return redirect('/')
+                        tenant = {'id': current_tenant.id,
+                                  'password': hashed_pass,
+                                  'new_password': hashed_new_pass,
+                                  'active_fortnox': form.active_fortnox.data,
+                                  'image': form.image.data,
+                                  'background_color': form.background_color.data}
+                        clt.update_tenant_information(tenant)
+                        flash('Gym information changed')
+                        return redirect('/')
+                    else:
+                        flash('Wrong password, could not save changes')
 
             return render_template('settings.html', title='Settings Tab',
                                    form=form,
@@ -199,18 +199,20 @@ def general_information():
 
                 if stored_hash is not None:
                     hashed_pass = bcrypt.hashpw(form.password.data, stored_hash)
-
-                    tenant = {'id': current_tenant.id,
-                              'password': hashed_pass,
-                              'gym_name': form.gym_name.data,
-                              'address': form.address.data,
-                              'phone': form.phone.data,
-                              'zip_code': form.zip_code.data,
-                              'city': form.city.data,
-                              'email': form.email.data}
-                    clt.update_tenant_general_information(tenant)
-
-                    return redirect('/')
+                    if hashed_pass == stored_hash:
+                        tenant = {'id': current_tenant.id,
+                                  'password': hashed_pass,
+                                  'gym_name': form.gym_name.data,
+                                  'address': form.address.data,
+                                  'phone': form.phone.data,
+                                  'zip_code': form.zip_code.data,
+                                  'city': form.city.data,
+                                  'email': form.email.data}
+                        clt.update_tenant_general_information(tenant)
+                        flash('Gym information changed')
+                        return redirect('/')
+                    else:
+                        flash('Wrong password, could not save changes')
 
             return render_template('general_information.html', title='General Information Tab',
                                    form=form,
@@ -616,8 +618,6 @@ def edit_user(user_index=None):
                 return "No user have this ID"
 
             form = EditUser(obj=user)
-            tagevents = []
-            #tagevents = get_tagevents_user_dict(user_index)
             if form.validate_on_submit():
                 user.firstname = form.firstname.data
                 user.lastname = form.lastname.data
@@ -643,7 +643,6 @@ def edit_user(user_index=None):
                                        title='Edit User',
                                        form=form,
                                        data=user.dict(),
-                                       tags=tagevents,
                                        error=form.errors)
             else:
                 return "she wrote upon it; no such number, no such zone"

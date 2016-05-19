@@ -15,10 +15,18 @@ class EditGeneralInformation(Form):
     :param city: Tenants City
     :param Email: Tenants Email
     """
-    password = PasswordField('password', [validators.Length(max=80), validators.DataRequired()])
-    gym_name = TextField('gym_name', [validators.Length(max=50), validators.DataRequired()])
-    address = TextField('address', [validators.Length(max=50), validators.DataRequired()])
-    phone = TextField('phone', [validators.Length(max=20), validators.DataRequired()])
-    zip_code = TextField('zip_code', [validators.Length(max=20), validators.DataRequired()])
-    city = TextField('city', [validators.Length(max=50), validators.DataRequired()])
-    email = TextField('email', [validators.Length(max=50), validators.Email()])
+    password = PasswordField('password', [validators.Length(max=80, message='Password is to long, 80 characters is maximum'),
+                                          validators.DataRequired(message='Password is required to save changes')])
+    gym_name = TextField('gym_name', [validators.Length(max=50, message='Gym name is to long, 50 characters is maximum'),
+                                      validators.DataRequired(message='Gym name is required')])
+    address = TextField('address', [validators.Length(max=50, message='Address is to long, 50 characters is maximum'),
+                                    validators.DataRequired(message='Address is required')])
+    phone = TextField('phone', [validators.Length(max=20, message='Phone number is to long, 20 characters is maximum'),
+                                validators.DataRequired(message='Phone number is required')])
+    zip_code = TextField('zip_code', [validators.Length(max=20, message='Zip code is to long, 20 characters is maximum'),
+                                      validators.DataRequired(message='Zip code is required')])
+    city = TextField('city', [validators.Length(max=50, message='City is to long, 50 characters is maximum'),
+                              validators.DataRequired(message='City is required')])
+    email = TextField('email', [validators.Length(max=50, message='Email is to long, 50 characters is maximum'),
+                                validators.Email(message='Email is not in valid format'),
+                                validators.DataRequired(message='Email is required')])

@@ -6,34 +6,25 @@
 {% if message %}
 Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_tag/{{message[0]}}">YES</a>
 {% endif %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+            {% for message in messages %}
+                <li>{{ message }} </li>
+            {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
-{% if error %}
-
-{% if error["firstname"] %}
-    <p style="color:red;">Not a valid Name.</p>
-{% endif %}
-{% if error["lastname"] %}
-    <p style="color:red;">Not a valid Name.</p>
-{% endif %}
-{% if error["email"] %}
-    <p style="color:red;">You need to enter a valid Email-address (test@domain.com)</p>
-{% endif %}
-{% if error["address"] %}
-    <p style="color:red;">You need to enter an Address.</p>
-{% endif %}
-{% if error["city"] %}
-    <p style="color:red;">You need to enter a City.</p>
-{% endif %}
-{% if error["gender"] %}
-    <p style="color:red;">Choose a gender.</p>
-{% endif %}
-{% if error["expiry_date"] %}
-    <p style="color:red;">Enter a valid Expiry date ex:[2018-06-25]</p>
-{% endif %}
-{% if error["status"] %}
-    <p style="color:red;">Choose a Membership status</p>
-{% endif %}
-{% endif %}
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
 
 {% if data %}
 <h1>Edit user</h1>

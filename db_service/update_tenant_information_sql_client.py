@@ -52,7 +52,6 @@ class UpdateTenantInformationSqlClient:
             cursor.close()
             my_connection.close()
             return_array = []
-            print(values[0][0])
             for tenants in values:
                 return_array.append(tenant.SQLTenant(tenants[0], tenants[1], tenants[2], tenants[3], tenants[4],
                                                      tenants[5], tenants[6], tenants[7], tenants[8], tenants[9],

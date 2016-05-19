@@ -49,15 +49,24 @@
         </nav>
     {# Added some css to the tagged in user #}
         {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul>
-          {% for message in messages %}
-            <li>{{ message }} </li>
-          {% endfor %}
+            {% if messages %}
+                <ul>
+            {% for message in messages %}
+                <li>{{ message }} </li>
+            {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
             </ul>
-          {% endif %}
-          {% endwith %}
-          {% block content %}{% endblock %}
+        {% endif %}
 
         <h3>Settings</h3>
         <a href="/static/crosslogo.png"><img class="cflogo" src="/static/crosslogo.png" alt="Crosstag Logo" height="150" width="200"></a>
