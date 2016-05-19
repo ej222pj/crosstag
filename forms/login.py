@@ -8,6 +8,8 @@ class Login(Form):
 
     :param Username: Username of a tenant.
     :param Password: Password of a tenant.
+    :type Username: string (80)
+    :type Password: string (80)
     """
     username = TextField('username', [validators.Length(max=80, message='Username is to long, 80 characters is maximum'),
                                       validators.DataRequired(message='Username is required')])

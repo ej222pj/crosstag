@@ -7,8 +7,8 @@ class EditUser(Form):
     """
     A representation of the form for editing a user.
 
-    :param name: Firstname of the user.
-    :param name: Lastname of the user.
+    :param firstname: Firstname of the user.
+    :param lastname: Lastname of the user.
     :param email: Emailaddress of the user.
     :param phone: Phonenumber of the user.
     :param address: Address 1 of the user.
@@ -16,9 +16,21 @@ class EditUser(Form):
     :param city: City of the user.
     :param zip_code: Zip code of the city.
     :param tag_id: Tag id of the user.
-    :param expiry_date: Expire date of the users membership.
     :param gender: Gender of the user.
+    :param expiry_date: Expire date of the users membership.
     :param status: Status of the users membership.
+    :type firstname: string (25)
+    :type lastname: string (30)
+    :type email: string (120)
+    :type phone: string (20)
+    :type address: string (50)
+    :type address2: string (50)
+    :type city: string (120)
+    :type zip_code: string (20)
+    :type tag_id: string (20)
+    :type gender: string (10)
+    :type expiry_date: datetime
+    :type status: string (10)
 
     """
     firstname = TextField('firstname', [validators.Length(max=25, message='Firstname to long, 25 characters is maximum'),

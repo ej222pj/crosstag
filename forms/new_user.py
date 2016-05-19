@@ -20,7 +20,18 @@ class NewUser(Form):
     :param gender: Gender of the user.
     :param expiry_date: Expire date of the users membership.
     :param status: Status of the users membership.
-
+    :type firstname: string (25)
+    :type lastname: string (30)
+    :type email: string (120)
+    :type phone: string (20)
+    :type address: string (50)
+    :type address2: string (50)
+    :type city: string (120)
+    :type zip_code: string (20)
+    :type ssn: string (14)
+    :type gender: string (10)
+    :type expiry_date: datetime
+    :type status: string (10)
     """
     firstname = TextField('firstname', [validators.Length(max=25, message='Firstname to long, 25 characters is maximum'),
                                         validators.DataRequired(message='Firstname is required')])
