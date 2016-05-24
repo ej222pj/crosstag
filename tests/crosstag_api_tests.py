@@ -5,9 +5,9 @@ import grequests
 import sys
 from datetime import datetime
 sys.path.append('../')
-import crosstag_server
-import db_service
-from db_service import users_sql_client as user_client
+# import crosstag_server
+# import db_service
+# from db_service import users_sql_client as user_client
 
 class CrosstagApiTestCase(unittest.TestCase):
 
