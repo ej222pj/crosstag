@@ -7,7 +7,7 @@
 import os
 from pyfiglet import Figlet
 from optparse import OptionParser
-import requests
+import grequests
 import json
 import time
 
@@ -80,13 +80,13 @@ class CrosstagViewer(object):
 
     def get_user_data(self, tag_nbr):
         try:
-            res = requests.get("http://localhost:80/crosstag/v1.0/get_user_data_tag/%s" % tag_nbr, timeout=3)
+            res = grequests.get("http://localhost:80/crosstag/v1.0/get_user_data_tag/%s" % tag_nbr, timeout=3)
             return json.loads(res.text)
         except:
             return None
 
     def get_user_stats(self, user_id):
-        res = requests.get("http://localhost:80/crosstag/v1.0/get_tagevents_user/%s" % user_id, timeout=3)
+        res = grequests.get("http://localhost:80/crosstag/v1.0/get_tagevents_user/%s" % user_id, timeout=3)
         return json.loads(res.text)
 
     def print_user(self, user_data, user_tagins):
@@ -107,7 +107,7 @@ class CrosstagViewer(object):
 
     def poll_server(self):
         try:
-            res = requests.get("http://%s:%d/crosstag/v1.0/last_tagin" % (
+            res = grequests.get("http://%s:%d/crosstag/v1.0/last_tagin" % (
                                self.server, self.port), timeout=3)
             res = json.loads(res.text)
             self.online = True
