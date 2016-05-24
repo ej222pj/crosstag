@@ -34,7 +34,6 @@ Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
 app.config.from_pyfile('config.py')
 app_name = 'crosstag'
 version = 'v1.0'
-last_tag_events = None
 
 
 def redirect_not_logged_in():
@@ -865,7 +864,7 @@ def stream():
     def up_stream():
         while True:
             global last_tag_events
-            # tag = get_last_tag_event() - NYTT SÄTT FINNS!!!
+            # tag = get_last_tag_event() - New way exists!!!
             user = None
             if last_tag_events is None or last_tag_events != tag.index:
                 last_tag_events = tag.index

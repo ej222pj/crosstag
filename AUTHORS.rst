@@ -30,3 +30,10 @@ Patches and Suggestions
 ```````````````````````
 
 - Ken Jeansson
+
+Cloudtag Developers
+```````````````````
+
+- Eric Sjöström Jennerstrand (ej222pj) <ej222pj@student.lnu.se> `@ej222pj <https://github.com/ej222pj>`_
+
+- Kristoffer Svensson (ks222rt) <ks222rt@student.lnu.se> `@ks222rt <https://github.com/ks222rt>`_
