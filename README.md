@@ -1,15 +1,13 @@
 Crosstag: A sensible gym solution for sensible gyms
 =========================
-I really wish I had written more here. Maybe by Christmas?
 
 Features
 ----------
 
-- Designed to run on a Raspberry Pi (http://www.raspberrypi.org/products/)
 - COTS RFID-reader compatible (https://www.sparkfun.com/products/retired/9875, https://www.sparkfun.com/products/13198)
 - Stand alone server
 - Stand alone reader
-- Stand alone viewer
+- Reader designed to run on a Raspberry Pi (http://www.raspberrypi.org/products/)
 - Not much more
 
 Installation
@@ -17,56 +15,18 @@ Installation
 ### install dependencies and clone this repo
 ```sh
 sudo pip3 install —upgrade pip
-sudo pip3 install Flask
-sudo pip3 install Flask-SQLAlchemy
-sudo pip3 install Flask-wtf
-sudo pip3 install pyfiglet
-sudo pip3 install requests
-sudo pip3 install pyserial
-git clone https://github.com/lundstrj/crosstag.git
+git clone https://github.com/ej222pj/crosstag.git
+sudo pip3 install -r requirements.txt 
 ```
-### to start the server
+### To start the server
 ```sh
-sudo python crosstag_server.py
+sudo python3 crosstag_server.py
 ```
-### to start the reader
+### To start the reader on a Raspberry PI
 ```sh
-python crosstag_reader.py
+sudo python3 crosstag_reader.py
 ```
-### to start the terminal based viewer
+### To start the reader in the terminal
 ```sh
-python crosstag_viewer.py
-```
-
-Avoid screen blanking
----------------------
-```sh
-sudo nano /etc/kbd/config
-```
-```
-BLANK_TIME=0
-POWERDOWN_TIME=0
-```
-```sh
-sudo /etc/init.d/kbd restart
-sudo nano /etc/lightdm/lightdm.conf
-xserver-command=X -s 0 dpms
-```
-Setup for remote access
------------------------
-```sh
-sudo apt-get update
-sudo apt-get install weavedconnectd
-sudo weavedinstaller
-```
-
-Setup for Crontab
------------------------
-```sh
-sudo apt-get install gnome-schedule
-crontab -e <== Opens crontab file
-Add 3 lines in the bottom for automatic email, automatic sync and clear tagcounter
-* 10 * * 1 wget -O - -q -t 1 http://localhost/crosstag/v1.0/send_latecomers_email/
-* 6 * * 1 wget -O - -q -t 1 http://localhost/crosstag/v1.0/fortnox/
-0 4 1 * * wget -O - -q -t 1 http://localhost/crosstag/v1.0/clear_tagcounter/
+sudo python3 crosstag_reader.py --dummy
 ```
