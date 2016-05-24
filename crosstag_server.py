@@ -39,21 +39,21 @@ last_tag_events = None
 
 def redirect_not_logged_in():
     """
-        Redirect the page if the tenant is not logged in and is trying to reach a page without permission
+    Redirect the page if the tenant is not logged in and is trying to reach a page without permission
 
-        :return: redirect to front page
-        """
+    :return: redirect to front page
+    """
     flash('You need to login before entering the application')
     return redirect('/')
 
 
 def check_session():
     """
-        Checks if the tenant is logged in by checking the session for username param and loggedin param
-        This function is called by all other functions that handle tenant templates
+    Checks if the tenant is logged in by checking the session for username param and loggedin param
+    This function is called by all other functions that handle tenant templates
 
-        :return: True or false
-        """
+    :return: True or false
+    """
     if session.get('loggedIn') is not None:
         if session['loggedIn'] and session.get('username') is not None:
             return True
@@ -66,10 +66,10 @@ def check_session():
 @app.route('/index')
 def index():
     """
-        Render index template if the user is logged in, if not the user is redirected to the login page
+    Render index template if the user is logged in, if not the user is redirected to the login page
 
-        :return: render template or redirect
-        """
+    :return: render template or redirect
+    """
     if check_session():
         return render_template('index.html')
     else:
@@ -79,24 +79,24 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
-        GET - Renders a login template for the tenant
-        POST - Validates the login form and check if the values are right. If they pass the tenant is logged in and redirected
-        to the front page again, if not the login templated is rendered with an message.
+    GET - Renders a login template for the tenant
+    POST - Validates the login form and check if the values are right. If they pass the tenant is logged in and redirected
+    to the front page again, if not the login templated is rendered with an message.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if not check_session():
             form = Login()
             if form.validate_on_submit():
                 cl = registration_client.RegisterLoginSqlClient()
-                stored_hash = cl.do_login(form.username.data)
+                stored_hash = cl.do_login(form.username.data.title())
                 if stored_hash is not None:
                     if bcrypt.hashpw(form.password.data, stored_hash) == stored_hash:
                         # Use above to match passwords
                         session['loggedIn'] = True
-                        session['username'] = form.username.data
-                        flash('Welcome %s' % form.username.data)
+                        session['username'] = form.username.data.title()
+                        flash('Welcome %s' % form.username.data.title())
                         return redirect('/')
                     else:
                         flash('Wrong username or password')
@@ -114,10 +114,10 @@ def login():
 @app.route('/logout', methods=['GET'])
 def logout():
     """
-        Logouts the tenant. Destroys the session and redirects to the front page again.
+    Logouts the tenant. Destroys the session and redirects to the front page again.
 
-        :return: redirect
-        """
+    :return: redirect
+    """
     session.pop('loggedIn', None)
     session.pop('username', None)
     return redirect('/')
@@ -126,13 +126,13 @@ def logout():
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     """
-        GET - Renders a registration form.
-        POST - Validates the login form and check if the values are right. If they pass the informations is stored in
-        the database and the tenant is registrated and is redirected to the front page.
-        If they fail the registration form is rendered with error messages.
+    GET - Renders a registration form.
+    POST - Validates the login form and check if the values are right. If they pass the informations is stored in
+    the database and the tenant is registrated and is redirected to the front page.
+    If they fail the registration form is rendered with error messages.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if not check_session():
             form = Register()
@@ -142,7 +142,7 @@ def registration():
                 # 2 Hash the password
                 hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
                 # 3 Save the Tenant in the db
-                registered_tenant = {'username': form.username.data,
+                registered_tenant = {'username': form.username.data.title(),
                                      'password': hashed_password,
                                      'active_fortnox': form.active_fortnox.data,
                                      'gym_name': form.gym_name.data,
@@ -151,7 +151,7 @@ def registration():
                                      'zip_code': form.zip_code.data,
                                      'city': form.city.data,
                                      'email': form.email.data,
-                                     'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data}
+                                     'pass': registration_client.cfg.TENANT_PASSWORD + form.username.data.title()}
 
                 cl = registration_client.RegisterLoginSqlClient()
                 if cl.do_registration(registered_tenant):
@@ -171,13 +171,13 @@ def registration():
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     """
-        GET - Renders a settings form with tenant information
-        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
-        the database and the tenant is redirected to the front page.
-        If they fail the settings form is rendered with error messages.
+    GET - Renders a settings form with tenant information
+    POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+    the database and the tenant is redirected to the front page.
+    If they fail the settings form is rendered with error messages.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             clt = update_tenant_client.UpdateTenantInformationSqlClient()
@@ -226,13 +226,13 @@ def settings():
 @app.route('/general_information', methods=['GET', 'POST'])
 def general_information():
     """
-        GET - Renders a settings form with general information.
-        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
-        the database and the tenant is redirected to the front page.
-        If they fail the settings form is rendered with error messages.
+    GET - Renders a settings form with general information.
+    POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+    the database and the tenant is redirected to the front page.
+    If they fail the settings form is rendered with error messages.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             clt = update_tenant_client.UpdateTenantInformationSqlClient()
@@ -279,13 +279,13 @@ def general_information():
 @app.route('/fortnox_information', methods=['GET', 'POST'])
 def fortnox_information():
     """
-        GET - Renders a settings form for fortnox information
-        POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
-        the database and the tenant is redirected to the front page.
-        If they fail the settings form is rendered with error messages.
+    GET - Renders a settings form for fortnox information
+    POST - Validates the settings form and check if the values are right. If they pass the informations is stored in
+    the database and the tenant is redirected to the front page.
+    If they fail the settings form is rendered with error messages.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             form = EditFortnoxInformation()
@@ -304,19 +304,19 @@ def fortnox_information():
 @app.route('/%s/%s/tagevent/<tag_id>/<api_key>/<timestamp>' % (app_name, version))
 def tagevent(tag_id, api_key, timestamp):
     """
-        Gets a tagevent from crosstag_reader with tag_id, api_key and timestamp of the tagevent.
-        Checks if the api-key is valid and then creates the tag and saves it in the database.
-        If the api-key is wrong a KeyError is raised.
+    Gets a tagevent from crosstag_reader with tag_id, api_key and timestamp of the tagevent.
+    Checks if the api-key is valid and then creates the tag and saves it in the database.
+    If the api-key is wrong a KeyError is raised.
 
-        :param tag_id:
-        :param api_key:
-        :param timestamp:
-        :type tag_id: string
-        :type api_key: string
-        :type timestamp: string
-        :return: Redirect or renders template
-        :raises: KeyError
-        """
+    :param tag_id:
+    :param api_key:
+    :param timestamp:
+    :type tag_id: string
+    :type api_key: string
+    :type timestamp: string
+    :return: Redirect or renders template
+    :raises: KeyError
+    """
     cl = registration_client.RegisterLoginSqlClient()
     username = cl.get_tenant_with_api_key(api_key)
     if username[0]['username'] is not None:
@@ -344,12 +344,12 @@ def tagevent(tag_id, api_key, timestamp):
 @app.route('/all_users/<filter>', methods=['GET', 'POST'])
 def all_users(filter=None):
     """
-        Lists all members based on the filter.
+    Lists all members based on the filter.
 
-        :param filter:
-        :type filter: string
-        :return: Redirect or renders template
-        """
+    :param filter:
+    :type filter: string
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             ret, users = [], []
@@ -381,10 +381,10 @@ def all_users(filter=None):
 @app.route('/last_tagins', methods=['GET'])
 def last_tagins():
     """
-        Lists the last tagins. At the moment ( 2016-05-19 ) it is the last 10 tags, but this will be changeable
+    Lists the last tagins. At the moment ( 2016-05-19 ) it is the last 10 tags, but this will be changeable
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             ret = []
@@ -404,12 +404,12 @@ def last_tagins():
 @app.route('/%s/%s/remove_user/<user_id>' % (app_name, version), methods=['POST'])
 def remove_user(user_id):
     """
-        Deletes a user from the database.
+    Deletes a user from the database.
 
-        :param user_id:
-        :type user_id: integer
-        :return: Redirect
-        """
+    :param user_id:
+    :type user_id: integer
+    :return: Redirect
+    """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
@@ -426,13 +426,13 @@ def remove_user(user_id):
 @app.route('/new_user', methods=['GET', 'POST'])
 def add_new_user():
     """
-        GET - Renders a new user form.
-        POST - Validates the user form and check if the values are right. If they pass the informations is stored in
-        the database and the user is registrated. The tenant is redirected to the user page.
-        If they fail the user form is rendered with error messages.
+    GET - Renders a new user form.
+    POST - Validates the user form and check if the values are right. If they pass the informations is stored in
+    the database and the user is registrated. The tenant is redirected to the user page.
+    If they fail the user form is rendered with error messages.
 
-        :return: Redirect or renders template
-        """
+    :return: Redirect or renders template
+    """
     try:
         if check_session():
             form = NewUser()
@@ -461,12 +461,12 @@ def add_new_user():
 @app.route('/search_user', methods=['GET', 'POST'])
 def search_user():
     """
-        GET - Renders a search user form.
-        POST - Takes the value from the form and pass it to the database. Retrieves a list of user/users based on
-        the information that was passed.
+    GET - Renders a search user form.
+    POST - Takes the value from the form and pass it to the database. Retrieves a list of user/users based on
+    the information that was passed.
 
-        :return: Renders template with the search result
-        """
+    :return: Renders template with the search result
+    """
     try:
         if check_session():
             form = SearchUser()
@@ -496,13 +496,13 @@ def search_user():
 @app.route('/%s/%s/link_user_to_last_tag/<user_id>' % (app_name, version), methods=['GET', 'POST'])
 def link_user_to_last_tag(user_id):
     """
-        Links the user to the last tag. Grabs the last tag stored in the database and binds it to the specified member.
-        Grabs only a tag that doesnt belong to another member.
+    Links the user to the last tag. Grabs the last tag stored in the database and binds it to the specified member.
+    Grabs only a tag that doesnt belong to another member.
 
-        :param user_id:
-        :type user_id: integer
-        :return: Redirect to edit user page
-        """
+    :param user_id:
+    :type user_id: integer
+    :return: Redirect to edit user page
+    """
     try:
         if check_session():
             try:
@@ -533,10 +533,10 @@ def link_user_to_last_tag(user_id):
 @app.route('/inactive_check', methods=['GET'])
 def inactive_check():
     """
-        Renders a template with a list of all users that have not tagged in for the last 2 weeks
+    Renders a template with a list of all users that have not tagged in for the last 2 weeks
 
-        :return: Renders template with a user list
-        """
+    :return: Renders template with a user list
+    """
     try:
         if check_session():
             ret = []
@@ -557,14 +557,14 @@ def inactive_check():
 @app.route('/debt_delete/<debt_id>/<user_id>', methods=['POST'])
 def debt_delete(debt_id, user_id):
     """
-        Deletes a debt from a user and redirect back to the userpage
+    Deletes a debt from a user and redirect back to the userpage
 
-        :param debt_id:
-        :param user_id:
-        :type debt_id: integer
-        :type user_id: integer
-        :return: Redirect to user page
-        """
+    :param debt_id:
+    :param user_id:
+    :type debt_id: integer
+    :type user_id: integer
+    :return: Redirect to user page
+    """
     try:
         if check_session():
             dcl = debt_client.DebtSqlClient()
@@ -582,10 +582,10 @@ def debt_delete(debt_id, user_id):
 @app.route('/debts', methods=['GET'])
 def debt_check():
     """
-        Renders a template with a list of all users with debts
+    Renders a template with a list of all users with debts
 
-        :return: Renders template with a list of users
-        """
+    :return: Renders template with a list of users
+    """
     try:
         if check_session():
             dcl = debt_client.DebtSqlClient()
@@ -605,15 +605,15 @@ def debt_check():
 @app.route('/debt_create/<user_id>', methods=['GET', 'POST'])
 def debt_create(user_id):
     """
-        GET - Renders a debt form.
-        POST - Validates the debt form and check if the values are right. If they pass the informations is stored in
-        the database and the debt is registrated. The tenant is redirected to the user page.
-        If they fail the debt form is rendered with error messages.
+    GET - Renders a debt form.
+    POST - Validates the debt form and check if the values are right. If they pass the informations is stored in
+    the database and the debt is registrated. The tenant is redirected to the user page.
+    If they fail the debt form is rendered with error messages.
 
-        :param user_id:
-        :type user_id: integer
-        :return: Redirect to edit user page
-        """
+    :param user_id:
+    :type user_id: integer
+    :return: Redirect to edit user page
+    """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
@@ -641,16 +641,16 @@ def debt_create(user_id):
 @app.route('/statistics', methods=['GET'])
 def statistics():
     """
-        Renders statistic from the database on todays date.
-        1. Tags by hour
-        2. Tags by day
-        3. Tags by month
-        4. Number of genders in database
-        5. Number of tags by gender
-        6. Number of age groups in database
+    Renders statistic from the database on todays date.
+    1. Tags by hour
+    2. Tags by day
+    3. Tags by month
+    4. Number of genders in database
+    5. Number of tags by gender
+    6. Number of age groups in database
 
-        :return: Render template for statistic
-        """
+    :return: Render template for statistic
+    """
     if check_session():
         default_date = datetime.now()
         default_date_array = {'year': str(default_date.year), 'month': str(default_date.strftime('%m')), 'day':str(default_date.strftime('%d'))}
@@ -680,22 +680,22 @@ def statistics():
 @app.route('/<_month>/<_day>/<_year>', methods=['GET'])
 def statistics_by_date(_month, _day, _year):
     """
-        Renders statistic from the database on the specified date from the params.
-        1. Tags by hour
-        2. Tags by day
-        3. Tags by month
-        4. Number of genders in database
-        5. Number of tags by gender
-        6. Number of age groups in database
+    Renders statistic from the database on the specified date from the params.
+    1. Tags by hour
+    2. Tags by day
+    3. Tags by month
+    4. Number of genders in database
+    5. Number of tags by gender
+    6. Number of age groups in database
 
-        :param _month:
-        :param _day:
-        :param _year:
-        :type _month: string
-        :type _day: string
-        :type _year: string
-        :return: Render template for statistic
-        """
+    :param _month:
+    :param _day:
+    :param _year:
+    :type _month: string
+    :type _day: string
+    :type _year: string
+    :return: Render template for statistic
+    """
     if check_session():
         chosen_date_array = {'year': _year, 'month': _month, 'day': _day}
         gs = GenerateStats()
@@ -726,11 +726,11 @@ def statistics_by_date(_month, _day, _year):
 @app.route('/%s/%s/fortnox/' % (app_name, version), methods=['GET'])
 def fortnox_users():
     """
-        Syncs the database with users from fortnox database.
-        Add or updates the users.
+    Syncs the database with users from fortnox database.
+    Add or updates the users.
 
-        :return: Redirect to front page
-        """
+    :return: Redirect to front page
+    """
     try:
         if check_session():
             sync_from_fortnox()
@@ -746,12 +746,12 @@ def fortnox_users():
 @app.route('/user_page/<user_index>', methods=['GET', 'POST'])
 def user_page(user_index=None):
     """
-        Renders a template with user information on a specified user.
+    Renders a template with user information on a specified user.
 
-        :param user_index:
-        :type user_index: integer
-        :return: Renders a template
-        """
+    :param user_index:
+    :type user_index: integer
+    :return: Renders a template
+    """
     try:
         if check_session():
             debts, tagevents = [], []
@@ -785,15 +785,15 @@ def user_page(user_index=None):
 @app.route('/edit_user/<user_index>', methods=['GET', 'POST'])
 def edit_user(user_index=None):
     """
-        GET - Renders a edit user form.
-        POST - Validates the user form and check if the values are right. If they pass the information is stored in
-        the database and the user is updated. The tenant is redirected to the user page.
-        If they fail the edit user form is rendered with error messages.
+    GET - Renders a edit user form.
+    POST - Validates the user form and check if the values are right. If they pass the information is stored in
+    the database and the user is updated. The tenant is redirected to the user page.
+    If they fail the edit user form is rendered with error messages.
 
-        :param user_index:
-        :type user_index: integer
-        :return: Renders a template
-        """
+    :param user_index:
+    :type user_index: integer
+    :return: Renders a template
+    """
     try:
         if check_session():
             cl = user_client.UsersSqlClient()
