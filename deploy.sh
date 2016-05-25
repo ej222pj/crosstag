@@ -28,7 +28,7 @@ stty echo
 # Login to docker
 repo="crosstag/crosstag"
 tag="latest"
-version="1.2"
+version="2.0"
 sudo docker login -u="$username" -p="$password"
 sudo docker build -f Dockerfile -t "$repo:$version" .
 sudo docker tag "$repo:$version" "$repo:$tag"
