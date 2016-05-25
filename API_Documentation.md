@@ -6,7 +6,7 @@
 ---
 #### Create tagevent
 ```sh
-Request : /crosstag/v1.0/tagevent/<tag_id>/<api_key>/<timestamp>
+Request : /crosstag/v2.0/tagevent/<tag_id>/<api_key>/<timestamp>
 Method : GET
 Params : tag_id, string. api_key, string. timestamp, string.
 Return : Redirect or renders template
@@ -16,7 +16,7 @@ Description : Gets a tagevent from crosstag_reader with tag_id, api_key and time
 
 #### Remove User
 ```sh
-Request : /crosstag/v1.0/remove_user/<user_id>
+Request : /crosstag/v2.0/remove_user/<user_id>
 Method : POST
 Params : user_id, integer
 Return : Redirect
@@ -25,7 +25,7 @@ Description : Deletes a user from the database.
 
 #### Link user to last tag
 ```sh
-Request : /crosstag/v1.0/link_user_to_last_tag/<user_id>
+Request : /crosstag/v2.0/link_user_to_last_tag/<user_id>
 Method : GET/POST
 Params : user_id, integer
 Return : Redirect
@@ -34,7 +34,7 @@ Description : Links the user to the last tag. Grabs the last tag stored in the d
 
 #### Sync from Fortnox
 ```sh
-Request : /crosstag/v1.0/fortnox/
+Request : /crosstag/v2.0/fortnox/
 Method : GET
 Params :
 Return : Redirect
