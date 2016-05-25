@@ -32,7 +32,7 @@ Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
 
 app.config.from_pyfile('config.py')
 app_name = 'crosstag'
-version = 'v1.0'
+version = 'v2.0'
 
 
 def redirect_not_logged_in():

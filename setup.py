@@ -10,12 +10,12 @@ def read(*paths):
 
 setup(
     name='crosstag',
-    version='0.0.1',
-    description='Tag-in system for a gym',
+    version='2.0.0',
+    description='Tag-in an member handing system for a gym',
     long_description=(read('README.md') + '\n\n' +
                       read('HISTORY.rst') + '\n\n' +
                       read('AUTHORS.rst')),
-    url='https://github.com/lundstrj/crosstag',
+    url='https://github.com/ej222pj/crosstag',
     license='MIT',
     author='Johan Lundstrom',
     author_email='lundstrom.se@gmail.com',
@@ -28,11 +28,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    install_requires=['flask', 'flask-WTF', 'flask-security', 'pyserial',
-                      'requests', 'flask-sqlalchemy', 'screen'],
+    install_requires=['Flask', 'Flask-WTF', 'Jinja2', 'WTForms',
+                      'grequests', 'pyfiglet', 'pypyodbc', 'py-bcrypt'],
 )
