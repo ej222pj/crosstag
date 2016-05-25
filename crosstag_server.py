@@ -32,7 +32,7 @@ Sql_detailed_tag = sql_detailed_tagevent.SQLDetailedTagevent
 
 app.config.from_pyfile('config.py')
 app_name = 'crosstag'
-version = 'v1.0'
+version = 'v2.0'
 
 
 def redirect_not_logged_in():
@@ -135,6 +135,10 @@ def registration():
         if not check_session():
             form = Register()
             if form.validate_on_submit():
+                # TODO: Remove temporally disabled registration, 2 lines below
+                flash('Registration is temporarily disabled.')
+                return redirect('/')
+                '''
                 # 1 Get password from form
                 password = form.password.data.encode('utf-8')
                 # 2 Hash the password
@@ -157,6 +161,7 @@ def registration():
                     return redirect('/')
                 else:
                     flash('Username already exists')
+                '''
 
             return render_template('register.html', title='Register new Tenant', form=form, errors=form.errors)
         else:
@@ -649,29 +654,35 @@ def statistics():
 
     :return: Render template for statistic
     """
-    if check_session():
-        default_date = datetime.now()
-        default_date_array = {'year': str(default_date.year), 'month': str(default_date.strftime('%m')), 'day':str(default_date.strftime('%d'))}
-        gs = GenerateStats()
+    try:
+        if check_session():
+            default_date = datetime.now()
+            default_date_array = {'year': str(default_date.year),
+                                  'month': str(default_date.strftime('%m')),
+                                  'day':str(default_date.strftime('%d'))}
+            gs = GenerateStats()
 
-        ucl = user_client.UsersSqlClient()
-        tcl = tag_client.TageventsSqlClient()
-        users = ucl.get_users()
-        tagevents = tcl.get_statistic_tagevents()
-        week_day_name = default_date.strftime('%A')
-        month_name = default_date.strftime('%B')
-        custom_date_day = {'weekday': week_day_name + ' ' + str(default_date.day) + '/' + str(default_date.month) + '/' +
-                           str(default_date.year)}
-        custom_date_month = {'month': month_name + ' ' + str(default_date.year)}
-        # Send the data to a method who returns an multi dimensional array with statistics.
-        ret = gs.get_data(users, tagevents, default_date_array)
-        return render_template('statistics.html',
-                               plot_paths='',
-                               data=ret,
-                               data2=custom_date_day,
-                               data3=custom_date_month)
-    else:
-        return redirect_not_logged_in()
+            ucl = user_client.UsersSqlClient()
+            tcl = tag_client.TageventsSqlClient()
+            users = ucl.get_users()
+            tagevents = tcl.get_statistic_tagevents()
+            week_day_name = default_date.strftime('%A')
+            month_name = default_date.strftime('%B')
+            custom_date_day = {'weekday': week_day_name + ' ' + str(default_date.day) + '/' + str(default_date.month) + '/' +
+                               str(default_date.year)}
+            custom_date_month = {'month': month_name + ' ' + str(default_date.year)}
+            # Send the data to a method who returns an multi dimensional array with statistics.
+            ret = gs.get_data(users, tagevents, default_date_array)
+            return render_template('statistics.html',
+                                   plot_paths='',
+                                   data=ret,
+                                   data2=custom_date_day,
+                                   data3=custom_date_month)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error showing statistic, please try again.')
+        return redirect('/')
 
 
 # Renders a HTML page based on month, day and year.
@@ -694,30 +705,37 @@ def statistics_by_date(_month, _day, _year):
     :type _year: string
     :return: Render template for statistic
     """
-    if check_session():
-        chosen_date_array = {'year': _year, 'month': _month, 'day': _day}
-        gs = GenerateStats()
+    try:
+        if check_session():
+            chosen_date_array = {'year': _year, 'month': _month, 'day': _day}
+            gs = GenerateStats()
 
-        ucl = user_client.UsersSqlClient()
-        tcl = tag_client.TageventsSqlClient()
-        users = ucl.get_users()
-        tagevents = tcl.get_statistic_tagevents()
+            ucl = user_client.UsersSqlClient()
+            tcl = tag_client.TageventsSqlClient()
+            users = ucl.get_users()
+            tagevents = tcl.get_statistic_tagevents()
 
-        default_date = datetime.now()
-        selected_date = default_date.replace(day=int(_day), month=int(_month), year=int(_year))
-        week_day_name = selected_date.strftime('%A')
-        month_name = selected_date.strftime('%B')
-        custom_date_day = {'weekday': week_day_name + ' ' + str(selected_date.day) + '/' + str(selected_date.month) + '/' + str(selected_date.year)}
-        custom_date_month = {'month': month_name + ' ' + str(selected_date.year)}
-        # Send the data to a method who returns an multi dimensional array with statistics.
-        ret = gs.get_data(users, tagevents, chosen_date_array)
-        return render_template('statistics.html',
-                               plot_paths='',
-                               data=ret,
-                               data2=custom_date_day,
-                               data3=custom_date_month)
-    else:
-        return redirect_not_logged_in()
+            default_date = datetime.now()
+            selected_date = default_date.replace(day=int(_day), month=int(_month), year=int(_year))
+            week_day_name = selected_date.strftime('%A')
+            month_name = selected_date.strftime('%B')
+            custom_date_day = {'weekday': week_day_name + ' ' + str(selected_date.day)
+                                          + '/' + str(selected_date.month)
+                                          + '/' + str(selected_date.year)}
+
+            custom_date_month = {'month': month_name + ' ' + str(selected_date.year)}
+            # Send the data to a method who returns an multi dimensional array with statistics.
+            ret = gs.get_data(users, tagevents, chosen_date_array)
+            return render_template('statistics.html',
+                                   plot_paths='',
+                                   data=ret,
+                                   data2=custom_date_day,
+                                   data3=custom_date_month)
+        else:
+            return redirect_not_logged_in()
+    except:
+        flash('Error showing statistic, please try again.')
+        return redirect('/')
 
 
 # Syncs the local database with customers from fortnox
@@ -895,14 +913,18 @@ def stream():
             return 'data: %s\n\n' % user
 
     return Response(up_stream(), mimetype='text/event-stream')
-
+#
+#   THE CODE BELOW IS NOT IN USE. BUT WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+#
 # TODO - APIKEY HERE?!
 # Renders a static page for the tagin view. Shows the person who tags in.
 @app.route('/%s/%s/static_tagin_page' % (app_name, version))
 def static_tagin_page():
     return render_template('static_tagin.html',
                            title='Static tagins')
-
+#
+#   THE CODE BELOW IS NOT IN USE. BUT WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+#
 # TODO - APIKEY HERE?!
 # Is called by the static page, it will send back an array with the top 5 of..
 # those who exercise the most. if there is not five people it will return an empty array.
@@ -922,7 +944,9 @@ def static_top_five():
     except:
         return jsonify({'json_arr': None})
 
-
+#
+#   THE CODE BELOW IS NOT IN USE. BUT WILL BE USED IN THE NEXT RELEASE OF THE PROGRAM!
+#
 # TODO - WHAT SHOULD WE DO HERE
 @app.route('/%s/%s/clear_tagcounter/' % (app_name, version), methods=['GET'])
 def clear_tagcounter():

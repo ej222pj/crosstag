@@ -26,7 +26,3 @@ sudo python3 crosstag_server.py
 ```sh
 sudo python3 crosstag_reader.py
 ```
-### To start the reader in the terminal
-```sh
-sudo python3 crosstag_reader.py --dummy
-```

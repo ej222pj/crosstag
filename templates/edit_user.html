@@ -4,7 +4,7 @@
 {% block content %}
 
 {% if message %}
-Add tag: {{message[1]}} to this user? <a href="/crosstag/v1.0/link_user_to_last_tag/{{message[0]}}">YES</a>
+Add tag: {{message[1]}} to this user? <a href="/crosstag/v2.0/link_user_to_last_tag/{{message[0]}}">YES</a>
 {% endif %}
         {% with messages = get_flashed_messages() %}
             {% if messages %}

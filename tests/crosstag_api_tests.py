@@ -14,7 +14,7 @@ class CrosstagApiTestCase(unittest.TestCase):
     def test_send_tagevent_pass(self):
         try:
             now = datetime.now()
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
+            urls = ["http://%s:%d/crosstag/v2.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
                                                                       '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E9D9B', str(now))]
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
@@ -25,7 +25,7 @@ class CrosstagApiTestCase(unittest.TestCase):
     def test_send_tagevent_fail(self):
         try:
             now = datetime.now()
-            urls = ["http://%s:%d/crosstag/v1.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
+            urls = ["http://%s:%d/crosstag/v2.0/tagevent/%s/%s/%s" % ("admin.crosstag.se", 80, "11111111",
                                                                       '2F80D9B8-AAB1-40A1-BC26-5DA4DB3E', str(now))]
             unsent = (grequests.get(url) for url in urls)
             res = grequests.map(unsent)
@@ -56,11 +56,11 @@ class CrosstagApiTestCase(unittest.TestCase):
         assert 'Cloudtag' in rv.data.decode('utf8')
 
     def test_static_tagin_page(self):
-        rv = self.app.get('/crosstag/v1.0/static_tagin_page')
+        rv = self.app.get('/crosstag/v2.0/static_tagin_page')
         assert 'Topp 5 taggningar' in rv.data.decode('utf8')
 
     def test_get_all_user(self):
-        urls = ["http://%s:%d/crosstag/v1.0/get_user_data_tag/%s" % ("0.0.0.0", 80, "11111111")]
+        urls = ["http://%s:%d/crosstag/v2.0/get_user_data_tag/%s" % ("0.0.0.0", 80, "11111111")]
         unsent = (grequests.get(url) for url in urls)
         res = grequests.map(unsent)
         self.assertEqual('[<Response [500]>]', str(res))
