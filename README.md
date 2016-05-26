@@ -16,7 +16,12 @@ Installation
 ```sh
 sudo pip3 install —upgrade pip
 git clone https://github.com/ej222pj/crosstag.git
-sudo pip3 install -r requirements.txt 
+sudo cd crosstag
+sudo pip3 install -r requirements.txt
+sudo apt-get install unixodbc unixodbc-dev freetds-dev freetds-bin tdsodbc
+sudo yes | cp -f freeodbcconfig/freetds.conf /etc/freetds/
+sudo yes | cp -f freeodbcconfig/odbc.ini /etc/
+sudo yes | cp -f freeodbcconfig/odbcinst.ini /etc/
 ```
 ### To start the server
 ```sh
