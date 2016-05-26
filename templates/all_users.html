@@ -3,78 +3,60 @@
 
 {% block content %}
 
-{% if message %}
-Add tag: {{message[1]}} to this user? <a href="/crosstag/v2.0/link_user_to_last_tag/{{message[0]}}">YES</a>
-{% endif %}
+<div class="col-md-12">
+    {% if filter %}
+        <div class="page-header col-md-8" style="margin: 0; border-bottom: 0;">
+            <h1>{{ filter.title() }} members <small>Listed {{ count }} users</small></h1>
+        </div>
+    {% endif %}
+    <div class="col-md-4" style="position: relative; top: 45px; left: 18%;">
+        <select onChange="window.location.href=this.value">
+            <option selected="selected" >Choose Filter</option>
+            <option value="/all_users/all">All</option>
+            <option value="/all_users/active">Active Membership</option>
+            <option value="/all_users/inactive">Inactive Membership</option>
+            <option value="/all_users/free">Free Membership</option>
+            <option value="/all_users/frozen">Frozen Membership</option>
+        </select>
+    </div>
+</div>
 
-
-<h1>All users</h1>
-
-    <select onChange="window.location.href=this.value">
-
-    <option selected="selected" >Choose Filter</option>
-    <option value="/all_users/all">All</option>
-    <option value="/all_users/active">Active Membership</option>
-    <option value="/all_users/inactive">Inactive Membership</option>
-    <option value="/all_users/free">Free Membership</option>
-    <option value="/all_users/frozen">Frozen Membership</option>
-    </select>
-
-{% if count %}
-<p>Listed {{ count }} users.</p>
-{% endif %}
-
-
-{% if filter == "all" %}
-    <h3>All members</h3>
-{% elif filter == "active" %}
-    <h3>Active members</h3>
-{% elif filter == "inactive" %}
-    <h3>Inactive members</h3>
-{% elif filter == "free" %}
-    <h3>Free members</h3>
-{% elif filter == "frozen" %}
-    <h3>Frozen members</h3>
-{% endif %}
-
-
-{% if hits %}
-
-	<table class="table table-hover">
-	<tbody>
-		<thead>
-			<tr>
-				<th>Firstname</th> <th>Lastname</th> <th>Member Status</th>  <th>E-mail</th> <th>Expire Date</th> <th>Linked Tag</th> <th></th>
-			</tr>
-		</thead>
-				{% for hit in hits %}
-				<tr>
-					<td>{{hit.firstname}}</td>
-                    <td>{{hit.lastname}}</td>
-                    <td>{% if hit.status == "Active" or hit.status == "Special"%}
-                        <p style="color:green">{{hit.status}}</p>
-                        {% elif hit.status == "Frozen" %}
-                        <p style="color:blue">{{hit.status}}</p>
-                        {% elif hit.status == "Free" %}
-                        <p style="color:darkgoldenrod">{{hit.status}}</p>
-                        {% else %}
-                        <p style="color:red">{{hit.status}}</p>
-                        {% endif %}
-                    </td>
-                    <td>{{hit.email}}</td>
-                    <td>{{hit.expiry_date}}</td>
-                    <td>
-                        {% if hit.tag_id == "None" or hit.tag_id == ""  or not hit.tag_id or hit.tag_id == " " %}
-                            <p style="color:red">No</p>
-                        {% else %}
-                            <p style="color:green">Yes</p>
-                        {% endif %}
-                    </td>
-                    <td><a style="text-decoration: underline;" href='/user_page/{{hit.id}}'>Info</a> </td>
-				</tr>
-				{% endfor %}
-	</tbody>
-	</table>
+<table class="table table-hover">
+<tbody>
+    <thead>
+        <tr>
+            <th>Firstname</th> <th>Lastname</th> <th>Member Status</th>  <th>E-mail</th> <th>Expire Date</th> <th>Linked Tag</th> <th></th>
+        </tr>
+    </thead>
+    {% if hits %}
+        {% for hit in hits %}
+        <tr>
+            <td>{{hit.firstname}}</td>
+            <td>{{hit.lastname}}</td>
+            <td>{% if hit.status == "Active" or hit.status == "Special"%}
+                <p style="color:green">{{hit.status}}</p>
+                {% elif hit.status == "Frozen" %}
+                <p style="color:blue">{{hit.status}}</p>
+                {% elif hit.status == "Free" %}
+                <p style="color:darkgoldenrod">{{hit.status}}</p>
+                {% else %}
+                <p style="color:red">{{hit.status}}</p>
+                {% endif %}
+            </td>
+            <td>{{hit.email}}</td>
+            <td>{{hit.expiry_date}}</td>
+            <td>
+                {% if hit.tag_id == "None" or hit.tag_id == ""  or not hit.tag_id or hit.tag_id == " " %}
+                    <p style="color:red">No</p>
+                {% else %}
+                    <p style="color:green">Yes</p>
+                {% endif %}
+            </td>
+            <td><a style="text-decoration: underline;" href='/user_page/{{hit.id}}'>Info</a> </td>
+        </tr>
+        {% endfor %}
+</tbody>
+</table>
 {% endif %}
 
 {% endblock %}

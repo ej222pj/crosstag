@@ -5,31 +5,30 @@
 
 <h2>Debts</h2>
 
-
-{% if hits %}
-	<table class="table table-hover">
-        <tbody>
-            <thead>
-                <tr>
-                    <th>Member</th><th>Product</th><th>Amount</th><th>Date</th>
-                </tr>
-            </thead>
-            {% for hit in hits %}
-                <tr>
-                    <td><a href='/user_page/{{hit['uid']}}'>{{ hit['firstname'] }} {{ hit['lastname'] }}</a></td>
-                    <td>{{ hit['product'] }} </td>
-                    <td>{{ hit['amount'] }} SEK</td>
-                    <td>{{ hit['create_date'] }} </td>
-                    <td>
-                        <form id="tjuue" action="/debt_delete/{{ hit['id']}}/{{ hit['uid'] }}" method="post"
-                            onsubmit="return confirm('Do you really want to delete this debt?')">
-                        <input type="submit"  value="Delete Debt" onclick="">
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<table class="table table-hover">
+    <tbody>
+        <thead>
+            <tr>
+                <th>Member</th><th>Product</th><th>Amount</th><th>Date</th>
+            </tr>
+        </thead>
+    {% if hits %}
+        {% for hit in hits %}
+            <tr>
+                <td><a href='/user_page/{{hit['uid']}}'>{{ hit['firstname'] }} {{ hit['lastname'] }}</a></td>
+                <td>{{ hit['product'] }} </td>
+                <td>{{ hit['amount'] }} SEK</td>
+                <td>{{ hit['create_date'] }} </td>
+                <td>
+                    <form id="tjuue" action="/debt_delete/{{ hit['id']}}/{{ hit['uid'] }}" method="post"
+                        onsubmit="return confirm('Do you really want to delete this debt?')">
+                    <input type="submit"  value="Delete Debt" onclick="">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endif %}
 
 {% endblock %}

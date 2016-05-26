@@ -26,117 +26,88 @@
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-          </ul>
-        </nav>
-        <!--<h3 class="text-muted">Crosstag</h3> -->
-      </div>
-
-        <div class="page-header">
-
-            <h1>CROSSTAG</h1>
-        </div>
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }} </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            {% endwith %}
-          {% block content %}{% endblock %}
-
-    {# Added some css to the tagged in user #}
-        {% if form.errors %}
-            <ul class="errors">
-                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-                    {% for error in field_errors %}
-                        <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-            </ul>
-        {% endif %}
-
-        <h1>Register</h1>
-        <form action="" method="post" name="register" class="form-horizontal" role="form">
-            {{form.hidden_tag()}}
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
-                        <div class="col-sm-10">
-                            {{form.username(size=80, placeholder='Username')}}
-                        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header col-md-8">
+                    <h1>Crosstag <small>Create new account</small></h1>
                 </div>
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
-                        <div class="col-sm-10">
-                            {{form.password(size=80, placeholder='Pasword', id='password')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Repeat Password</label>
-                        <div class="col-sm-10">
-                            {{form.repeat_password(size=80, placeholder='Repeat Pasword', id='password')}}
-                        </div>
-                </div>
-
-                <label for="inputEmail3" class="col-sm-2 control-label">Do you have Fortnox?</label>
-                {{form.active_fortnox()}}
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Gym Name</label>
-                        <div class="col-sm-10">
-                            {{form.gym_name(size=80, placeholder='Gym name')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Street Name</label>
-                        <div class="col-sm-10">
-                            {{form.address(size=80, placeholder='Street name')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Phonenumber</label>
-                        <div class="col-sm-10">
-                            {{form.phone(size=80, placeholder='Phonenumber')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Zip Code</label>
-                        <div class="col-sm-10">
-                            {{form.zip_code(size=80, placeholder='Zip Code')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">City</label>
-                        <div class="col-sm-10">
-                            {{form.city(size=80, placeholder='City')}}
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
-                        <div class="col-sm-10">
-                            {{form.email(size=80, placeholder='Email')}}
-                        </div>
-                </div>
-
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <input type="submit" value="Register" class="btn btn-default">
+                <div class="col-md-1" style="margin-top: 70px;">
+                    <a href="/" class="btn btn-default">Back</a>
                 </div>
             </div>
-        </form>
+            <div class="col-md-10 form-content">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="col-md-12">
+                            <div class="alert alert-warning" role="alert">{{ message }} </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
 
-        <a href="/" class="btn btn-default">Back</a>
+                {% if form.errors %}
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <div class="col-md-12">
+                            <div class="alert alert-danger" role="alert">{{ error }} </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {% endif %}
+            </div>
+            <form action="" method="post" name="register" class="form-horizontal" role="form">
+                {{form.hidden_tag()}}
+                <div class="form-group col-md-6" style="margin-right: 25px;">
+                    <label for="inputEmail3">Username</label>
+                    {{form.username(size=80, placeholder='Username', class="form-control", type="text")}}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail3">Email</label>
+                    {{form.email(size=80, placeholder='Email', class="form-control", type="email")}}
+                </div>
+                <div class="form-group col-md-6" style="margin-right: 25px;">
+                    <label for="inputEmail3">Password</label>
+                    {{form.password(size=80, placeholder='Pasword', id='password', class="form-control", type="password")}}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail3">Repeat Password</label>
+                    {{form.repeat_password(size=80, placeholder='Repeat Pasword', id='password', class="form-control", type="password")}}
+                </div>
+                <div class="form-group col-md-6" style="margin-right: 25px;">
+                    <label for="inputEmail3">Phonenumber</label>
+                    {{form.phone(size=80, placeholder='Phonenumber', class="form-control", type="text")}}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail3" >Do you have Fortnox?</label>
+                    {{form.active_fortnox(class="checkbox-inline", style="list-style-type: none;")}}
+                </div>
+                <div class="form-group col-md-6" style="margin-right: 25px;">
+                    <label for="inputEmail3">Gym Name</label>
+                    {{form.gym_name(size=80, placeholder='Gym name', class="form-control", type="text")}}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail3">Street Name</label>
+                    {{form.address(size=80, placeholder='Street name', class="form-control", type="text")}}
+                </div>
+                <div class="form-group col-md-6" style="margin-right: 25px;">
+                    <label for="inputEmail3">Zip Code</label>
+                    {{form.zip_code(size=80, placeholder='Zip Code', class="form-control", type="text")}}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail3">City</label>
+                    {{form.city(size=80, placeholder='City', class="form-control", type="text")}}
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-12">
+                      <input type="submit" value="Register" class="btn btn-primary btn-lg btn-block">
+                    </div>
+                </div>
+            </form>
+        </div>
+
       <footer class="footer">
         <p>&copy; Crosstag 2013-2016</p>
       </footer>

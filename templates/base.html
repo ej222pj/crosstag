@@ -84,7 +84,11 @@
       </ul>
       {% endif %}
       {% endwith %}
-      {% block content %}{% endblock %}
+
+      {% block content %}
+        {# This is where all contents from the other templates will be. #}
+      {% endblock %}
+
       <footer class="footer">
         <p>&copy; Crosstag 2013-2016</p>
       </footer>
