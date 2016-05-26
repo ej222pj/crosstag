@@ -22,6 +22,7 @@ sudo apt-get install unixodbc unixodbc-dev freetds-dev freetds-bin tdsodbc
 sudo yes | cp -f freeodbcconfig/freetds.conf /etc/freetds/
 sudo yes | cp -f freeodbcconfig/odbc.ini /etc/
 sudo yes | cp -f freeodbcconfig/odbcinst.ini /etc/
+edit db_service/sql_client_cfg.py to correct database info
 ```
 ### To start the server
 ```sh
