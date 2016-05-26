@@ -22,6 +22,10 @@ sudo pip3 install -r requirements.txt
 ```sh
 sudo python3 crosstag_server.py
 ```
+### To start the reader in the terminal
+```sh
+sudo python3 crosstag_reader.py --dummy
+```
 ### To start the reader on a Raspberry PI
 ```sh
 sudo python3 crosstag_reader.py
