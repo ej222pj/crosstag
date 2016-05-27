@@ -1,138 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../static/favicon.ico">
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
 
-    {% if title %}
-    <title>{{title}} - Crosstag</title>
-    {% else %}
-    <title>Crosstag</title>
-    {% endif %}
-    {% block scripts %}{% endblock%}
+<div class="row" style="width: 75%;">
+    <h1>General information</h1>
+    <h3>Edit Settings</h3>
 
-    <!-- Bootstrap core CSS -->
-    <link href="../../static/bootstrap.css" rel="stylesheet">
-    <link href="../../static/jumbotron-narrow.css" rel="stylesheet">
-    <script type="text/javascript" src="../../static/ie-emulation-modes-warning.js"></script>
-    <script type="text/javascript" src="../../static/d3.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
-
-
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-          </ul>
-        </nav>
-        <!--<h3 class="text-muted">Crosstag</h3> -->
-      </div>
-
-        <div class="page-header">
-
-            <h1>CROSSTAG</h1>
-        </div>
-    <div class="container">
-      <div class="header">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-            <li role="presentation"><a href="/settings">Settings</a></li>
-            <li role="presentation"><a href="/general_information">General Information</a></li>
-            <li role="presentation"><a href="/fortnox_information">Fortnox Information</a></li>
-          </ul>
-        </nav>
-    {# Added some css to the tagged in user #}
+     <div class="col-md-10 form-content">
         {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
+        {% if messages %}
             {% for message in messages %}
-                <li>{{ message }} </li>
+                <div class="col-md-12">
+                    <div class="alert alert-warning" role="alert">{{ message }} </div>
+                </div>
             {% endfor %}
-                </ul>
-            {% endif %}
+        {% endif %}
         {% endwith %}
 
+
         {% if form.errors %}
-            <ul class="errors">
-                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-                    {% for error in field_errors %}
-                        <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-            </ul>
-        {% endif %}
-
-        <h3>General Information</h3>
-        <a href="/static/crosslogo.png"><img class="cflogo" src="/static/crosslogo.png" alt="Crosstag Logo" height="150" width="200"></a>
-
-        <h1>Edit General Information</h1>
-        <form action="" method="post" name="general_information" class="form-horizontal" role="form">
-        {{form.hidden_tag()}}
-            <p>* Required Fields</p>
-
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Password needed for confirmation</label>
-                    <div class="col-sm-10">
-                        {{form.password(size=80, value='')}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Gym Name</label>
-                    <div class="col-sm-10">
-                        {{form.gym_name(size=80, value=data.gym_name)}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Address</label>
-                    <div class="col-sm-10">
-                        {{form.address(size=80, value=data.address)}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Phone number</label>
-                    <div class="col-sm-10">
-                        {{form.phone(size=80, value=data.phone)}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Zip Code</label>
-                    <div class="col-sm-10">
-                        {{form.zip_code(size=80, value=data.zip_code)}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">City</label>
-                    <div class="col-sm-10">
-                        {{form.city(size=80, value=data.city)}}
-                    </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
-                    <div class="col-sm-10">
-                        {{form.email(size=80, value=data.email)}}
-                    </div>
-            </div>
-
-            <br>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                      <input type="submit" value="Save Settings" class="btn btn-primary">
-                    </div>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <div class="col-md-12">
+                    <div class="alert alert-danger" role="alert">{{ error }} </div>
                 </div>
-            </form>
+            {% endfor %}
+        {% endfor %}
+        {% endif %}
+    </div>
 
-        <a href="/" class="btn btn-default">Back</a>
-      <footer class="footer">
-        <p>&copy; Crosstag 2013-2016</p>
-      </footer>
+    <form action="" method="post" name="general_information" class="form-horizontal" role="form">
+    {{form.hidden_tag()}}
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">Gym Name</label>
+            {{form.gym_name(size=80, value=data.gym_name, class="form-control")}}
+        </div>
 
-    </div> <!-- /container -->
-    <script src="../../static/ie10-viewport-bug-workaround.js"></script>
-  </body>
-</html>
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">Address</label>
+            {{form.address(size=80, value=data.address, class="form-control")}}
+        </div>
+
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">Phone number</label>
+            {{form.phone(size=80, value=data.phone, class="form-control")}}
+        </div>
+
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">Zip Code</label>
+            {{form.zip_code(size=80, value=data.zip_code, class="form-control")}}
+        </div>
+
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">City</label>
+            {{form.city(size=80, value=data.city, class="form-control")}}
+        </div>
+
+        <div class="form-group col-md-8">
+            <label for="inputEmail3">Email</label>
+            {{form.email(size=80, value=data.email, class="form-control", type="email")}}
+        </div>
+
+        <div class="form-group col-md-8">
+
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="inputEmail3">Password needed for confirmation</label>
+            {{form.password(size=80, value='', class="form-control", type="password")}}
+            <input type="submit" value="Save Settings" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+{% endblock %}
