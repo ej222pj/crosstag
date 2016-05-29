@@ -14,16 +14,17 @@ Installation
 ------------
 ### install dependencies and clone this repo
 ```sh
-sudo apt-get install python-pip python-dev build-essential 
-sudo pip install --upgrade pip 
-sudo pip install --upgrade virtualenv 
+sudo apt-get install python3-pip python3-dev build-essential 
+sudo pip3 install --upgrade pip 
+sudo pip3 install --upgrade virtualenv 
+sudo apt-get install git
 git clone https://github.com/ej222pj/crosstag.git
 sudo cd crosstag
 sudo pip3 install -r requirements.txt
 sudo apt-get install unixodbc unixodbc-dev freetds-dev freetds-bin tdsodbc
-sudo yes | cp -f freeodbcconfig/freetds.conf /etc/freetds/
-sudo yes | cp -f freeodbcconfig/odbc.ini /etc/
-sudo yes | cp -f freeodbcconfig/odbcinst.ini /etc/
+sudo cp -f freeodbcconfig/freetds.conf /etc/freetds/
+sudo cp -f freeodbcconfig/odbc.ini /etc/
+sudo cp -f freeodbcconfig/odbcinst.ini /etc/
 edit db_service/sql_client_cfg.py to correct database info
 ```
 ### To start the server
