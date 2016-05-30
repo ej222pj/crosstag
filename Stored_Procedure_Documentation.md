@@ -1,11 +1,11 @@
-## Stored Procedure Documentation
+# Stored Procedure Documentation
 
 ---
-### Aplication Specific Stored Procedures
-##### Schema: [crosstagAdminSchema]
+## Aplication Specific Stored Procedures
+#### Schema: [crosstagAdminSchema]
 ---
 
-#### Create Tenant Login
+### Create Tenant Login
 ```sh
 Stored Procedure [CreateTenantLogin]
 Method : CREATE
@@ -15,7 +15,7 @@ Raises :
 Description : Creates a Database login, Database User, Database Schema, Adds Database User to AppRole, Runs [RegisterTenant], Runs [CreateUserTable], Runs [CreateDebtTable], Runs [CreateStatisticTagevents], Runs [CreateDetailedTageventsTable].
 ```
 
-#### Register Tenant
+### Register Tenant
 ```sh
 Stored Procedure : [RegisterTenant] 
 Method : CREATE
@@ -26,7 +26,7 @@ Description : (Is only runned by [CreateTenantLogin]) Register a new Tenant and 
 ```
 
 
-#### Create User Table
+### Create User Table
 ```sh
 Stored Procedure : [CreateUserTable]
 Method : CREATE
@@ -36,7 +36,7 @@ Raises : FailError
 Description : (Is only runned by [CreateTenantLogin]) Create a table where the Tenant saves all users(Gym Members)
 ```
 
-#### Create Debt Table
+### Create Debt Table
 ```sh
 Stored Procedure : [CreateDebtTable]
 Method : CREATE
@@ -46,7 +46,7 @@ Raises : FailError
 Description : (Is only runned by [CreateTenantLogin]) Create a table where the Tenant saves all Debts
 ```
 
-#### Create Statistic Tagevents Table
+### Create Statistic Tagevents Table
 ```sh
 Stored Procedure : [CreateStatisticTagevents]
 Method : CREATE
@@ -56,7 +56,7 @@ Raises : FailError
 Description : (Is only runned by [CreateTenantLogin]) Create a table where the Tenant saves all Tagevents for statistic
 ```
 
-#### Create Detailed Tagevents Table
+### Create Detailed Tagevents Table
 ```sh
 Stored Procedure : [CreateDetailedtageventsTable]
 Method : CREATE
@@ -66,7 +66,7 @@ Raises : FailError
 Description : (Is only runned by [CreateTenantLogin]) Create a table where the Tenant saves all Tagevents ub detail
 ```
 
-#### Update Tenants Account Info
+### Update Tenants Account Info
 ```sh
 Stored Procedure : [UpdateTenant] 
 Method : UPDATE
@@ -76,7 +76,7 @@ Raises : FailError
 Description : Update a Tenants account info
 ```
 
-#### Update Tenants Gym Info
+### Update Tenants Gym Info
 ```sh
 Stored Procedure : [UpdateGymInfo]
 Method : UPDATE
@@ -86,7 +86,7 @@ Raises : FailError
 Description : Update a Tenants contact and gym info
 ```
 
-#### Update Tenants Fortnox Info
+### Update Tenants Fortnox Info
 ```sh
 Stored Procedure : [UpdateFortnox]
 Method : UPDATE
@@ -96,7 +96,7 @@ Raises : FailError
 Description : Update a Tenants Fortnox info
 ```
 
-#### Login Tenant
+### Login Tenant
 ```sh
 Stored Procedure : [LoginTenant]
 Method : READ
@@ -106,7 +106,7 @@ Raises :
 Description : If username exists, return hashed password for comparision in the code.
 ```
 
-#### Get Tenant With Api Key
+### Get Tenant With Api Key
 ```sh
 Stored Procedure : [GetTenantWithApiKey] 
 Method : READ
@@ -116,7 +116,7 @@ Raises :
 Description : If apikey exists, return username matching the api key
 ```
 
-#### Get Tenant(s)
+### Get Tenant(s)
 ```sh
 Stored Procedure : [GetTenants]
 Method : READ
@@ -126,11 +126,11 @@ Raises :
 Description : If username is empty, return all tenants. If username contains a name, return matching tenant info. 
 ```
 
-### Tenant Specific Stored Procedures
-##### Schema: [dbo]
+## Tenant Specific Stored Procedures
+#### Schema: [dbo]
 ---
 
-#### Add User
+### Add User
 ```sh
 Stored Procedure : [AddUser]
 Method : CREATE
@@ -140,7 +140,7 @@ Raises : FailError
 Description : Creates a new User
 ```
 
-#### Add Debt
+### Add Debt
 ```sh
 Stored Procedure : [AddDebt]
 Method : CREATE
@@ -150,7 +150,7 @@ Raises : FailError
 Description : Creates a new Debt
 ```
 
-#### Add Detailed Tagevent
+### Add Detailed Tagevent
 ```sh
 Stored Procedure : [AddDetailedTagevents]
 Method : CREATE
@@ -160,7 +160,7 @@ Raises : FailError
 Description : Creates a new Detailed Tagevent and runs [AddStatisticTagevents]
 ```
 
-#### Add Statistic Tagevent
+### Add Statistic Tagevent
 ```sh
 Stored Procedure : [AddStatisticTagevents]
 Method : CREATE
@@ -170,7 +170,7 @@ Raises : FailError
 Description : (This stored proc is only used by [AddDetailedTagevents]) Creates a new row for statistic tagevents. Updates if a new tagevent occurs on the same hour. If it's a new hour, create a new row.
 ```
 
-#### Update User
+### Update User
 ```sh
 Stored Procedure : [UpdateUser]
 Method : UPDATE
@@ -180,7 +180,7 @@ Raises : FailError
 Description : Update Info on a User
 ```
 
-#### Update Debt
+### Update Debt
 ```sh
 Stored Procedure : [UpdateDebt]
 Method : UPDATE
@@ -190,7 +190,7 @@ Raises : FailError
 Description : Update a Debt
 ```
 
-#### Update Statistic Tagevent
+### Update Statistic Tagevent
 ```sh
 Stored Procedure : [UpdateStatisticTagevents]
 Method : UPDATE
@@ -200,7 +200,7 @@ Raises : FailError
 Description : Update the current row for statistic tagevent if a new tagevent occured.
 ```
 
-#### Search User
+### Search User
 ```sh
 Stored Procedure : [SearchUsers]
 Method : READ
@@ -210,7 +210,7 @@ Raises :
 Description : Search if for one or all of the inputs and returns all matching users.
 ```
 
-#### Search User On Tag
+### Search User On Tag
 ```sh
 Stored Procedure : [SearchUserOnTag]
 Method : READ
@@ -220,7 +220,7 @@ Raises :
 Description : If tag_id is connected to a user, return that user
 ```
 
-#### Get User ID
+### Get User ID
 ```sh
 Stored Procedure : [GetUserId]
 Method : READ
@@ -230,7 +230,7 @@ Raises :
 Description : If fortnox_id is connected to a user, return that users id
 ```
 
-#### Get User(s)
+### Get User(s)
 ```sh
 Stored Procedure : [GetUser]
 Method : READ
@@ -240,7 +240,7 @@ Raises :
 Description : If id is 0, get all users. If id is > 0, get the user with that id.
 ```
 
-#### Get Statistic Tagevents
+### Get Statistic Tagevents
 ```sh
 Stored Procedure : [GetStatisticTagevents]
 Method : READ
@@ -250,7 +250,7 @@ Raises :
 Description : If id is 0, get all statistic tagevents. If id is > 0, get the tagevent with that id.
 ```
 
-#### Get Inactive Users
+### Get Inactive Users
 ```sh
 Stored Procedure : [GetInactiveUsers] 
 Method : READ
@@ -260,7 +260,7 @@ Raises :
 Description : Get all users with active membership that has not tagged for 2 weeks
 ```
 
-#### Get Detailed Tagevent(s)
+### Get Detailed Tagevent(s)
 ```sh
 Stored Procedure : [GetDetailedTagevents] 
 Method : READ
@@ -270,7 +270,7 @@ Raises :
 Description : If uid = 0 and numberOfTagevents = 1, get the last tagevent. If uid = 0 and numberOfTagevents > 1 get as many as numberOfTagevents says. If uid > 0 get tagevents for a specific user.
 ```
 
-#### Get Debt(s)
+### Get Debt(s)
 ```sh
 Stored Procedure : [GetDebt]
 Method : READ
@@ -280,7 +280,7 @@ Raises :
 Description : If uid = 0, get all Debts. If uid > 0, get Debts for specific user.
 ```
 
-#### Does User Exsts
+### Does User Exsts
 ```sh
 Stored Procedure : [DoesUserExists]
 Method : READ
@@ -290,7 +290,7 @@ Raises :
 Description : Check if a user already exist from Fortnox. 
 ```
 
-#### Delete User
+### Delete User
 ```sh
 Stored Procedure : [DeleteUser]
 Method : DELETE
@@ -300,7 +300,7 @@ Raises : FailError
 Description : Delete a user based on the ID
 ```
 
-#### Delete Debt
+### Delete Debt
 ```sh
 Stored Procedure : [DeleteDebt]
 Method : DELETE
