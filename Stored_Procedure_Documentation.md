@@ -2,7 +2,7 @@
 
 [Application Specific Stored Procedures](https://github.com/ej222pj/crosstag/blob/master/Stored_Procedure_Documentation.md#aplication-specific-stored-procedures)   
 
-[Tenant Specific Stored Procedures](https://github.com/ej222pj/crosstag/blob/master/Stored_Procedure_Documentation.md#tenant-specific-stored-procedures-1)
+[Tenant Specific Stored Procedures](https://github.com/ej222pj/crosstag/blob/master/Stored_Procedure_Documentation.md#tenant-specific-stored-procedures)
 
 ---
 ## Aplication Specific Stored Procedures
